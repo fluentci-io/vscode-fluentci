@@ -1,6 +1,6 @@
-# fluentci README
+# FluentCI for VS Code
 
-This is the README for your extension "fluentci". After writing up a brief description, we recommend including the following sections.
+The FluentCI extension for VS Code provides a set of commands for interacting with the FluentCI Pipelines.
 
 ## Features
 

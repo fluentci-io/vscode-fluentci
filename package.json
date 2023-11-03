@@ -2,6 +2,7 @@
   "name": "fluentci",
   "displayName": "FluentCI",
   "description": "Run FluentCI jobs from within VS Code",
+  "publisher": "fluentci-io",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.84.0"
@@ -14,8 +15,44 @@
   "contributes": {
     "commands": [
       {
-        "command": "fluentci.helloWorld",
-        "title": "Hello World"
+        "command": "fluentci.run",
+        "title": "Fluent CI: Run Current Pipeline..."
+      },
+      {
+        "command": "fluentci.runJob",
+        "title": "Fluent CI: Run a Job..."
+      },
+      {
+        "command": "fluentci.runJobWithParams",
+        "title": "Fluent CI: Run a Job with Parameters..."
+      },
+      {
+        "command": "fluentci.init",
+        "title": "Fluent CI: Initialize a New Pipeline..."
+      },
+      {
+        "command": "fluentci.runPrebuiltPipeline",
+        "title": "Fluent CI: Run a Prebuilt Pipeline..."
+      },
+      {
+        "command": "fluentci.showDocs",
+        "title": "Fluent CI: Show Current Pipeline Documentation..."
+      },
+      {
+        "command": "fluentci.editDocs",
+        "title": "Fluent CI: Edit Current Pipeline Documentation..."
+      },
+      {
+        "command": "fluentci.showPipelineDocs",
+        "title": "Fluent CI: Show Pipeline Documentation..."
+      },
+      {
+        "command": "fluentci.removeConfigs",
+        "title": "Fluent CI: Remove Fluent CI Configuration..."
+      },
+      {
+        "command": "fluentci.runJobFromPrebuiltPipeline",
+        "title": "Fluent CI: Run a Job from a Prebuilt Pipeline..."
       }
     ]
   },
@@ -31,18 +68,28 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.83.2",
+    "@types/markdown-it": "^13.0.5",
+    "@types/markdown-it-external-links": "^0.0.2",
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
+    "@types/vscode": "^1.83.2",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
+    "@vscode/test-electron": "^2.3.6",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
-    "typescript": "^5.2.2",
     "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
-    "@vscode/test-electron": "^2.3.6"
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "ansi-to-html": "^0.7.2",
+    "graphql": "16.8.1",
+    "highlight.js": "^11.9.0",
+    "markdown-it": "^13.0.2",
+    "markdown-it-external-links": "^0.0.6",
+    "markdown-it-multimd-table": "^4.2.3"
   }
 }
