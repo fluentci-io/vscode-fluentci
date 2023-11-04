@@ -1,6 +1,7 @@
 # FluentCI for VS Code
 
 [![tests](https://github.com/fluentci-io/vscode-fluentci/actions/workflows/ci.yml/badge.svg)](https://github.com/fluentci-io/vscode-fluentci/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/fluentci-io/vscode-fluentci/graph/badge.svg?token=R68IYX06SZ)](https://codecov.io/gh/fluentci-io/vscode-fluentci)
 
 The FluentCI extension for VS Code provides a set of commands for interacting with the [FluentCI](https://fluentci.io) Pipelines.
 
