@@ -1,6 +1,10 @@
 # FluentCI for VS Code
 
-The FluentCI extension for VS Code provides a set of commands for interacting with the FluentCI Pipelines.
+The FluentCI extension for VS Code provides a set of commands for interacting with the FluentCI Pipelines. To get started:
+
+1. Setup FluentCI in your project if you haven't.
+2. Install "FluentCI" extension in VS Code.
+3. reload or restart VS Code.
 
 ## Features
 

@@ -28,288 +28,37 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deactivate = exports.activate = void 0;
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(__webpack_require__(1));
-const pipelines_1 = __webpack_require__(2);
-const markdown_it_1 = __importDefault(__webpack_require__(3));
-const markdown_it_external_links_1 = __importDefault(__webpack_require__(266));
-const child_process_1 = __webpack_require__(269);
-const fs_1 = __webpack_require__(270);
+const icons_1 = __webpack_require__(76);
+const outputChannel_1 = __webpack_require__(77);
+const terminal_1 = __webpack_require__(79);
+const explorer_1 = __webpack_require__(276);
+const views_1 = __webpack_require__(277);
+const configs_1 = __webpack_require__(278);
+const pipeline_1 = __webpack_require__(279);
+const jobs_1 = __webpack_require__(280);
+const docs_1 = __webpack_require__(281);
 const outputChannel = vscode.window.createOutputChannel("Fluent CI");
 const terminal = vscode.window.createTerminal("Fluent CI");
-const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-function normalizeHighlightLang(lang) {
-    switch (lang && lang.toLowerCase()) {
-        case "tsx":
-        case "typescriptreact":
-            return "jsx";
-        case "json5":
-        case "jsonc":
-            return "json";
-        case "c#":
-        case "csharp":
-            return "cs";
-        default:
-            return lang;
-    }
-}
-function renderMarkdown(markdownContent) {
-    const hljs = __webpack_require__(72);
-    const md = new markdown_it_1.default({
-        html: true,
-        highlight: (str, lang) => {
-            if (lang && hljs.getLanguage(normalizeHighlightLang(lang))) {
-                try {
-                    return ('<pre class="hljs"><code>' +
-                        hljs.highlight(normalizeHighlightLang(lang), str).value +
-                        "</code></pre>");
-                }
-                catch (error) { }
-            }
-            return ('<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>");
-        },
-    });
-    md.use(markdown_it_external_links_1.default, {
-        externalTarget: "_blank",
-        externalRel: "noopener noreferrer",
-    });
-    md.use(__webpack_require__(267), {
-        multiline: true,
-        headerless: false, // Render tables without headers
-    });
-    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">';
-    const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
-    const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
-    const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
-    const html = `<!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>${""}</title>
-        ${markdownCss}
-        ${highlightCss}
-        ${katexCss}
-        ${copyTeXCss}
-    </head>
-    <body class="vscode-body">
-        ${md.render(markdownContent)}
-    </body>
-    </html>`;
-    return html;
-}
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "fluentci" is now active!');
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with registerCommand
-    // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand("fluentci.run", () => {
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage("No workspace folder found");
-            return;
-        }
-        if (!(0, fs_1.existsSync)(`${workspaceFolder.uri.fsPath}/.fluentci`)) {
-            vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
-            return;
-        }
-        terminal.show();
-        terminal.sendText("fluentci run .");
-    });
-    vscode.commands.registerCommand("fluentci.runJob", async () => {
-        const childProcess = (0, child_process_1.spawn)("deno", [
-            "eval",
-            `
-   import { runnableJobs , jobDescriptions } from './.fluentci/src/dagger/jobs.ts';
-   console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
-        ], {
-            cwd: workspaceFolder?.uri.fsPath,
-        });
-        const jobs = await new Promise((resolve, reject) => {
-            childProcess.stdout.on("data", (data) => {
-                const jobs = JSON.parse(data.toString());
-                outputChannel.appendLine(jobs);
-                resolve(jobs);
-            });
-            childProcess.stderr.on("data", (data) => {
-                outputChannel.appendLine(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
-                reject();
-            });
-        });
-        const quickPick = vscode.window.createQuickPick();
-        quickPick.title = "Select a Job";
-        quickPick.items = jobs.map((x) => ({
-            label: x.name,
-            description: x.description,
-        }));
-        quickPick.onDidChangeSelection((selection) => {
-            terminal.show();
-            terminal.sendText(`fluentci run . ${selection[0].label}`);
-        });
-        quickPick.onDidHide(() => quickPick.dispose());
-        quickPick.show();
-    });
-    vscode.commands.registerCommand("fluentci.runJobWithParams", () => { });
-    vscode.commands.registerCommand("fluentci.init", () => {
-        const quickPick = vscode.window.createQuickPick();
-        quickPick.title = "Create from Prebuilt Pipeline";
-        quickPick.items = pipelines_1.pipelines;
-        quickPick.onDidChangeSelection((selection) => {
-            if (!workspaceFolder) {
-                vscode.window.showErrorMessage("No workspace folder found");
-                quickPick.dispose();
-                return;
-            }
-            outputChannel.appendLine(`Workspace folder: ${workspaceFolder.uri.fsPath}`);
-            quickPick.dispose();
-            if ((0, fs_1.existsSync)(`${workspaceFolder.uri.fsPath}/.fluentci`)) {
-                vscode.window.showErrorMessage("FluentCI Project already exists in this directory");
-                return;
-            }
-            vscode.window.setStatusBarMessage("Initializing FluentCI Project...");
-            const pipeline = selection[0].name;
-            terminal.show();
-            terminal.sendText(`fluentci init -t ${pipeline}`);
-            vscode.window.setStatusBarMessage("FluentCI Project Initialized!");
-        });
-        quickPick.onDidHide(() => quickPick.dispose());
-        quickPick.show();
-    });
-    vscode.commands.registerCommand("fluentci.runPrebuiltPipeline", () => {
-        const quickPick = vscode.window.createQuickPick();
-        quickPick.title = "Select a Pipeline";
-        quickPick.items = pipelines_1.pipelines;
-        quickPick.onDidChangeSelection((selection) => {
-            terminal.show();
-            terminal.sendText(`fluentci run ${selection[0].name}`);
-        });
-        quickPick.onDidHide(() => quickPick.dispose());
-        quickPick.show();
-    });
-    vscode.commands.registerCommand("fluentci.runJobFromPrebuiltPipeline", async () => {
-        const quickPick = vscode.window.createQuickPick();
-        quickPick.title = "Select a Pipeline (1/2)";
-        quickPick.items = pipelines_1.pipelines;
-        quickPick.onDidChangeSelection(async (selection) => {
-            quickPick.dispose();
-            vscode.window.setStatusBarMessage("Fetching Jobs...");
-            const childProcess = (0, child_process_1.spawn)("deno", [
-                "eval",
-                `
-     import { runnableJobs , jobDescriptions } from '${selection[0].url}/src/dagger/jobs.ts';
-     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
-            ], {
-                cwd: workspaceFolder?.uri.fsPath,
-            });
-            const jobs = await new Promise((resolve) => {
-                childProcess.stdout.on("data", (data) => {
-                    const jobs = JSON.parse(data.toString());
-                    outputChannel.appendLine(data.toString());
-                    resolve(jobs);
-                });
-                childProcess.stderr.on("data", (data) => {
-                    outputChannel.show(true);
-                    outputChannel.appendLine(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
-                });
-            });
-            vscode.window.setStatusBarMessage("Jobs Fetched!");
-            vscode.window.setStatusBarMessage("");
-            const jobsQuickPick = vscode.window.createQuickPick();
-            jobsQuickPick.title = "Select a Job (2/2)";
-            jobsQuickPick.items = jobs.map((x) => ({
-                label: x.name,
-                description: x.description,
-            }));
-            jobsQuickPick.onDidChangeSelection((job) => {
-                terminal.show();
-                terminal.sendText(`fluentci run ${selection[0].name} ${job[0].label}`);
-            });
-            jobsQuickPick.onDidHide(() => quickPick.dispose());
-            jobsQuickPick.show();
-        });
-        quickPick.onDidHide(() => quickPick.dispose());
-        quickPick.show();
-    });
-    vscode.commands.registerCommand("fluentci.showDocs", () => {
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage("No workspace folder found");
-            return;
-        }
-        if (!(0, fs_1.existsSync)(`${workspaceFolder.uri.fsPath}/.fluentci`)) {
-            vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
-            return;
-        }
-        const panel = vscode.window.createWebviewPanel("markdownPreview", "Pipeline Docs", vscode.ViewColumn.One, {});
-        // open the readme file from the fluentci directory
-        const data = (0, fs_1.readFileSync)(`${workspaceFolder.uri.fsPath}/.fluentci/README.md`);
-        panel.webview.html = renderMarkdown(data.toString());
-    });
-    vscode.commands.registerCommand("fluentci.editDocs", () => {
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage("No workspace folder found");
-            return;
-        }
-        if (!(0, fs_1.existsSync)(`${workspaceFolder.uri.fsPath}/.fluentci`)) {
-            vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
-            return;
-        }
-        const filePath = `${workspaceFolder.uri.fsPath}/.fluentci/README.md`;
-        vscode.workspace.openTextDocument(filePath).then((doc) => {
-            vscode.window.showTextDocument(doc);
-        });
-    });
-    vscode.commands.registerCommand("fluentci.showPipelineDocs", () => {
-        const quickPick = vscode.window.createQuickPick();
-        quickPick.title = "Select a Pipeline";
-        quickPick.items = pipelines_1.pipelines.slice(1);
-        quickPick.onDidChangeSelection(async (selection) => {
-            const panel = vscode.window.createWebviewPanel("markdownPreview", `${selection[0].label} Pipeline Docs`, vscode.ViewColumn.One, {});
-            fetch(selection[0].readme)
-                .then((response) => response.text())
-                .then((text) => {
-                panel.webview.html = renderMarkdown(text);
-            });
-        });
-        quickPick.onDidHide(() => quickPick.dispose());
-        quickPick.show();
-    });
-    vscode.commands.registerCommand("fluentci.removeConfigs", () => {
-        if (!workspaceFolder) {
-            vscode.window.showErrorMessage("No workspace folder found");
-            return;
-        }
-        if (!(0, fs_1.existsSync)(`${workspaceFolder.uri.fsPath}/.fluentci`)) {
-            vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
-            return;
-        }
-        const childProcess = (0, child_process_1.spawn)("rm", [
-            "-rf",
-            `${workspaceFolder.uri.fsPath}/.fluentci`,
-        ]);
-        childProcess.stdout.on("data", (data) => {
-            outputChannel.appendLine(data.toString());
-        });
-        childProcess.stderr.on("data", (data) => {
-            outputChannel.appendLine(data.toString());
-        });
-        childProcess.on("close", (code) => {
-            if (code !== 0) {
-                vscode.window.showErrorMessage("Failed to remove FluentCI Configs Directory from Workspace");
-                return;
-            }
-            outputChannel.appendLine("FluentCI Configs Directory Successfully Removed from Workspace");
-            vscode.window.showInformationMessage("FluentCI Configs Directory Successfully Removed from Workspace");
-        });
-    });
-    context.subscriptions.push(disposable);
+    (0, icons_1.initResources)(context);
+    (0, outputChannel_1.initOutputChannel)(outputChannel);
+    (0, terminal_1.initTerminal)(terminal);
+    (0, views_1.registerExplorerViews)(context);
+    (0, explorer_1.registerExplorerCommands)();
+    (0, pipeline_1.registerPipelineCommands)(context);
+    (0, jobs_1.registerJobsCommands)();
+    (0, docs_1.registerDocsCommands)();
+    (0, configs_1.registerConfigsCommand)();
 }
 exports.activate = activate;
 // This method is called when your extension is deactivated
@@ -8742,209 +8491,609 @@ module.exports = {
 
 /***/ }),
 /* 72 */
+/***/ ((module) => {
+
+"use strict";
+// Copyright (c) Rotorz Limited. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root.
+
+
+
+
+function externalLinksPlugin(md, options) {
+  options = options || {};
+
+  let externalClassName = (typeof options.externalClassName === "string" || options.externalClassName === null)
+      ? options.externalClassName
+      : "external-link";
+  let internalClassName = (typeof options.internalClassName === "string" || options.internalClassName === null)
+      ? options.internalClassName
+      : null;
+  let internalDomains = Array.isArray(options.internalDomains)
+      ? options.internalDomains.map(domain => domain.toLowerCase())
+      : [];
+
+  let externalTarget = options.externalTarget || "_self";
+  let internalTarget = options.internalTarget || "_self";
+
+  let externalRel = options.externalRel || null;
+  let internalRel = options.internalRel || null;
+
+  if (externalClassName === null && internalClassName === null
+      && externalTarget === "_self" && internalTarget === "_self"
+      && externalRel === null && internalRel === null) {
+    // No point proceeding!
+    return;
+  }
+
+  function externalLinks(state) {
+    function applyFilterToTokenHierarchy(token) {
+      if (token.children) {
+        token.children.map(applyFilterToTokenHierarchy);
+      }
+
+      if (token.type === "link_open") {
+        let href = token.attrGet("href");
+        let internal = isInternalLink(href);
+
+        let newClasses = internal ? internalClassName : externalClassName;
+        if (newClasses) {
+          let existingClasses = token.attrGet("class") || "";
+          if (existingClasses !== "") {
+            newClasses = existingClasses + " " + newClasses;
+          }
+          token.attrSet("class", newClasses);
+        }
+
+        let target = internal ? internalTarget : externalTarget;
+        if (target !== "_self") {
+          token.attrSet("target", target);
+        }
+
+        let rel = internal ? internalRel : externalRel;
+        if (rel) {
+          let existingRel = token.attrGet("rel") || "";
+          if (existingRel !== "") {
+            rel = existingRel + " " + rel;
+          }
+          token.attrSet("rel", rel);
+        }
+      }
+    }
+
+    state.tokens.map(applyFilterToTokenHierarchy);
+  }
+
+  function isInternalLink(href) {
+    let domain = getDomain(href);
+    return domain === null || internalDomains.indexOf(domain) !== -1;
+  }
+
+  function getDomain(href) {
+    let domain = href.split("//")[1];
+    if (domain) {
+      domain = domain.split("/")[0].toLowerCase();
+      return domain || null;
+    }
+    return null;
+  }
+
+  md.core.ruler.push("external_links", externalLinks);
+}
+
+
+module.exports = externalLinksPlugin;
+
+
+/***/ }),
+/* 73 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
+
+/***/ }),
+/* 74 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+/* 75 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JobsTreeProvider = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const icons_1 = __webpack_require__(76);
+const child_process_1 = __webpack_require__(73);
+const outputChannel_1 = __webpack_require__(77);
+const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+class JobsTreeProvider {
+    onDidChangeTreeData;
+    getTreeItem(element) {
+        return {
+            label: element.name,
+            tooltip: element.description,
+            collapsibleState: element.children && element.children.length > 0
+                ? vscode.TreeItemCollapsibleState.Expanded
+                : vscode.TreeItemCollapsibleState.None,
+            contextValue: element.children && element.children.length > 0
+                ? "fluentci-pipeline"
+                : "fluentci-job",
+            iconPath: (0, icons_1.getIconPath)("steps/step_success.svg"),
+        };
+    }
+    getChildren(element) {
+        if (!element) {
+            const childProcess = (0, child_process_1.spawn)("deno", [
+                "eval",
+                `
+     import { pipelineName } from './.fluentci/src/dagger/jobs.ts';
+     import { runnableJobs , jobDescriptions } from './.fluentci/src/dagger/jobs.ts';
+     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ pipelineName, name: x, description: jobDescriptions[x]}))));`,
+            ], {
+                cwd: workspaceFolder?.uri.fsPath,
+            });
+            const jobs = new Promise((resolve, _reject) => {
+                childProcess.stdout.on("data", (data) => {
+                    const jobs = JSON.parse(data.toString());
+                    (0, outputChannel_1.appendLineToOutputChannel)(`=> ${jobs[0].pipelineName || "default_pipeline"} Jobs:`);
+                    (0, outputChannel_1.appendLineToOutputChannel)(JSON.stringify(jobs, null, 2));
+                    resolve([
+                        {
+                            name: jobs[0].pipelineName || "default_pipeline",
+                            children: jobs,
+                        },
+                    ]);
+                });
+                childProcess.stderr.on("data", (data) => {
+                    (0, outputChannel_1.showOutputChannel)(true);
+                    (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
+                    if (data.toString().includes("error")) {
+                        resolve([]);
+                    }
+                });
+            });
+            return jobs;
+        }
+        return element.children || [];
+    }
+    getParent(element) {
+        throw new Error("Method not implemented. 3");
+    }
+    resolveTreeItem(item, element, token) {
+        throw new Error("Method not implemented. 4");
+    }
+}
+exports.JobsTreeProvider = JobsTreeProvider;
+
+
+/***/ }),
+/* 76 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getIconPath = exports.initResources = void 0;
+const vscode = __importStar(__webpack_require__(1));
+let _context;
+function initResources(context) {
+    _context = context;
+}
+exports.initResources = initResources;
+function getIconPath(iconName) {
+    return vscode.Uri.joinPath(_context.extensionUri, "resources", "icons", "light", iconName);
+}
+exports.getIconPath = getIconPath;
+
+
+/***/ }),
+/* 77 */
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.showOutputChannel = exports.appendLineToOutputChannel = exports.initOutputChannel = void 0;
+let _outputChannel;
+function initOutputChannel(outputChannel) {
+    _outputChannel = outputChannel;
+}
+exports.initOutputChannel = initOutputChannel;
+function appendLineToOutputChannel(line) {
+    _outputChannel.appendLine(line);
+}
+exports.appendLineToOutputChannel = appendLineToOutputChannel;
+function showOutputChannel(preserveFocus) {
+    _outputChannel.show(preserveFocus);
+}
+exports.showOutputChannel = showOutputChannel;
+
+
+/***/ }),
+/* 78 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PipelinesTreeProvider = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const icons_1 = __webpack_require__(76);
+const outputChannel_1 = __webpack_require__(77);
+const child_process_1 = __webpack_require__(73);
+const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+class PipelinesTreeProvider {
+    onDidChangeTreeData;
+    getTreeItem(element) {
+        return {
+            label: element.name,
+            tooltip: element.description,
+            collapsibleState: element.repo_name
+                ? vscode.TreeItemCollapsibleState.Collapsed
+                : vscode.TreeItemCollapsibleState.None,
+            contextValue: element.repo_name
+                ? "fluentci-prebuilt-pipeline"
+                : "fluentci-pp-job",
+            iconPath: element.repo_name
+                ? new vscode.ThemeIcon("layers")
+                : (0, icons_1.getIconPath)("steps/step_success.svg"),
+        };
+    }
+    getChildren(element) {
+        if (!element) {
+            return fetch("https://api.fluentci.io/v1/pipelines?limit=100")
+                .then((response) => response.json())
+                .then((data) => data
+                .filter((x) => x.name !== "nix_installer_pipeline")
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((x) => ({
+                name: x.name,
+                description: x.description,
+                repo_name: x.repo_name,
+                version: x.version,
+            })));
+        }
+        vscode.window.setStatusBarMessage("Fetching Jobs...");
+        const childProcess = (0, child_process_1.spawn)("deno", [
+            "eval",
+            `
+     import { runnableJobs , jobDescriptions } from 'https://pkg.fluentci.io/${element.name}@${element.version}/src/dagger/jobs.ts';
+     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
+        ], {
+            cwd: workspaceFolder?.uri.fsPath,
+        });
+        const jobs = new Promise((resolve) => {
+            childProcess.stdout.on("data", (data) => {
+                const jobs = JSON.parse(data.toString());
+                (0, outputChannel_1.appendLineToOutputChannel)(`=> ${element.name}@${element.version} Jobs:`);
+                (0, outputChannel_1.appendLineToOutputChannel)(JSON.stringify(jobs, null, 2));
+                resolve(jobs.map((x) => ({ ...x, pipeline: element.name })));
+            });
+            childProcess.stderr.on("data", (data) => {
+                (0, outputChannel_1.showOutputChannel)(true);
+                (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
+                if (data.toString().includes("error")) {
+                    resolve([]);
+                }
+            });
+        });
+        vscode.window.setStatusBarMessage("Jobs Fetched!");
+        vscode.window.setStatusBarMessage("");
+        return jobs;
+    }
+    getParent(element) {
+        throw new Error("Method not implemented. 3");
+    }
+    resolveTreeItem(item, element, token) {
+        throw new Error("Method not implemented. 4");
+    }
+}
+exports.PipelinesTreeProvider = PipelinesTreeProvider;
+
+
+/***/ }),
+/* 79 */
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.sendTextToTerminal = exports.showTerminal = exports.initTerminal = void 0;
+let _terminal;
+function initTerminal(terminal) {
+    _terminal = terminal;
+}
+exports.initTerminal = initTerminal;
+function showTerminal(preserveFocus) {
+    _terminal.show(preserveFocus);
+}
+exports.showTerminal = showTerminal;
+function sendTextToTerminal(text) {
+    _terminal.sendText(text);
+}
+exports.sendTextToTerminal = sendTextToTerminal;
+
+
+/***/ }),
+/* 80 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var hljs = __webpack_require__(73);
+var hljs = __webpack_require__(81);
 
-hljs.registerLanguage('1c', __webpack_require__(74));
-hljs.registerLanguage('abnf', __webpack_require__(75));
-hljs.registerLanguage('accesslog', __webpack_require__(76));
-hljs.registerLanguage('actionscript', __webpack_require__(77));
-hljs.registerLanguage('ada', __webpack_require__(78));
-hljs.registerLanguage('angelscript', __webpack_require__(79));
-hljs.registerLanguage('apache', __webpack_require__(80));
-hljs.registerLanguage('applescript', __webpack_require__(81));
-hljs.registerLanguage('arcade', __webpack_require__(82));
-hljs.registerLanguage('arduino', __webpack_require__(83));
-hljs.registerLanguage('armasm', __webpack_require__(84));
-hljs.registerLanguage('xml', __webpack_require__(85));
-hljs.registerLanguage('asciidoc', __webpack_require__(86));
-hljs.registerLanguage('aspectj', __webpack_require__(87));
-hljs.registerLanguage('autohotkey', __webpack_require__(88));
-hljs.registerLanguage('autoit', __webpack_require__(89));
-hljs.registerLanguage('avrasm', __webpack_require__(90));
-hljs.registerLanguage('awk', __webpack_require__(91));
-hljs.registerLanguage('axapta', __webpack_require__(92));
-hljs.registerLanguage('bash', __webpack_require__(93));
-hljs.registerLanguage('basic', __webpack_require__(94));
-hljs.registerLanguage('bnf', __webpack_require__(95));
-hljs.registerLanguage('brainfuck', __webpack_require__(96));
-hljs.registerLanguage('c', __webpack_require__(97));
-hljs.registerLanguage('cal', __webpack_require__(98));
-hljs.registerLanguage('capnproto', __webpack_require__(99));
-hljs.registerLanguage('ceylon', __webpack_require__(100));
-hljs.registerLanguage('clean', __webpack_require__(101));
-hljs.registerLanguage('clojure', __webpack_require__(102));
-hljs.registerLanguage('clojure-repl', __webpack_require__(103));
-hljs.registerLanguage('cmake', __webpack_require__(104));
-hljs.registerLanguage('coffeescript', __webpack_require__(105));
-hljs.registerLanguage('coq', __webpack_require__(106));
-hljs.registerLanguage('cos', __webpack_require__(107));
-hljs.registerLanguage('cpp', __webpack_require__(108));
-hljs.registerLanguage('crmsh', __webpack_require__(109));
-hljs.registerLanguage('crystal', __webpack_require__(110));
-hljs.registerLanguage('csharp', __webpack_require__(111));
-hljs.registerLanguage('csp', __webpack_require__(112));
-hljs.registerLanguage('css', __webpack_require__(113));
-hljs.registerLanguage('d', __webpack_require__(114));
-hljs.registerLanguage('markdown', __webpack_require__(115));
-hljs.registerLanguage('dart', __webpack_require__(116));
-hljs.registerLanguage('delphi', __webpack_require__(117));
-hljs.registerLanguage('diff', __webpack_require__(118));
-hljs.registerLanguage('django', __webpack_require__(119));
-hljs.registerLanguage('dns', __webpack_require__(120));
-hljs.registerLanguage('dockerfile', __webpack_require__(121));
-hljs.registerLanguage('dos', __webpack_require__(122));
-hljs.registerLanguage('dsconfig', __webpack_require__(123));
-hljs.registerLanguage('dts', __webpack_require__(124));
-hljs.registerLanguage('dust', __webpack_require__(125));
-hljs.registerLanguage('ebnf', __webpack_require__(126));
-hljs.registerLanguage('elixir', __webpack_require__(127));
-hljs.registerLanguage('elm', __webpack_require__(128));
-hljs.registerLanguage('ruby', __webpack_require__(129));
-hljs.registerLanguage('erb', __webpack_require__(130));
-hljs.registerLanguage('erlang-repl', __webpack_require__(131));
-hljs.registerLanguage('erlang', __webpack_require__(132));
-hljs.registerLanguage('excel', __webpack_require__(133));
-hljs.registerLanguage('fix', __webpack_require__(134));
-hljs.registerLanguage('flix', __webpack_require__(135));
-hljs.registerLanguage('fortran', __webpack_require__(136));
-hljs.registerLanguage('fsharp', __webpack_require__(137));
-hljs.registerLanguage('gams', __webpack_require__(138));
-hljs.registerLanguage('gauss', __webpack_require__(139));
-hljs.registerLanguage('gcode', __webpack_require__(140));
-hljs.registerLanguage('gherkin', __webpack_require__(141));
-hljs.registerLanguage('glsl', __webpack_require__(142));
-hljs.registerLanguage('gml', __webpack_require__(143));
-hljs.registerLanguage('go', __webpack_require__(144));
-hljs.registerLanguage('golo', __webpack_require__(145));
-hljs.registerLanguage('gradle', __webpack_require__(146));
-hljs.registerLanguage('graphql', __webpack_require__(147));
-hljs.registerLanguage('groovy', __webpack_require__(148));
-hljs.registerLanguage('haml', __webpack_require__(149));
-hljs.registerLanguage('handlebars', __webpack_require__(150));
-hljs.registerLanguage('haskell', __webpack_require__(151));
-hljs.registerLanguage('haxe', __webpack_require__(152));
-hljs.registerLanguage('hsp', __webpack_require__(153));
-hljs.registerLanguage('http', __webpack_require__(154));
-hljs.registerLanguage('hy', __webpack_require__(155));
-hljs.registerLanguage('inform7', __webpack_require__(156));
-hljs.registerLanguage('ini', __webpack_require__(157));
-hljs.registerLanguage('irpf90', __webpack_require__(158));
-hljs.registerLanguage('isbl', __webpack_require__(159));
-hljs.registerLanguage('java', __webpack_require__(160));
-hljs.registerLanguage('javascript', __webpack_require__(161));
-hljs.registerLanguage('jboss-cli', __webpack_require__(162));
-hljs.registerLanguage('json', __webpack_require__(163));
-hljs.registerLanguage('julia', __webpack_require__(164));
-hljs.registerLanguage('julia-repl', __webpack_require__(165));
-hljs.registerLanguage('kotlin', __webpack_require__(166));
-hljs.registerLanguage('lasso', __webpack_require__(167));
-hljs.registerLanguage('latex', __webpack_require__(168));
-hljs.registerLanguage('ldif', __webpack_require__(169));
-hljs.registerLanguage('leaf', __webpack_require__(170));
-hljs.registerLanguage('less', __webpack_require__(171));
-hljs.registerLanguage('lisp', __webpack_require__(172));
-hljs.registerLanguage('livecodeserver', __webpack_require__(173));
-hljs.registerLanguage('livescript', __webpack_require__(174));
-hljs.registerLanguage('llvm', __webpack_require__(175));
-hljs.registerLanguage('lsl', __webpack_require__(176));
-hljs.registerLanguage('lua', __webpack_require__(177));
-hljs.registerLanguage('makefile', __webpack_require__(178));
-hljs.registerLanguage('mathematica', __webpack_require__(179));
-hljs.registerLanguage('matlab', __webpack_require__(180));
-hljs.registerLanguage('maxima', __webpack_require__(181));
-hljs.registerLanguage('mel', __webpack_require__(182));
-hljs.registerLanguage('mercury', __webpack_require__(183));
-hljs.registerLanguage('mipsasm', __webpack_require__(184));
-hljs.registerLanguage('mizar', __webpack_require__(185));
-hljs.registerLanguage('perl', __webpack_require__(186));
-hljs.registerLanguage('mojolicious', __webpack_require__(187));
-hljs.registerLanguage('monkey', __webpack_require__(188));
-hljs.registerLanguage('moonscript', __webpack_require__(189));
-hljs.registerLanguage('n1ql', __webpack_require__(190));
-hljs.registerLanguage('nestedtext', __webpack_require__(191));
-hljs.registerLanguage('nginx', __webpack_require__(192));
-hljs.registerLanguage('nim', __webpack_require__(193));
-hljs.registerLanguage('nix', __webpack_require__(194));
-hljs.registerLanguage('node-repl', __webpack_require__(195));
-hljs.registerLanguage('nsis', __webpack_require__(196));
-hljs.registerLanguage('objectivec', __webpack_require__(197));
-hljs.registerLanguage('ocaml', __webpack_require__(198));
-hljs.registerLanguage('openscad', __webpack_require__(199));
-hljs.registerLanguage('oxygene', __webpack_require__(200));
-hljs.registerLanguage('parser3', __webpack_require__(201));
-hljs.registerLanguage('pf', __webpack_require__(202));
-hljs.registerLanguage('pgsql', __webpack_require__(203));
-hljs.registerLanguage('php', __webpack_require__(204));
-hljs.registerLanguage('php-template', __webpack_require__(205));
-hljs.registerLanguage('plaintext', __webpack_require__(206));
-hljs.registerLanguage('pony', __webpack_require__(207));
-hljs.registerLanguage('powershell', __webpack_require__(208));
-hljs.registerLanguage('processing', __webpack_require__(209));
-hljs.registerLanguage('profile', __webpack_require__(210));
-hljs.registerLanguage('prolog', __webpack_require__(211));
-hljs.registerLanguage('properties', __webpack_require__(212));
-hljs.registerLanguage('protobuf', __webpack_require__(213));
-hljs.registerLanguage('puppet', __webpack_require__(214));
-hljs.registerLanguage('purebasic', __webpack_require__(215));
-hljs.registerLanguage('python', __webpack_require__(216));
-hljs.registerLanguage('python-repl', __webpack_require__(217));
-hljs.registerLanguage('q', __webpack_require__(218));
-hljs.registerLanguage('qml', __webpack_require__(219));
-hljs.registerLanguage('r', __webpack_require__(220));
-hljs.registerLanguage('reasonml', __webpack_require__(221));
-hljs.registerLanguage('rib', __webpack_require__(222));
-hljs.registerLanguage('roboconf', __webpack_require__(223));
-hljs.registerLanguage('routeros', __webpack_require__(224));
-hljs.registerLanguage('rsl', __webpack_require__(225));
-hljs.registerLanguage('ruleslanguage', __webpack_require__(226));
-hljs.registerLanguage('rust', __webpack_require__(227));
-hljs.registerLanguage('sas', __webpack_require__(228));
-hljs.registerLanguage('scala', __webpack_require__(229));
-hljs.registerLanguage('scheme', __webpack_require__(230));
-hljs.registerLanguage('scilab', __webpack_require__(231));
-hljs.registerLanguage('scss', __webpack_require__(232));
-hljs.registerLanguage('shell', __webpack_require__(233));
-hljs.registerLanguage('smali', __webpack_require__(234));
-hljs.registerLanguage('smalltalk', __webpack_require__(235));
-hljs.registerLanguage('sml', __webpack_require__(236));
-hljs.registerLanguage('sqf', __webpack_require__(237));
-hljs.registerLanguage('sql', __webpack_require__(238));
-hljs.registerLanguage('stan', __webpack_require__(239));
-hljs.registerLanguage('stata', __webpack_require__(240));
-hljs.registerLanguage('step21', __webpack_require__(241));
-hljs.registerLanguage('stylus', __webpack_require__(242));
-hljs.registerLanguage('subunit', __webpack_require__(243));
-hljs.registerLanguage('swift', __webpack_require__(244));
-hljs.registerLanguage('taggerscript', __webpack_require__(245));
-hljs.registerLanguage('yaml', __webpack_require__(246));
-hljs.registerLanguage('tap', __webpack_require__(247));
-hljs.registerLanguage('tcl', __webpack_require__(248));
-hljs.registerLanguage('thrift', __webpack_require__(249));
-hljs.registerLanguage('tp', __webpack_require__(250));
-hljs.registerLanguage('twig', __webpack_require__(251));
-hljs.registerLanguage('typescript', __webpack_require__(252));
-hljs.registerLanguage('vala', __webpack_require__(253));
-hljs.registerLanguage('vbnet', __webpack_require__(254));
-hljs.registerLanguage('vbscript', __webpack_require__(255));
-hljs.registerLanguage('vbscript-html', __webpack_require__(256));
-hljs.registerLanguage('verilog', __webpack_require__(257));
-hljs.registerLanguage('vhdl', __webpack_require__(258));
-hljs.registerLanguage('vim', __webpack_require__(259));
-hljs.registerLanguage('wasm', __webpack_require__(260));
-hljs.registerLanguage('wren', __webpack_require__(261));
-hljs.registerLanguage('x86asm', __webpack_require__(262));
-hljs.registerLanguage('xl', __webpack_require__(263));
-hljs.registerLanguage('xquery', __webpack_require__(264));
-hljs.registerLanguage('zephir', __webpack_require__(265));
+hljs.registerLanguage('1c', __webpack_require__(82));
+hljs.registerLanguage('abnf', __webpack_require__(83));
+hljs.registerLanguage('accesslog', __webpack_require__(84));
+hljs.registerLanguage('actionscript', __webpack_require__(85));
+hljs.registerLanguage('ada', __webpack_require__(86));
+hljs.registerLanguage('angelscript', __webpack_require__(87));
+hljs.registerLanguage('apache', __webpack_require__(88));
+hljs.registerLanguage('applescript', __webpack_require__(89));
+hljs.registerLanguage('arcade', __webpack_require__(90));
+hljs.registerLanguage('arduino', __webpack_require__(91));
+hljs.registerLanguage('armasm', __webpack_require__(92));
+hljs.registerLanguage('xml', __webpack_require__(93));
+hljs.registerLanguage('asciidoc', __webpack_require__(94));
+hljs.registerLanguage('aspectj', __webpack_require__(95));
+hljs.registerLanguage('autohotkey', __webpack_require__(96));
+hljs.registerLanguage('autoit', __webpack_require__(97));
+hljs.registerLanguage('avrasm', __webpack_require__(98));
+hljs.registerLanguage('awk', __webpack_require__(99));
+hljs.registerLanguage('axapta', __webpack_require__(100));
+hljs.registerLanguage('bash', __webpack_require__(101));
+hljs.registerLanguage('basic', __webpack_require__(102));
+hljs.registerLanguage('bnf', __webpack_require__(103));
+hljs.registerLanguage('brainfuck', __webpack_require__(104));
+hljs.registerLanguage('c', __webpack_require__(105));
+hljs.registerLanguage('cal', __webpack_require__(106));
+hljs.registerLanguage('capnproto', __webpack_require__(107));
+hljs.registerLanguage('ceylon', __webpack_require__(108));
+hljs.registerLanguage('clean', __webpack_require__(109));
+hljs.registerLanguage('clojure', __webpack_require__(110));
+hljs.registerLanguage('clojure-repl', __webpack_require__(111));
+hljs.registerLanguage('cmake', __webpack_require__(112));
+hljs.registerLanguage('coffeescript', __webpack_require__(113));
+hljs.registerLanguage('coq', __webpack_require__(114));
+hljs.registerLanguage('cos', __webpack_require__(115));
+hljs.registerLanguage('cpp', __webpack_require__(116));
+hljs.registerLanguage('crmsh', __webpack_require__(117));
+hljs.registerLanguage('crystal', __webpack_require__(118));
+hljs.registerLanguage('csharp', __webpack_require__(119));
+hljs.registerLanguage('csp', __webpack_require__(120));
+hljs.registerLanguage('css', __webpack_require__(121));
+hljs.registerLanguage('d', __webpack_require__(122));
+hljs.registerLanguage('markdown', __webpack_require__(123));
+hljs.registerLanguage('dart', __webpack_require__(124));
+hljs.registerLanguage('delphi', __webpack_require__(125));
+hljs.registerLanguage('diff', __webpack_require__(126));
+hljs.registerLanguage('django', __webpack_require__(127));
+hljs.registerLanguage('dns', __webpack_require__(128));
+hljs.registerLanguage('dockerfile', __webpack_require__(129));
+hljs.registerLanguage('dos', __webpack_require__(130));
+hljs.registerLanguage('dsconfig', __webpack_require__(131));
+hljs.registerLanguage('dts', __webpack_require__(132));
+hljs.registerLanguage('dust', __webpack_require__(133));
+hljs.registerLanguage('ebnf', __webpack_require__(134));
+hljs.registerLanguage('elixir', __webpack_require__(135));
+hljs.registerLanguage('elm', __webpack_require__(136));
+hljs.registerLanguage('ruby', __webpack_require__(137));
+hljs.registerLanguage('erb', __webpack_require__(138));
+hljs.registerLanguage('erlang-repl', __webpack_require__(139));
+hljs.registerLanguage('erlang', __webpack_require__(140));
+hljs.registerLanguage('excel', __webpack_require__(141));
+hljs.registerLanguage('fix', __webpack_require__(142));
+hljs.registerLanguage('flix', __webpack_require__(143));
+hljs.registerLanguage('fortran', __webpack_require__(144));
+hljs.registerLanguage('fsharp', __webpack_require__(145));
+hljs.registerLanguage('gams', __webpack_require__(146));
+hljs.registerLanguage('gauss', __webpack_require__(147));
+hljs.registerLanguage('gcode', __webpack_require__(148));
+hljs.registerLanguage('gherkin', __webpack_require__(149));
+hljs.registerLanguage('glsl', __webpack_require__(150));
+hljs.registerLanguage('gml', __webpack_require__(151));
+hljs.registerLanguage('go', __webpack_require__(152));
+hljs.registerLanguage('golo', __webpack_require__(153));
+hljs.registerLanguage('gradle', __webpack_require__(154));
+hljs.registerLanguage('graphql', __webpack_require__(155));
+hljs.registerLanguage('groovy', __webpack_require__(156));
+hljs.registerLanguage('haml', __webpack_require__(157));
+hljs.registerLanguage('handlebars', __webpack_require__(158));
+hljs.registerLanguage('haskell', __webpack_require__(159));
+hljs.registerLanguage('haxe', __webpack_require__(160));
+hljs.registerLanguage('hsp', __webpack_require__(161));
+hljs.registerLanguage('http', __webpack_require__(162));
+hljs.registerLanguage('hy', __webpack_require__(163));
+hljs.registerLanguage('inform7', __webpack_require__(164));
+hljs.registerLanguage('ini', __webpack_require__(165));
+hljs.registerLanguage('irpf90', __webpack_require__(166));
+hljs.registerLanguage('isbl', __webpack_require__(167));
+hljs.registerLanguage('java', __webpack_require__(168));
+hljs.registerLanguage('javascript', __webpack_require__(169));
+hljs.registerLanguage('jboss-cli', __webpack_require__(170));
+hljs.registerLanguage('json', __webpack_require__(171));
+hljs.registerLanguage('julia', __webpack_require__(172));
+hljs.registerLanguage('julia-repl', __webpack_require__(173));
+hljs.registerLanguage('kotlin', __webpack_require__(174));
+hljs.registerLanguage('lasso', __webpack_require__(175));
+hljs.registerLanguage('latex', __webpack_require__(176));
+hljs.registerLanguage('ldif', __webpack_require__(177));
+hljs.registerLanguage('leaf', __webpack_require__(178));
+hljs.registerLanguage('less', __webpack_require__(179));
+hljs.registerLanguage('lisp', __webpack_require__(180));
+hljs.registerLanguage('livecodeserver', __webpack_require__(181));
+hljs.registerLanguage('livescript', __webpack_require__(182));
+hljs.registerLanguage('llvm', __webpack_require__(183));
+hljs.registerLanguage('lsl', __webpack_require__(184));
+hljs.registerLanguage('lua', __webpack_require__(185));
+hljs.registerLanguage('makefile', __webpack_require__(186));
+hljs.registerLanguage('mathematica', __webpack_require__(187));
+hljs.registerLanguage('matlab', __webpack_require__(188));
+hljs.registerLanguage('maxima', __webpack_require__(189));
+hljs.registerLanguage('mel', __webpack_require__(190));
+hljs.registerLanguage('mercury', __webpack_require__(191));
+hljs.registerLanguage('mipsasm', __webpack_require__(192));
+hljs.registerLanguage('mizar', __webpack_require__(193));
+hljs.registerLanguage('perl', __webpack_require__(194));
+hljs.registerLanguage('mojolicious', __webpack_require__(195));
+hljs.registerLanguage('monkey', __webpack_require__(196));
+hljs.registerLanguage('moonscript', __webpack_require__(197));
+hljs.registerLanguage('n1ql', __webpack_require__(198));
+hljs.registerLanguage('nestedtext', __webpack_require__(199));
+hljs.registerLanguage('nginx', __webpack_require__(200));
+hljs.registerLanguage('nim', __webpack_require__(201));
+hljs.registerLanguage('nix', __webpack_require__(202));
+hljs.registerLanguage('node-repl', __webpack_require__(203));
+hljs.registerLanguage('nsis', __webpack_require__(204));
+hljs.registerLanguage('objectivec', __webpack_require__(205));
+hljs.registerLanguage('ocaml', __webpack_require__(206));
+hljs.registerLanguage('openscad', __webpack_require__(207));
+hljs.registerLanguage('oxygene', __webpack_require__(208));
+hljs.registerLanguage('parser3', __webpack_require__(209));
+hljs.registerLanguage('pf', __webpack_require__(210));
+hljs.registerLanguage('pgsql', __webpack_require__(211));
+hljs.registerLanguage('php', __webpack_require__(212));
+hljs.registerLanguage('php-template', __webpack_require__(213));
+hljs.registerLanguage('plaintext', __webpack_require__(214));
+hljs.registerLanguage('pony', __webpack_require__(215));
+hljs.registerLanguage('powershell', __webpack_require__(216));
+hljs.registerLanguage('processing', __webpack_require__(217));
+hljs.registerLanguage('profile', __webpack_require__(218));
+hljs.registerLanguage('prolog', __webpack_require__(219));
+hljs.registerLanguage('properties', __webpack_require__(220));
+hljs.registerLanguage('protobuf', __webpack_require__(221));
+hljs.registerLanguage('puppet', __webpack_require__(222));
+hljs.registerLanguage('purebasic', __webpack_require__(223));
+hljs.registerLanguage('python', __webpack_require__(224));
+hljs.registerLanguage('python-repl', __webpack_require__(225));
+hljs.registerLanguage('q', __webpack_require__(226));
+hljs.registerLanguage('qml', __webpack_require__(227));
+hljs.registerLanguage('r', __webpack_require__(228));
+hljs.registerLanguage('reasonml', __webpack_require__(229));
+hljs.registerLanguage('rib', __webpack_require__(230));
+hljs.registerLanguage('roboconf', __webpack_require__(231));
+hljs.registerLanguage('routeros', __webpack_require__(232));
+hljs.registerLanguage('rsl', __webpack_require__(233));
+hljs.registerLanguage('ruleslanguage', __webpack_require__(234));
+hljs.registerLanguage('rust', __webpack_require__(235));
+hljs.registerLanguage('sas', __webpack_require__(236));
+hljs.registerLanguage('scala', __webpack_require__(237));
+hljs.registerLanguage('scheme', __webpack_require__(238));
+hljs.registerLanguage('scilab', __webpack_require__(239));
+hljs.registerLanguage('scss', __webpack_require__(240));
+hljs.registerLanguage('shell', __webpack_require__(241));
+hljs.registerLanguage('smali', __webpack_require__(242));
+hljs.registerLanguage('smalltalk', __webpack_require__(243));
+hljs.registerLanguage('sml', __webpack_require__(244));
+hljs.registerLanguage('sqf', __webpack_require__(245));
+hljs.registerLanguage('sql', __webpack_require__(246));
+hljs.registerLanguage('stan', __webpack_require__(247));
+hljs.registerLanguage('stata', __webpack_require__(248));
+hljs.registerLanguage('step21', __webpack_require__(249));
+hljs.registerLanguage('stylus', __webpack_require__(250));
+hljs.registerLanguage('subunit', __webpack_require__(251));
+hljs.registerLanguage('swift', __webpack_require__(252));
+hljs.registerLanguage('taggerscript', __webpack_require__(253));
+hljs.registerLanguage('yaml', __webpack_require__(254));
+hljs.registerLanguage('tap', __webpack_require__(255));
+hljs.registerLanguage('tcl', __webpack_require__(256));
+hljs.registerLanguage('thrift', __webpack_require__(257));
+hljs.registerLanguage('tp', __webpack_require__(258));
+hljs.registerLanguage('twig', __webpack_require__(259));
+hljs.registerLanguage('typescript', __webpack_require__(260));
+hljs.registerLanguage('vala', __webpack_require__(261));
+hljs.registerLanguage('vbnet', __webpack_require__(262));
+hljs.registerLanguage('vbscript', __webpack_require__(263));
+hljs.registerLanguage('vbscript-html', __webpack_require__(264));
+hljs.registerLanguage('verilog', __webpack_require__(265));
+hljs.registerLanguage('vhdl', __webpack_require__(266));
+hljs.registerLanguage('vim', __webpack_require__(267));
+hljs.registerLanguage('wasm', __webpack_require__(268));
+hljs.registerLanguage('wren', __webpack_require__(269));
+hljs.registerLanguage('x86asm', __webpack_require__(270));
+hljs.registerLanguage('xl', __webpack_require__(271));
+hljs.registerLanguage('xquery', __webpack_require__(272));
+hljs.registerLanguage('zephir', __webpack_require__(273));
 
 hljs.HighlightJS = hljs
 hljs.default = hljs
 module.exports = hljs;
 
 /***/ }),
-/* 73 */
+/* 81 */
 /***/ ((module) => {
 
 /* eslint-disable no-multi-assign */
@@ -11547,7 +11696,7 @@ highlight.default = highlight;
 
 
 /***/ }),
-/* 74 */
+/* 82 */
 /***/ ((module) => {
 
 /*
@@ -12090,7 +12239,7 @@ module.exports = _1c;
 
 
 /***/ }),
-/* 75 */
+/* 83 */
 /***/ ((module) => {
 
 /*
@@ -12178,7 +12327,7 @@ module.exports = abnf;
 
 
 /***/ }),
-/* 76 */
+/* 84 */
 /***/ ((module) => {
 
 /*
@@ -12276,7 +12425,7 @@ module.exports = accesslog;
 
 
 /***/ }),
-/* 77 */
+/* 85 */
 /***/ ((module) => {
 
 /*
@@ -12435,7 +12584,7 @@ module.exports = actionscript;
 
 
 /***/ }),
-/* 78 */
+/* 86 */
 /***/ ((module) => {
 
 /*
@@ -12706,7 +12855,7 @@ module.exports = ada;
 
 
 /***/ }),
-/* 79 */
+/* 87 */
 /***/ ((module) => {
 
 /*
@@ -12890,7 +13039,7 @@ module.exports = angelscript;
 
 
 /***/ }),
-/* 80 */
+/* 88 */
 /***/ ((module) => {
 
 /*
@@ -12997,7 +13146,7 @@ module.exports = apache;
 
 
 /***/ }),
-/* 81 */
+/* 89 */
 /***/ ((module) => {
 
 /*
@@ -13152,7 +13301,7 @@ module.exports = applescript;
 
 
 /***/ }),
-/* 82 */
+/* 90 */
 /***/ ((module) => {
 
 /*
@@ -13519,7 +13668,7 @@ module.exports = arcade;
 
 
 /***/ }),
-/* 83 */
+/* 91 */
 /***/ ((module) => {
 
 /*
@@ -14495,7 +14644,7 @@ module.exports = arduino;
 
 
 /***/ }),
-/* 84 */
+/* 92 */
 /***/ ((module) => {
 
 /*
@@ -14625,7 +14774,7 @@ module.exports = armasm;
 
 
 /***/ }),
-/* 85 */
+/* 93 */
 /***/ ((module) => {
 
 /*
@@ -14872,7 +15021,7 @@ module.exports = xml;
 
 
 /***/ }),
-/* 86 */
+/* 94 */
 /***/ ((module) => {
 
 /*
@@ -15139,7 +15288,7 @@ module.exports = asciidoc;
 
 
 /***/ }),
-/* 87 */
+/* 95 */
 /***/ ((module) => {
 
 /*
@@ -15375,7 +15524,7 @@ module.exports = aspectj;
 
 
 /***/ }),
-/* 88 */
+/* 96 */
 /***/ ((module) => {
 
 /*
@@ -15456,7 +15605,7 @@ module.exports = autohotkey;
 
 
 /***/ }),
-/* 89 */
+/* 97 */
 /***/ ((module) => {
 
 /*
@@ -15640,7 +15789,7 @@ module.exports = autoit;
 
 
 /***/ }),
-/* 90 */
+/* 98 */
 /***/ ((module) => {
 
 /*
@@ -15724,7 +15873,7 @@ module.exports = avrasm;
 
 
 /***/ }),
-/* 91 */
+/* 99 */
 /***/ ((module) => {
 
 /*
@@ -15797,7 +15946,7 @@ module.exports = awk;
 
 
 /***/ }),
-/* 92 */
+/* 100 */
 /***/ ((module) => {
 
 /*
@@ -15991,7 +16140,7 @@ module.exports = axapta;
 
 
 /***/ }),
-/* 93 */
+/* 101 */
 /***/ ((module) => {
 
 /*
@@ -16388,7 +16537,7 @@ module.exports = bash;
 
 
 /***/ }),
-/* 94 */
+/* 102 */
 /***/ ((module) => {
 
 /*
@@ -16623,7 +16772,7 @@ module.exports = basic;
 
 
 /***/ }),
-/* 95 */
+/* 103 */
 /***/ ((module) => {
 
 /*
@@ -16667,7 +16816,7 @@ module.exports = bnf;
 
 
 /***/ }),
-/* 96 */
+/* 104 */
 /***/ ((module) => {
 
 /*
@@ -16727,7 +16876,7 @@ module.exports = brainfuck;
 
 
 /***/ }),
-/* 97 */
+/* 105 */
 /***/ ((module) => {
 
 /*
@@ -17051,7 +17200,7 @@ module.exports = c;
 
 
 /***/ }),
-/* 98 */
+/* 106 */
 /***/ ((module) => {
 
 /*
@@ -17216,7 +17365,7 @@ module.exports = cal;
 
 
 /***/ }),
-/* 99 */
+/* 107 */
 /***/ ((module) => {
 
 /*
@@ -17321,7 +17470,7 @@ module.exports = capnproto;
 
 
 /***/ }),
-/* 100 */
+/* 108 */
 /***/ ((module) => {
 
 /*
@@ -17466,7 +17615,7 @@ module.exports = ceylon;
 
 
 /***/ }),
-/* 101 */
+/* 109 */
 /***/ ((module) => {
 
 /*
@@ -17539,7 +17688,7 @@ module.exports = clean;
 
 
 /***/ }),
-/* 102 */
+/* 110 */
 /***/ ((module) => {
 
 /*
@@ -17729,7 +17878,7 @@ module.exports = clojure;
 
 
 /***/ }),
-/* 103 */
+/* 111 */
 /***/ ((module) => {
 
 /*
@@ -17762,7 +17911,7 @@ module.exports = clojureRepl;
 
 
 /***/ }),
-/* 104 */
+/* 112 */
 /***/ ((module) => {
 
 /*
@@ -17831,7 +17980,7 @@ module.exports = cmake;
 
 
 /***/ }),
-/* 105 */
+/* 113 */
 /***/ ((module) => {
 
 const KEYWORDS = [
@@ -18203,7 +18352,7 @@ module.exports = coffeescript;
 
 
 /***/ }),
-/* 106 */
+/* 114 */
 /***/ ((module) => {
 
 /*
@@ -18654,7 +18803,7 @@ module.exports = coq;
 
 
 /***/ }),
-/* 107 */
+/* 115 */
 /***/ ((module) => {
 
 /*
@@ -18800,7 +18949,7 @@ module.exports = cos;
 
 
 /***/ }),
-/* 108 */
+/* 116 */
 /***/ ((module) => {
 
 /*
@@ -19374,7 +19523,7 @@ module.exports = cpp;
 
 
 /***/ }),
-/* 109 */
+/* 117 */
 /***/ ((module) => {
 
 /*
@@ -19480,7 +19629,7 @@ module.exports = crmsh;
 
 
 /***/ }),
-/* 110 */
+/* 118 */
 /***/ ((module) => {
 
 /*
@@ -19797,7 +19946,7 @@ module.exports = crystal;
 
 
 /***/ }),
-/* 111 */
+/* 119 */
 /***/ ((module) => {
 
 /*
@@ -20203,7 +20352,7 @@ module.exports = csharp;
 
 
 /***/ }),
-/* 112 */
+/* 120 */
 /***/ ((module) => {
 
 /*
@@ -20266,7 +20415,7 @@ module.exports = csp;
 
 
 /***/ }),
-/* 113 */
+/* 121 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -21010,7 +21159,7 @@ module.exports = css;
 
 
 /***/ }),
-/* 114 */
+/* 122 */
 /***/ ((module) => {
 
 /*
@@ -21287,7 +21436,7 @@ module.exports = d;
 
 
 /***/ }),
-/* 115 */
+/* 123 */
 /***/ ((module) => {
 
 /*
@@ -21534,7 +21683,7 @@ module.exports = markdown;
 
 
 /***/ }),
-/* 116 */
+/* 124 */
 /***/ ((module) => {
 
 /*
@@ -21802,7 +21951,7 @@ module.exports = dart;
 
 
 /***/ }),
-/* 117 */
+/* 125 */
 /***/ ((module) => {
 
 /*
@@ -22038,7 +22187,7 @@ module.exports = delphi;
 
 
 /***/ }),
-/* 118 */
+/* 126 */
 /***/ ((module) => {
 
 /*
@@ -22106,7 +22255,7 @@ module.exports = diff;
 
 
 /***/ }),
-/* 119 */
+/* 127 */
 /***/ ((module) => {
 
 /*
@@ -22187,7 +22336,7 @@ module.exports = django;
 
 
 /***/ }),
-/* 120 */
+/* 128 */
 /***/ ((module) => {
 
 /*
@@ -22271,7 +22420,7 @@ module.exports = dns;
 
 
 /***/ }),
-/* 121 */
+/* 129 */
 /***/ ((module) => {
 
 /*
@@ -22321,7 +22470,7 @@ module.exports = dockerfile;
 
 
 /***/ }),
-/* 122 */
+/* 130 */
 /***/ ((module) => {
 
 /*
@@ -22493,7 +22642,7 @@ module.exports = dos;
 
 
 /***/ }),
-/* 123 */
+/* 131 */
 /***/ ((module) => {
 
 /*
@@ -22565,7 +22714,7 @@ module.exports = dsconfig;
 
 
 /***/ }),
-/* 124 */
+/* 132 */
 /***/ ((module) => {
 
 /*
@@ -22728,7 +22877,7 @@ module.exports = dts;
 
 
 /***/ }),
-/* 125 */
+/* 133 */
 /***/ ((module) => {
 
 /*
@@ -22781,7 +22930,7 @@ module.exports = dust;
 
 
 /***/ }),
-/* 126 */
+/* 134 */
 /***/ ((module) => {
 
 /*
@@ -22840,7 +22989,7 @@ module.exports = ebnf;
 
 
 /***/ }),
-/* 127 */
+/* 135 */
 /***/ ((module) => {
 
 /*
@@ -23125,7 +23274,7 @@ module.exports = elixir;
 
 
 /***/ }),
-/* 128 */
+/* 136 */
 /***/ ((module) => {
 
 /*
@@ -23274,7 +23423,7 @@ module.exports = elm;
 
 
 /***/ }),
-/* 129 */
+/* 137 */
 /***/ ((module) => {
 
 /*
@@ -23728,7 +23877,7 @@ module.exports = ruby;
 
 
 /***/ }),
-/* 130 */
+/* 138 */
 /***/ ((module) => {
 
 /*
@@ -23763,7 +23912,7 @@ module.exports = erb;
 
 
 /***/ }),
-/* 131 */
+/* 139 */
 /***/ ((module) => {
 
 /*
@@ -23823,7 +23972,7 @@ module.exports = erlangRepl;
 
 
 /***/ }),
-/* 132 */
+/* 140 */
 /***/ ((module) => {
 
 /*
@@ -24020,7 +24169,7 @@ module.exports = erlang;
 
 
 /***/ }),
-/* 133 */
+/* 141 */
 /***/ ((module) => {
 
 /*
@@ -24570,7 +24719,7 @@ module.exports = excel;
 
 
 /***/ }),
-/* 134 */
+/* 142 */
 /***/ ((module) => {
 
 /*
@@ -24615,7 +24764,7 @@ module.exports = fix;
 
 
 /***/ }),
-/* 135 */
+/* 143 */
 /***/ ((module) => {
 
 /*
@@ -24700,7 +24849,7 @@ module.exports = flix;
 
 
 /***/ }),
-/* 136 */
+/* 144 */
 /***/ ((module) => {
 
 /*
@@ -25279,7 +25428,7 @@ module.exports = fortran;
 
 
 /***/ }),
-/* 137 */
+/* 145 */
 /***/ ((module) => {
 
 /**
@@ -25912,7 +26061,7 @@ module.exports = fsharp;
 
 
 /***/ }),
-/* 138 */
+/* 146 */
 /***/ ((module) => {
 
 /*
@@ -26099,7 +26248,7 @@ module.exports = gams;
 
 
 /***/ }),
-/* 139 */
+/* 147 */
 /***/ ((module) => {
 
 /*
@@ -26411,7 +26560,7 @@ module.exports = gauss;
 
 
 /***/ }),
-/* 140 */
+/* 148 */
 /***/ ((module) => {
 
 /*
@@ -26497,7 +26646,7 @@ module.exports = gcode;
 
 
 /***/ }),
-/* 141 */
+/* 149 */
 /***/ ((module) => {
 
 /*
@@ -26552,7 +26701,7 @@ module.exports = gherkin;
 
 
 /***/ }),
-/* 142 */
+/* 150 */
 /***/ ((module) => {
 
 /*
@@ -26686,7 +26835,7 @@ module.exports = glsl;
 
 
 /***/ }),
-/* 143 */
+/* 151 */
 /***/ ((module) => {
 
 /*
@@ -29508,7 +29657,7 @@ module.exports = gml;
 
 
 /***/ }),
-/* 144 */
+/* 152 */
 /***/ ((module) => {
 
 /*
@@ -29655,7 +29804,7 @@ module.exports = go;
 
 
 /***/ }),
-/* 145 */
+/* 153 */
 /***/ ((module) => {
 
 /*
@@ -29741,7 +29890,7 @@ module.exports = golo;
 
 
 /***/ }),
-/* 146 */
+/* 154 */
 /***/ ((module) => {
 
 /*
@@ -29936,7 +30085,7 @@ module.exports = gradle;
 
 
 /***/ }),
-/* 147 */
+/* 155 */
 /***/ ((module) => {
 
 /*
@@ -30020,7 +30169,7 @@ module.exports = graphql;
 
 
 /***/ }),
-/* 148 */
+/* 156 */
 /***/ ((module) => {
 
 /*
@@ -30215,7 +30364,7 @@ module.exports = groovy;
 
 
 /***/ }),
-/* 149 */
+/* 157 */
 /***/ ((module) => {
 
 /*
@@ -30334,7 +30483,7 @@ module.exports = haml;
 
 
 /***/ }),
-/* 150 */
+/* 158 */
 /***/ ((module) => {
 
 /*
@@ -30598,7 +30747,7 @@ module.exports = handlebars;
 
 
 /***/ }),
-/* 151 */
+/* 159 */
 /***/ ((module) => {
 
 /*
@@ -30821,7 +30970,7 @@ module.exports = haskell;
 
 
 /***/ }),
-/* 152 */
+/* 160 */
 /***/ ((module) => {
 
 /*
@@ -30993,7 +31142,7 @@ module.exports = haxe;
 
 
 /***/ }),
-/* 153 */
+/* 161 */
 /***/ ((module) => {
 
 /*
@@ -31058,7 +31207,7 @@ module.exports = hsp;
 
 
 /***/ }),
-/* 154 */
+/* 162 */
 /***/ ((module) => {
 
 /*
@@ -31161,7 +31310,7 @@ module.exports = http;
 
 
 /***/ }),
-/* 155 */
+/* 163 */
 /***/ ((module) => {
 
 /*
@@ -31304,7 +31453,7 @@ module.exports = hy;
 
 
 /***/ }),
-/* 156 */
+/* 164 */
 /***/ ((module) => {
 
 /*
@@ -31379,7 +31528,7 @@ module.exports = inform7;
 
 
 /***/ }),
-/* 157 */
+/* 165 */
 /***/ ((module) => {
 
 /*
@@ -31506,7 +31655,7 @@ module.exports = ini;
 
 
 /***/ }),
-/* 158 */
+/* 166 */
 /***/ ((module) => {
 
 /*
@@ -31619,7 +31768,7 @@ module.exports = irpf90;
 
 
 /***/ }),
-/* 159 */
+/* 167 */
 /***/ ((module) => {
 
 /*
@@ -34830,7 +34979,7 @@ module.exports = isbl;
 
 
 /***/ }),
-/* 160 */
+/* 168 */
 /***/ ((module) => {
 
 // https://docs.oracle.com/javase/specs/jls/se15/html/jls-3.html#jls-3.10
@@ -35125,7 +35274,7 @@ module.exports = java;
 
 
 /***/ }),
-/* 161 */
+/* 169 */
 /***/ ((module) => {
 
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
@@ -35897,7 +36046,7 @@ module.exports = javascript;
 
 
 /***/ }),
-/* 162 */
+/* 170 */
 /***/ ((module) => {
 
 /*
@@ -35966,7 +36115,7 @@ module.exports = jbossCli;
 
 
 /***/ }),
-/* 163 */
+/* 171 */
 /***/ ((module) => {
 
 /*
@@ -36025,7 +36174,7 @@ module.exports = json;
 
 
 /***/ }),
-/* 164 */
+/* 172 */
 /***/ ((module) => {
 
 /*
@@ -36472,7 +36621,7 @@ module.exports = julia;
 
 
 /***/ }),
-/* 165 */
+/* 173 */
 /***/ ((module) => {
 
 /*
@@ -36528,7 +36677,7 @@ module.exports = juliaRepl;
 
 
 /***/ }),
-/* 166 */
+/* 174 */
 /***/ ((module) => {
 
 // https://docs.oracle.com/javase/specs/jls/se15/html/jls-3.html#jls-3.10
@@ -36820,7 +36969,7 @@ module.exports = kotlin;
 
 
 /***/ }),
-/* 167 */
+/* 175 */
 /***/ ((module) => {
 
 /*
@@ -36996,7 +37145,7 @@ module.exports = lasso;
 
 
 /***/ }),
-/* 168 */
+/* 176 */
 /***/ ((module) => {
 
 /*
@@ -37280,7 +37429,7 @@ module.exports = latex;
 
 
 /***/ }),
-/* 169 */
+/* 177 */
 /***/ ((module) => {
 
 /*
@@ -37317,7 +37466,7 @@ module.exports = ldif;
 
 
 /***/ }),
-/* 170 */
+/* 178 */
 /***/ ((module) => {
 
 /*
@@ -37420,7 +37569,7 @@ module.exports = leaf;
 
 
 /***/ }),
-/* 171 */
+/* 179 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -38265,7 +38414,7 @@ module.exports = less;
 
 
 /***/ }),
-/* 172 */
+/* 180 */
 /***/ ((module) => {
 
 /*
@@ -38410,7 +38559,7 @@ module.exports = lisp;
 
 
 /***/ }),
-/* 173 */
+/* 181 */
 /***/ ((module) => {
 
 /*
@@ -38589,7 +38738,7 @@ module.exports = livecodeserver;
 
 
 /***/ }),
-/* 174 */
+/* 182 */
 /***/ ((module) => {
 
 const KEYWORDS = [
@@ -38973,7 +39122,7 @@ module.exports = livescript;
 
 
 /***/ }),
-/* 175 */
+/* 183 */
 /***/ ((module) => {
 
 /*
@@ -39111,7 +39260,7 @@ module.exports = llvm;
 
 
 /***/ }),
-/* 176 */
+/* 184 */
 /***/ ((module) => {
 
 /*
@@ -39193,7 +39342,7 @@ module.exports = lsl;
 
 
 /***/ }),
-/* 177 */
+/* 185 */
 /***/ ((module) => {
 
 /*
@@ -39279,7 +39428,7 @@ module.exports = lua;
 
 
 /***/ }),
-/* 178 */
+/* 186 */
 /***/ ((module) => {
 
 /*
@@ -39371,7 +39520,7 @@ module.exports = makefile;
 
 
 /***/ }),
-/* 179 */
+/* 187 */
 /***/ ((module) => {
 
 const SYSTEM_SYMBOLS = [
@@ -46736,7 +46885,7 @@ module.exports = mathematica;
 
 
 /***/ }),
-/* 180 */
+/* 188 */
 /***/ ((module) => {
 
 /*
@@ -46849,7 +46998,7 @@ module.exports = matlab;
 
 
 /***/ }),
-/* 181 */
+/* 189 */
 /***/ ((module) => {
 
 /*
@@ -47269,7 +47418,7 @@ module.exports = maxima;
 
 
 /***/ }),
-/* 182 */
+/* 190 */
 /***/ ((module) => {
 
 /*
@@ -47510,7 +47659,7 @@ module.exports = mel;
 
 
 /***/ }),
-/* 183 */
+/* 191 */
 /***/ ((module) => {
 
 /*
@@ -47623,7 +47772,7 @@ module.exports = mercury;
 
 
 /***/ }),
-/* 184 */
+/* 192 */
 /***/ ((module) => {
 
 /*
@@ -47733,7 +47882,7 @@ module.exports = mipsasm;
 
 
 /***/ }),
-/* 185 */
+/* 193 */
 /***/ ((module) => {
 
 /*
@@ -47766,7 +47915,7 @@ module.exports = mizar;
 
 
 /***/ }),
-/* 186 */
+/* 194 */
 /***/ ((module) => {
 
 /*
@@ -48243,7 +48392,7 @@ module.exports = perl;
 
 
 /***/ }),
-/* 187 */
+/* 195 */
 /***/ ((module) => {
 
 /*
@@ -48285,7 +48434,7 @@ module.exports = mojolicious;
 
 
 /***/ }),
-/* 188 */
+/* 196 */
 /***/ ((module) => {
 
 /*
@@ -48474,7 +48623,7 @@ module.exports = monkey;
 
 
 /***/ }),
-/* 189 */
+/* 197 */
 /***/ ((module) => {
 
 /*
@@ -48621,7 +48770,7 @@ module.exports = moonscript;
 
 
 /***/ }),
-/* 190 */
+/* 198 */
 /***/ ((module) => {
 
 /*
@@ -48991,7 +49140,7 @@ module.exports = n1ql;
 
 
 /***/ }),
-/* 191 */
+/* 199 */
 /***/ ((module) => {
 
 /*
@@ -49080,7 +49229,7 @@ module.exports = nestedtext;
 
 
 /***/ }),
-/* 192 */
+/* 200 */
 /***/ ((module) => {
 
 /*
@@ -49239,7 +49388,7 @@ module.exports = nginx;
 
 
 /***/ }),
-/* 193 */
+/* 201 */
 /***/ ((module) => {
 
 /*
@@ -49430,7 +49579,7 @@ module.exports = nim;
 
 
 /***/ }),
-/* 194 */
+/* 202 */
 /***/ ((module) => {
 
 /*
@@ -49530,7 +49679,7 @@ module.exports = nix;
 
 
 /***/ }),
-/* 195 */
+/* 203 */
 /***/ ((module) => {
 
 /*
@@ -49569,7 +49718,7 @@ module.exports = nodeRepl;
 
 
 /***/ }),
-/* 196 */
+/* 204 */
 /***/ ((module) => {
 
 /*
@@ -50131,7 +50280,7 @@ module.exports = nsis;
 
 
 /***/ }),
-/* 197 */
+/* 205 */
 /***/ ((module) => {
 
 /*
@@ -50390,7 +50539,7 @@ module.exports = objectivec;
 
 
 /***/ }),
-/* 198 */
+/* 206 */
 /***/ ((module) => {
 
 /*
@@ -50479,7 +50628,7 @@ module.exports = ocaml;
 
 
 /***/ }),
-/* 199 */
+/* 207 */
 /***/ ((module) => {
 
 /*
@@ -50562,7 +50711,7 @@ module.exports = openscad;
 
 
 /***/ }),
-/* 200 */
+/* 208 */
 /***/ ((module) => {
 
 /*
@@ -50654,7 +50803,7 @@ module.exports = oxygene;
 
 
 /***/ }),
-/* 201 */
+/* 209 */
 /***/ ((module) => {
 
 /*
@@ -50715,7 +50864,7 @@ module.exports = parser3;
 
 
 /***/ }),
-/* 202 */
+/* 210 */
 /***/ ((module) => {
 
 /*
@@ -50781,7 +50930,7 @@ module.exports = pf;
 
 
 /***/ }),
-/* 203 */
+/* 211 */
 /***/ ((module) => {
 
 /*
@@ -51311,7 +51460,7 @@ module.exports = pgsql;
 
 
 /***/ }),
-/* 204 */
+/* 212 */
 /***/ ((module) => {
 
 /*
@@ -51930,7 +52079,7 @@ module.exports = php;
 
 
 /***/ }),
-/* 205 */
+/* 213 */
 /***/ ((module) => {
 
 /*
@@ -51990,7 +52139,7 @@ module.exports = phpTemplate;
 
 
 /***/ }),
-/* 206 */
+/* 214 */
 /***/ ((module) => {
 
 /*
@@ -52015,7 +52164,7 @@ module.exports = plaintext;
 
 
 /***/ }),
-/* 207 */
+/* 215 */
 /***/ ((module) => {
 
 /*
@@ -52110,7 +52259,7 @@ module.exports = pony;
 
 
 /***/ }),
-/* 208 */
+/* 216 */
 /***/ ((module) => {
 
 /*
@@ -52432,7 +52581,7 @@ module.exports = powershell;
 
 
 /***/ }),
-/* 209 */
+/* 217 */
 /***/ ((module) => {
 
 /*
@@ -52872,7 +53021,7 @@ module.exports = processing;
 
 
 /***/ }),
-/* 210 */
+/* 218 */
 /***/ ((module) => {
 
 /*
@@ -52921,7 +53070,7 @@ module.exports = profile;
 
 
 /***/ }),
-/* 211 */
+/* 219 */
 /***/ ((module) => {
 
 /*
@@ -53023,7 +53172,7 @@ module.exports = prolog;
 
 
 /***/ }),
-/* 212 */
+/* 220 */
 /***/ ((module) => {
 
 /*
@@ -53097,7 +53246,7 @@ module.exports = properties;
 
 
 /***/ }),
-/* 213 */
+/* 221 */
 /***/ ((module) => {
 
 /*
@@ -53182,7 +53331,7 @@ module.exports = protobuf;
 
 
 /***/ }),
-/* 214 */
+/* 222 */
 /***/ ((module) => {
 
 /*
@@ -53334,7 +53483,7 @@ module.exports = puppet;
 
 
 /***/ }),
-/* 215 */
+/* 223 */
 /***/ ((module) => {
 
 /*
@@ -53439,7 +53588,7 @@ module.exports = purebasic;
 
 
 /***/ }),
-/* 216 */
+/* 224 */
 /***/ ((module) => {
 
 /*
@@ -53879,7 +54028,7 @@ module.exports = python;
 
 
 /***/ }),
-/* 217 */
+/* 225 */
 /***/ ((module) => {
 
 /*
@@ -53917,7 +54066,7 @@ module.exports = pythonRepl;
 
 
 /***/ }),
-/* 218 */
+/* 226 */
 /***/ ((module) => {
 
 /*
@@ -53960,7 +54109,7 @@ module.exports = q;
 
 
 /***/ }),
-/* 219 */
+/* 227 */
 /***/ ((module) => {
 
 /*
@@ -54155,7 +54304,7 @@ module.exports = qml;
 
 
 /***/ }),
-/* 220 */
+/* 228 */
 /***/ ((module) => {
 
 /*
@@ -54418,7 +54567,7 @@ module.exports = r;
 
 
 /***/ }),
-/* 221 */
+/* 229 */
 /***/ ((module) => {
 
 /*
@@ -54566,7 +54715,7 @@ module.exports = reasonml;
 
 
 /***/ }),
-/* 222 */
+/* 230 */
 /***/ ((module) => {
 
 /*
@@ -54609,7 +54758,7 @@ module.exports = rib;
 
 
 /***/ }),
-/* 223 */
+/* 231 */
 /***/ ((module) => {
 
 /*
@@ -54697,7 +54846,7 @@ module.exports = roboconf;
 
 
 /***/ }),
-/* 224 */
+/* 232 */
 /***/ ((module) => {
 
 /*
@@ -54866,7 +55015,7 @@ module.exports = routeros;
 
 
 /***/ }),
-/* 225 */
+/* 233 */
 /***/ ((module) => {
 
 /*
@@ -55021,7 +55170,7 @@ module.exports = rsl;
 
 
 /***/ }),
-/* 226 */
+/* 234 */
 /***/ ((module) => {
 
 /*
@@ -55103,7 +55252,7 @@ module.exports = ruleslanguage;
 
 
 /***/ }),
-/* 227 */
+/* 235 */
 /***/ ((module) => {
 
 /*
@@ -55414,7 +55563,7 @@ module.exports = rust;
 
 
 /***/ }),
-/* 228 */
+/* 236 */
 /***/ ((module) => {
 
 /*
@@ -55976,7 +56125,7 @@ module.exports = sas;
 
 
 /***/ }),
-/* 229 */
+/* 237 */
 /***/ ((module) => {
 
 /*
@@ -56196,7 +56345,7 @@ module.exports = scala;
 
 
 /***/ }),
-/* 230 */
+/* 238 */
 /***/ ((module) => {
 
 /*
@@ -56398,7 +56547,7 @@ module.exports = scheme;
 
 
 /***/ }),
-/* 231 */
+/* 239 */
 /***/ ((module) => {
 
 /*
@@ -56477,7 +56626,7 @@ module.exports = scilab;
 
 
 /***/ }),
-/* 232 */
+/* 240 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -57211,7 +57360,7 @@ module.exports = scss;
 
 
 /***/ }),
-/* 233 */
+/* 241 */
 /***/ ((module) => {
 
 /*
@@ -57250,7 +57399,7 @@ module.exports = shell;
 
 
 /***/ }),
-/* 234 */
+/* 242 */
 /***/ ((module) => {
 
 /*
@@ -57381,7 +57530,7 @@ module.exports = smali;
 
 
 /***/ }),
-/* 235 */
+/* 243 */
 /***/ ((module) => {
 
 /*
@@ -57455,7 +57604,7 @@ module.exports = smalltalk;
 
 
 /***/ }),
-/* 236 */
+/* 244 */
 /***/ ((module) => {
 
 /*
@@ -57536,7 +57685,7 @@ module.exports = sml;
 
 
 /***/ }),
-/* 237 */
+/* 245 */
 /***/ ((module) => {
 
 /*
@@ -60204,7 +60353,7 @@ module.exports = sqf;
 
 
 /***/ }),
-/* 238 */
+/* 246 */
 /***/ ((module) => {
 
 /*
@@ -60892,7 +61041,7 @@ module.exports = sql;
 
 
 /***/ }),
-/* 239 */
+/* 247 */
 /***/ ((module) => {
 
 /*
@@ -61419,7 +61568,7 @@ module.exports = stan;
 
 
 /***/ }),
-/* 240 */
+/* 248 */
 /***/ ((module) => {
 
 /*
@@ -61478,7 +61627,7 @@ module.exports = stata;
 
 
 /***/ }),
-/* 241 */
+/* 249 */
 /***/ ((module) => {
 
 /*
@@ -61550,7 +61699,7 @@ module.exports = step21;
 
 
 /***/ }),
-/* 242 */
+/* 250 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -62344,7 +62493,7 @@ module.exports = stylus;
 
 
 /***/ }),
-/* 243 */
+/* 251 */
 /***/ ((module) => {
 
 /*
@@ -62393,7 +62542,7 @@ module.exports = subunit;
 
 
 /***/ }),
-/* 244 */
+/* 252 */
 /***/ ((module) => {
 
 /**
@@ -63319,7 +63468,7 @@ module.exports = swift;
 
 
 /***/ }),
-/* 245 */
+/* 253 */
 /***/ ((module) => {
 
 /*
@@ -63383,7 +63532,7 @@ module.exports = taggerscript;
 
 
 /***/ }),
-/* 246 */
+/* 254 */
 /***/ ((module) => {
 
 /*
@@ -63583,7 +63732,7 @@ module.exports = yaml;
 
 
 /***/ }),
-/* 247 */
+/* 255 */
 /***/ ((module) => {
 
 /*
@@ -63636,7 +63785,7 @@ module.exports = tap;
 
 
 /***/ }),
-/* 248 */
+/* 256 */
 /***/ ((module) => {
 
 /*
@@ -63832,7 +63981,7 @@ module.exports = tcl;
 
 
 /***/ }),
-/* 249 */
+/* 257 */
 /***/ ((module) => {
 
 /*
@@ -63915,7 +64064,7 @@ module.exports = thrift;
 
 
 /***/ }),
-/* 250 */
+/* 258 */
 /***/ ((module) => {
 
 /*
@@ -64092,7 +64241,7 @@ module.exports = tp;
 
 
 /***/ }),
-/* 251 */
+/* 259 */
 /***/ ((module) => {
 
 /*
@@ -64358,7 +64507,7 @@ module.exports = twig;
 
 
 /***/ }),
-/* 252 */
+/* 260 */
 /***/ ((module) => {
 
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
@@ -65244,7 +65393,7 @@ module.exports = typescript;
 
 
 /***/ }),
-/* 253 */
+/* 261 */
 /***/ ((module) => {
 
 /*
@@ -65310,7 +65459,7 @@ module.exports = vala;
 
 
 /***/ }),
-/* 254 */
+/* 262 */
 /***/ ((module) => {
 
 /*
@@ -65473,7 +65622,7 @@ module.exports = vbnet;
 
 
 /***/ }),
-/* 255 */
+/* 263 */
 /***/ ((module) => {
 
 /*
@@ -65699,7 +65848,7 @@ module.exports = vbscript;
 
 
 /***/ }),
-/* 256 */
+/* 264 */
 /***/ ((module) => {
 
 /*
@@ -65729,7 +65878,7 @@ module.exports = vbscriptHtml;
 
 
 /***/ }),
-/* 257 */
+/* 265 */
 /***/ ((module) => {
 
 /*
@@ -66284,7 +66433,7 @@ module.exports = verilog;
 
 
 /***/ }),
-/* 258 */
+/* 266 */
 /***/ ((module) => {
 
 /*
@@ -66505,7 +66654,7 @@ module.exports = vhdl;
 
 
 /***/ }),
-/* 259 */
+/* 267 */
 /***/ ((module) => {
 
 /*
@@ -66640,7 +66789,7 @@ module.exports = vim;
 
 
 /***/ }),
-/* 260 */
+/* 268 */
 /***/ ((module) => {
 
 /*
@@ -66785,7 +66934,7 @@ module.exports = wasm;
 
 
 /***/ }),
-/* 261 */
+/* 269 */
 /***/ ((module) => {
 
 /*
@@ -67093,7 +67242,7 @@ module.exports = wren;
 
 
 /***/ }),
-/* 262 */
+/* 270 */
 /***/ ((module) => {
 
 /*
@@ -67252,7 +67401,7 @@ module.exports = x86asm;
 
 
 /***/ }),
-/* 263 */
+/* 271 */
 /***/ ((module) => {
 
 /*
@@ -67463,7 +67612,7 @@ module.exports = xl;
 
 
 /***/ }),
-/* 264 */
+/* 272 */
 /***/ ((module) => {
 
 /*
@@ -67829,7 +67978,7 @@ module.exports = xquery;
 
 
 /***/ }),
-/* 265 */
+/* 273 */
 /***/ ((module) => {
 
 /*
@@ -67963,108 +68112,12 @@ module.exports = zephir;
 
 
 /***/ }),
-/* 266 */
-/***/ ((module) => {
-
-"use strict";
-// Copyright (c) Rotorz Limited. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root.
-
-
-
-
-function externalLinksPlugin(md, options) {
-  options = options || {};
-
-  let externalClassName = (typeof options.externalClassName === "string" || options.externalClassName === null)
-      ? options.externalClassName
-      : "external-link";
-  let internalClassName = (typeof options.internalClassName === "string" || options.internalClassName === null)
-      ? options.internalClassName
-      : null;
-  let internalDomains = Array.isArray(options.internalDomains)
-      ? options.internalDomains.map(domain => domain.toLowerCase())
-      : [];
-
-  let externalTarget = options.externalTarget || "_self";
-  let internalTarget = options.internalTarget || "_self";
-
-  let externalRel = options.externalRel || null;
-  let internalRel = options.internalRel || null;
-
-  if (externalClassName === null && internalClassName === null
-      && externalTarget === "_self" && internalTarget === "_self"
-      && externalRel === null && internalRel === null) {
-    // No point proceeding!
-    return;
-  }
-
-  function externalLinks(state) {
-    function applyFilterToTokenHierarchy(token) {
-      if (token.children) {
-        token.children.map(applyFilterToTokenHierarchy);
-      }
-
-      if (token.type === "link_open") {
-        let href = token.attrGet("href");
-        let internal = isInternalLink(href);
-
-        let newClasses = internal ? internalClassName : externalClassName;
-        if (newClasses) {
-          let existingClasses = token.attrGet("class") || "";
-          if (existingClasses !== "") {
-            newClasses = existingClasses + " " + newClasses;
-          }
-          token.attrSet("class", newClasses);
-        }
-
-        let target = internal ? internalTarget : externalTarget;
-        if (target !== "_self") {
-          token.attrSet("target", target);
-        }
-
-        let rel = internal ? internalRel : externalRel;
-        if (rel) {
-          let existingRel = token.attrGet("rel") || "";
-          if (existingRel !== "") {
-            rel = existingRel + " " + rel;
-          }
-          token.attrSet("rel", rel);
-        }
-      }
-    }
-
-    state.tokens.map(applyFilterToTokenHierarchy);
-  }
-
-  function isInternalLink(href) {
-    let domain = getDomain(href);
-    return domain === null || internalDomains.indexOf(domain) !== -1;
-  }
-
-  function getDomain(href) {
-    let domain = href.split("//")[1];
-    if (domain) {
-      domain = domain.split("/")[0].toLowerCase();
-      return domain || null;
-    }
-    return null;
-  }
-
-  md.core.ruler.push("external_links", externalLinks);
-}
-
-
-module.exports = externalLinksPlugin;
-
-
-/***/ }),
-/* 267 */
+/* 274 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
-var DFA = __webpack_require__(268);
+var DFA = __webpack_require__(275);
 
 module.exports = function multimd_table_plugin(md, options) {
   var defaults = {
@@ -68456,7 +68509,7 @@ module.exports = function multimd_table_plugin(md, options) {
 
 
 /***/ }),
-/* 268 */
+/* 275 */
 /***/ ((module) => {
 
 "use strict";
@@ -68535,18 +68588,615 @@ module.exports = DFA;
 
 
 /***/ }),
-/* 269 */
-/***/ ((module) => {
+/* 276 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-module.exports = require("child_process");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.registerExplorerCommands = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const terminal_1 = __webpack_require__(79);
+const mdEngine_1 = __webpack_require__(282);
+const fs_1 = __webpack_require__(74);
+const workspace_1 = __webpack_require__(283);
+function registerExplorerCommands() {
+    vscode.commands.registerCommand("fluentci-explorer.runJob", (args) => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)(`fluentci run . ${args.name}`);
+    });
+    vscode.commands.registerCommand("fluentci-explorer.runCurrentPipeline", (_args) => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)("fluentci run .");
+    });
+    vscode.commands.registerCommand("fluentci-explorer.runPrebuiltPipeline", (args) => {
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)(`fluentci run ${args.name}`);
+    });
+    vscode.commands.registerCommand("fluentci-explorer.runJobFromPrebuiltPipeline", (args) => {
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)(`fluentci run ${args.pipeline} ${args.name}`);
+    });
+    vscode.commands.registerCommand("fluentci-explorer.showDocs", (_args) => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        const panel = vscode.window.createWebviewPanel("markdownPreview", "Pipeline Docs", vscode.ViewColumn.One, {});
+        // open the readme file from the fluentci directory
+        const data = (0, fs_1.readFileSync)(`${workspace_1.workspaceFolder?.uri.fsPath}/.fluentci/README.md`);
+        panel.webview.html = (0, mdEngine_1.renderMarkdown)(data.toString());
+    });
+    vscode.commands.registerCommand("fluentci-explorer.showPrebuiltPipelineDocs", (args) => {
+        const panel = vscode.window.createWebviewPanel("markdownPreview", `${args.name} Docs`, vscode.ViewColumn.One, {});
+        fetch(`https://cdn.jsdelivr.net/gh/${args.repo_name}@${args.version}/README.md`)
+            .then((response) => response.text())
+            .then((text) => {
+            panel.webview.html = (0, mdEngine_1.renderMarkdown)(text);
+        });
+    });
+}
+exports.registerExplorerCommands = registerExplorerCommands;
+
 
 /***/ }),
-/* 270 */
-/***/ ((module) => {
+/* 277 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-module.exports = require("fs");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.registerExplorerViews = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const jobsTreeView_1 = __webpack_require__(75);
+const pipelinesTreeView_1 = __webpack_require__(78);
+function registerExplorerViews(context) {
+    context.subscriptions.push(vscode.window.createTreeView("fluentci-explorer.jobs", {
+        treeDataProvider: new jobsTreeView_1.JobsTreeProvider(),
+    }));
+    context.subscriptions.push(vscode.window.createTreeView("fluentci-explorer.pipelines", {
+        treeDataProvider: new pipelinesTreeView_1.PipelinesTreeProvider(),
+    }));
+}
+exports.registerExplorerViews = registerExplorerViews;
+
+
+/***/ }),
+/* 278 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.registerConfigsCommand = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const outputChannel_1 = __webpack_require__(77);
+const fs_1 = __webpack_require__(74);
+const child_process_1 = __webpack_require__(73);
+const terminal_1 = __webpack_require__(79);
+const pipelines_1 = __webpack_require__(2);
+const workspace_1 = __webpack_require__(283);
+function registerConfigsCommand() {
+    vscode.commands.registerCommand("fluentci.init", () => {
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.title = "Create from Prebuilt Pipeline";
+        quickPick.items = pipelines_1.pipelines;
+        quickPick.onDidChangeSelection((selection) => {
+            if (!workspace_1.workspaceFolder) {
+                vscode.window.showErrorMessage("No workspace folder found");
+                quickPick.dispose();
+                return;
+            }
+            (0, outputChannel_1.appendLineToOutputChannel)(`Workspace folder: ${workspace_1.workspaceFolder.uri.fsPath}`);
+            quickPick.dispose();
+            if ((0, fs_1.existsSync)(`${workspace_1.workspaceFolder.uri.fsPath}/.fluentci`)) {
+                vscode.window.showErrorMessage("FluentCI Project already exists in this directory");
+                return;
+            }
+            vscode.window.setStatusBarMessage("Initializing FluentCI Project...");
+            const pipeline = selection[0].name;
+            (0, terminal_1.showTerminal)(true);
+            (0, terminal_1.sendTextToTerminal)(`fluentci init -t ${pipeline}`);
+            vscode.window.setStatusBarMessage("FluentCI Project Initialized!");
+        });
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.show();
+    });
+    vscode.commands.registerCommand("fluentci.removeConfigs", () => {
+        if (!workspace_1.workspaceFolder) {
+            vscode.window.showErrorMessage("No workspace folder found");
+            return;
+        }
+        if (!(0, fs_1.existsSync)(`${workspace_1.workspaceFolder.uri.fsPath}/.fluentci`)) {
+            vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
+            return;
+        }
+        const childProcess = (0, child_process_1.spawn)("rm", [
+            "-rf",
+            `${workspace_1.workspaceFolder.uri.fsPath}/.fluentci`,
+        ]);
+        childProcess.stdout.on("data", (data) => {
+            (0, outputChannel_1.appendLineToOutputChannel)(data.toString());
+        });
+        childProcess.stderr.on("data", (data) => {
+            (0, outputChannel_1.appendLineToOutputChannel)(data.toString());
+        });
+        childProcess.on("close", (code) => {
+            if (code !== 0) {
+                vscode.window.showErrorMessage("Failed to remove FluentCI Configs Directory from Workspace");
+                return;
+            }
+            (0, outputChannel_1.appendLineToOutputChannel)("FluentCI Configs Directory Successfully Removed from Workspace");
+            vscode.window.showInformationMessage("FluentCI Configs Directory Successfully Removed from Workspace");
+        });
+    });
+}
+exports.registerConfigsCommand = registerConfigsCommand;
+
+
+/***/ }),
+/* 279 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.registerPipelineCommands = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const terminal_1 = __webpack_require__(79);
+const pipelines_1 = __webpack_require__(2);
+const workspace_1 = __webpack_require__(283);
+function registerPipelineCommands(context) {
+    // The command has been defined in the package.json file
+    // Now provide the implementation of the command with registerCommand
+    // The commandId parameter must match the command field in package.json
+    let disposable = vscode.commands.registerCommand("fluentci.run", () => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)("fluentci run .");
+    });
+    vscode.commands.registerCommand("fluentci.runPrebuiltPipeline", () => {
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.title = "Select a Pipeline";
+        quickPick.items = pipelines_1.pipelines;
+        quickPick.onDidChangeSelection((selection) => {
+            quickPick.dispose();
+            (0, terminal_1.showTerminal)(true);
+            (0, terminal_1.sendTextToTerminal)(`fluentci run ${selection[0].name}`);
+        });
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.show();
+    });
+    context.subscriptions.push(disposable);
+}
+exports.registerPipelineCommands = registerPipelineCommands;
+
+
+/***/ }),
+/* 280 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.registerJobsCommands = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const terminal_1 = __webpack_require__(79);
+const outputChannel_1 = __webpack_require__(77);
+const child_process_1 = __webpack_require__(73);
+const pipelines_1 = __webpack_require__(2);
+const workspace_1 = __webpack_require__(283);
+function registerJobsCommands() {
+    vscode.commands.registerCommand("fluentci.runJob", async () => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        const childProcess = (0, child_process_1.spawn)("deno", [
+            "eval",
+            `
+   import { runnableJobs , jobDescriptions } from './.fluentci/src/dagger/jobs.ts';
+   console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
+        ], {
+            cwd: workspace_1.workspaceFolder?.uri.fsPath,
+        });
+        const jobs = await new Promise((resolve, reject) => {
+            childProcess.stdout.on("data", (data) => {
+                const jobs = JSON.parse(data.toString());
+                (0, outputChannel_1.appendLineToOutputChannel)(jobs);
+                resolve(jobs);
+            });
+            childProcess.stderr.on("data", (data) => {
+                (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
+                reject();
+            });
+        });
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.title = "Select a Job";
+        quickPick.items = jobs.map((x) => ({
+            label: x.name,
+            description: x.description,
+        }));
+        quickPick.onDidChangeSelection((selection) => {
+            quickPick.dispose();
+            (0, terminal_1.showTerminal)(true);
+            (0, terminal_1.sendTextToTerminal)(`fluentci run . ${selection[0].label}`);
+        });
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.show();
+    });
+    vscode.commands.registerCommand("fluentci.runJobWithParams", () => { });
+    vscode.commands.registerCommand("fluentci.runJobFromPrebuiltPipeline", async () => {
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.title = "Select a Pipeline (1/2)";
+        quickPick.items = pipelines_1.pipelines;
+        quickPick.onDidChangeSelection(async (selection) => {
+            quickPick.dispose();
+            vscode.window.setStatusBarMessage("Fetching Jobs...");
+            const childProcess = (0, child_process_1.spawn)("deno", [
+                "eval",
+                `
+     import { runnableJobs , jobDescriptions } from '${selection[0].url}/src/dagger/jobs.ts';
+     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
+            ], {
+                cwd: workspace_1.workspaceFolder?.uri.fsPath,
+            });
+            const jobs = await new Promise((resolve) => {
+                childProcess.stdout.on("data", (data) => {
+                    const jobs = JSON.parse(data.toString());
+                    (0, outputChannel_1.appendLineToOutputChannel)(data.toString());
+                    resolve(jobs);
+                });
+                childProcess.stderr.on("data", (data) => {
+                    (0, outputChannel_1.showOutputChannel)(true);
+                    (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
+                });
+            });
+            vscode.window.setStatusBarMessage("Jobs Fetched!");
+            vscode.window.setStatusBarMessage("");
+            const jobsQuickPick = vscode.window.createQuickPick();
+            jobsQuickPick.title = "Select a Job (2/2)";
+            jobsQuickPick.items = jobs.map((x) => ({
+                label: x.name,
+                description: x.description,
+            }));
+            jobsQuickPick.onDidChangeSelection((job) => {
+                jobsQuickPick.dispose();
+                (0, terminal_1.showTerminal)(true);
+                (0, terminal_1.sendTextToTerminal)(`fluentci run ${selection[0].name} ${job[0].label}`);
+            });
+            jobsQuickPick.onDidHide(() => quickPick.dispose());
+            jobsQuickPick.show();
+        });
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.show();
+    });
+}
+exports.registerJobsCommands = registerJobsCommands;
+
+
+/***/ }),
+/* 281 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.registerDocsCommands = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const fs_1 = __webpack_require__(74);
+const pipelines_1 = __webpack_require__(2);
+const mdEngine_1 = __webpack_require__(282);
+const workspace_1 = __webpack_require__(283);
+function registerDocsCommands() {
+    vscode.commands.registerCommand("fluentci.showDocs", () => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        const panel = vscode.window.createWebviewPanel("markdownPreview", "Pipeline Docs", vscode.ViewColumn.One, {});
+        // open the readme file from the fluentci directory
+        const data = (0, fs_1.readFileSync)(`${workspace_1.workspaceFolder?.uri.fsPath}/.fluentci/README.md`);
+        panel.webview.html = (0, mdEngine_1.renderMarkdown)(data.toString());
+    });
+    vscode.commands.registerCommand("fluentci.editDocs", () => {
+        if (!workspace_1.workspaceFolder) {
+            vscode.window.showErrorMessage("No workspace folder found");
+            return;
+        }
+        if (!(0, fs_1.existsSync)(`${workspace_1.workspaceFolder.uri.fsPath}/.fluentci`)) {
+            vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
+            return;
+        }
+        const filePath = `${workspace_1.workspaceFolder.uri.fsPath}/.fluentci/README.md`;
+        vscode.workspace.openTextDocument(filePath).then((doc) => {
+            vscode.window.showTextDocument(doc);
+        });
+    });
+    vscode.commands.registerCommand("fluentci.showPipelineDocs", () => {
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.title = "Select a Pipeline";
+        quickPick.items = pipelines_1.pipelines.slice(1);
+        quickPick.onDidChangeSelection(async (selection) => {
+            const panel = vscode.window.createWebviewPanel("markdownPreview", `${selection[0].label} Pipeline Docs`, vscode.ViewColumn.One, {});
+            fetch(selection[0].readme)
+                .then((response) => response.text())
+                .then((text) => {
+                panel.webview.html = (0, mdEngine_1.renderMarkdown)(text);
+            });
+        });
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.show();
+    });
+}
+exports.registerDocsCommands = registerDocsCommands;
+
+
+/***/ }),
+/* 282 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.renderMarkdown = void 0;
+const markdown_it_1 = __importDefault(__webpack_require__(3));
+const markdown_it_external_links_1 = __importDefault(__webpack_require__(72));
+function normalizeHighlightLang(lang) {
+    switch (lang && lang.toLowerCase()) {
+        case "tsx":
+        case "typescriptreact":
+            return "jsx";
+        case "json5":
+        case "jsonc":
+            return "json";
+        case "c#":
+        case "csharp":
+            return "cs";
+        default:
+            return lang;
+    }
+}
+function renderMarkdown(markdownContent) {
+    const hljs = __webpack_require__(80);
+    const md = new markdown_it_1.default({
+        html: true,
+        highlight: (str, lang) => {
+            if (lang && hljs.getLanguage(normalizeHighlightLang(lang))) {
+                try {
+                    return ('<pre class="hljs"><code>' +
+                        hljs.highlight(normalizeHighlightLang(lang), str).value +
+                        "</code></pre>");
+                }
+                catch (error) { }
+            }
+            return ('<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>");
+        },
+    });
+    md.use(markdown_it_external_links_1.default, {
+        externalTarget: "_blank",
+        externalRel: "noopener noreferrer",
+    });
+    md.use(__webpack_require__(274), {
+        multiline: true,
+        headerless: false, // Render tables without headers
+    });
+    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">';
+    const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
+    const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
+    const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
+    const html = `<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>${""}</title>
+        ${markdownCss}
+        ${highlightCss}
+        ${katexCss}
+        ${copyTeXCss}
+    </head>
+    <body class="vscode-body">
+        ${md.render(markdownContent)}
+    </body>
+    </html>`;
+    return html;
+}
+exports.renderMarkdown = renderMarkdown;
+
+
+/***/ }),
+/* 283 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyWorkspace = exports.workspaceFolder = void 0;
+const fs_1 = __webpack_require__(74);
+const vscode = __importStar(__webpack_require__(1));
+exports.workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+function verifyWorkspace() {
+    if (!exports.workspaceFolder) {
+        vscode.window.showErrorMessage("No workspace folder found");
+        return false;
+    }
+    if (!(0, fs_1.existsSync)(`${exports.workspaceFolder.uri.fsPath}/.fluentci`)) {
+        vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
+        return false;
+    }
+    return true;
+}
+exports.verifyWorkspace = verifyWorkspace;
+
 
 /***/ })
 /******/ 	]);

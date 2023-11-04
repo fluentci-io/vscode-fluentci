@@ -3,7 +3,8 @@
   "displayName": "FluentCI",
   "description": "Run FluentCI jobs from within VS Code",
   "publisher": "fluentci-io",
-  "version": "0.0.1",
+  "icon": "resources/logo.png",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -12,7 +13,38 @@
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
+  "sponsor": {
+    "url": "https://github.com/sponsors/fluent-ci-templates"
+  },
   "contributes": {
+    "views": {
+      "fluentci-explorer": [
+        {
+          "id": "fluentci-explorer.jobs",
+          "name": "Jobs"
+        },
+        {
+          "id": "fluentci-explorer.pipelines",
+          "name": "Prebuilt Pipelines"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "fluentci-explorer.empty-view",
+        "contents": "No Fluent CI Jobs found. Please open a folder that contains a Fluent CI Pipelines.",
+        "when": "!fluentci-explorer.has-fluentci-config"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "fluentci-explorer",
+          "title": "Fluent CI",
+          "icon": "resources/icons/light/explorer.svg"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "fluentci.run",
@@ -53,8 +85,60 @@
       {
         "command": "fluentci.runJobFromPrebuiltPipeline",
         "title": "Fluent CI: Run a Job from a Prebuilt Pipeline..."
+      },
+      {
+        "command": "fluentci-explorer.runJob",
+        "title": "Run this Job"
+      },
+      {
+        "command": "fluentci-explorer.runCurrentPipeline",
+        "title": "Run this Pipeline"
+      },
+      {
+        "command": "fluentci-explorer.showDocs",
+        "title": "Show Documentation"
+      },
+      {
+        "command": "fluentci-explorer.runJobFromPrebuiltPipeline",
+        "title": "Run this Job"
+      },
+      {
+        "command": "fluentci-explorer.runPrebuiltPipeline",
+        "title": "Run this Pipeline"
+      },
+      {
+        "command": "fluentci-explorer.showPrebuiltPipelineDocs",
+        "title": "Show Documentation"
       }
-    ]
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "fluentci-explorer.runJob",
+          "when": "viewItem =~ /fluentci-job/ "
+        },
+        {
+          "command": "fluentci-explorer.runCurrentPipeline",
+          "when": "viewItem =~ /fluentci-pipeline/ "
+        },
+        {
+          "command": "fluentci-explorer.runJobFromPrebuiltPipeline",
+          "when": "viewItem =~ /fluentci-pp-job/ "
+        },
+        {
+          "command": "fluentci-explorer.runPrebuiltPipeline",
+          "when": "viewItem =~ /fluentci-prebuilt-pipeline/ "
+        },
+        {
+          "command": "fluentci-explorer.showDocs",
+          "when": "viewItem =~ /fluentci-pipeline/ "
+        },
+        {
+          "command": "fluentci-explorer.showPrebuiltPipelineDocs",
+          "when": "viewItem =~ /fluentci-prebuilt-pipeline/ "
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
