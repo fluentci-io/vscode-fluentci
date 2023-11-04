@@ -37,9 +37,9 @@ export class JobsTreeProvider implements vscode.TreeDataProvider<Job> {
         [
           "eval",
           `
-     import { pipelineName } from './.fluentci/src/dagger/jobs.ts';
+     import * as jobs from './.fluentci/src/dagger/jobs.ts';
      import { runnableJobs , jobDescriptions } from './.fluentci/src/dagger/jobs.ts';
-     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ pipelineName, name: x, description: jobDescriptions[x]}))));`,
+     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ pipelineName: jobs.pipelineName, name: x, description: jobDescriptions[x]}))));`,
         ],
         {
           cwd: workspaceFolder?.uri.fsPath,
