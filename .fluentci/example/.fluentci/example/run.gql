@@ -1,0 +1,5 @@
+{
+  nodejs {
+    run(src: ".", task: "build", packageManager: "npm", nodeVersion: "18.16.1")
+  }
+}
