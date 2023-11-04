@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 import { getIconPath } from "./icons";
 import { spawn } from "child_process";
 import { appendLineToOutputChannel, showOutputChannel } from "./outputChannel";
+import { workspaceFolder } from "./workspace";
 
-const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
 export interface Job {
   name: string;
   description?: string;

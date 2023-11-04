@@ -3,8 +3,8 @@ import { getIconPath } from "./icons";
 import { Job } from "./jobsTreeView";
 import { appendLineToOutputChannel, showOutputChannel } from "./outputChannel";
 import { spawn } from "child_process";
+import { workspaceFolder } from "./workspace";
 
-const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
 export interface Pipeline {
   name: string;
   description: string;

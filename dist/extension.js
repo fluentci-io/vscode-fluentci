@@ -68456,7 +68456,7 @@ const vscode = __importStar(__webpack_require__(1));
 const icons_1 = __webpack_require__(2);
 const child_process_1 = __webpack_require__(277);
 const outputChannel_1 = __webpack_require__(3);
-const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+const workspace_1 = __webpack_require__(274);
 class JobsTreeProvider {
     onDidChangeTreeData;
     getTreeItem(element) {
@@ -68481,7 +68481,7 @@ class JobsTreeProvider {
      import { runnableJobs , jobDescriptions } from './.fluentci/src/dagger/jobs.ts';
      console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ pipelineName: jobs.pipelineName, name: x, description: jobDescriptions[x]}))));`,
             ], {
-                cwd: workspaceFolder?.uri.fsPath,
+                cwd: workspace_1.workspaceFolder?.uri.fsPath,
             });
             const jobs = new Promise((resolve, _reject) => {
                 childProcess.stdout.on("data", (data) => {
@@ -68559,7 +68559,7 @@ const vscode = __importStar(__webpack_require__(1));
 const icons_1 = __webpack_require__(2);
 const outputChannel_1 = __webpack_require__(3);
 const child_process_1 = __webpack_require__(277);
-const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+const workspace_1 = __webpack_require__(274);
 class PipelinesTreeProvider {
     onDidChangeTreeData;
     getTreeItem(element) {
@@ -68598,7 +68598,7 @@ class PipelinesTreeProvider {
      import { runnableJobs , jobDescriptions } from 'https://pkg.fluentci.io/${element.name}@${element.version}/src/dagger/jobs.ts';
      console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
         ], {
-            cwd: workspaceFolder?.uri.fsPath,
+            cwd: workspace_1.workspaceFolder?.uri.fsPath,
         });
         const jobs = new Promise((resolve) => {
             childProcess.stdout.on("data", (data) => {
