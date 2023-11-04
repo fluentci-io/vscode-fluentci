@@ -1,75 +1,63 @@
 # FluentCI for VS Code
 
-The FluentCI extension for VS Code provides a set of commands for interacting with the FluentCI Pipelines. To get started:
+The FluentCI extension for VS Code provides a set of commands for interacting with the [FluentCI](https://fluentci.io) Pipelines.
 
-1. Setup FluentCI in your project if you haven't.
+## Getting Started
+
+1. [Setup FluentCI](https://docs.fluentci.io/tutorial-extras/initializing-a-project) in your project if you haven't.
 2. Install "FluentCI" extension in VS Code.
 3. reload or restart VS Code.
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- [FluentCI](https://fluentci.io) 0.6.9 or later
+- [Docker](https://www.docker.com/)
+- [VS Code](https://code.visualstudio.com/) 1.84 or later
+- [Deno](https://deno.com/) 1.37 or later
+- [Dagger](https://dagger.io) >= 0.8.x < 0.9.0
 
-## Extension Settings
+## Supported Features
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- Initialize a new FluentCI project
+- Run a Pipeline
+- Show Pipeline Documentation
+- Edit Pipeline Documentation
+- Run a specific Job
+- Run Pipeline directly from the [FluentCI Registry](https://pkg.fluentci.io) without installing it locally
 
-For example:
+## Commands
 
-This extension contributes the following settings:
+This extension contributes the following commands and can be accessed via [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette):
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+|command|description|availability|
+|---|---|---|
+|Fluent CI: Run Current Pipeline...|Run the current Pipeline configured in the workspace|always|
+|Fluent CI: Run a Job...|Run a specific Job in the current Pipeline|always|
+|Fluent CI: Initialize a New Pipeline...|Initialize the current workspace as a new FluentCI Project|always|
+|Fluent CI: Run a Prebuilt Pipeline...|Run a Pipeline directly from the [FluentCI Registry](https://pkg.fluentci.io) without installing it locally|always|
+|Fluent CI: Show Current Pipeline Documentation...|Show Documentation for the Current Pipeline|always|
+|Fluent CI: Show Pipeline Documentation...|Show Documentation for a Pipeline|always|
+|Fluent CI: Edit Current Pipeline Documentation...|Edit Documentation for the Current Pipeline|always|
+|Fluent CI: Remove Fluent CI Configuration...|Remove Fluent CI Configuration from the current workspace|always|
+|Fluent CI: Run a Job from a Prebuilt Pipeline...|Run a Job from a Pipeline directly from the [FluentCI Registry](https://pkg.fluentci.io) without installing it locally|always|
+|Fluent CI: Run Doctor...|Run the FluentCI Doctor|always|
 
-## Known Issues
+## Menu
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+User can trigger the following action from the FluentCI Explorer context-menu
 
-## Release Notes
+|menu|description|
+|---|---|
+|Run This Pipeline|Run the selected Pipeline|
+|Run This Job|Run the selected Job|
+|Show Documentation|Show Documentation for the selected Pipeline|
 
-Users appreciate release notes as you update your extension.
+## Contributing
 
-### 1.0.0
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-Initial release of ...
+## License
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+This project is licensed under the terms of the MIT open source license. Please refer to [MIT](LICENSE) for the full terms.
 
 **Enjoy!**

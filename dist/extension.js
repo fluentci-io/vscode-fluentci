@@ -69074,7 +69074,6 @@ function registerJobsCommands() {
         quickPick.onDidHide(() => quickPick.dispose());
         quickPick.show();
     });
-    vscode.commands.registerCommand("fluentci.runJobWithParams", () => { });
     vscode.commands.registerCommand("fluentci.runJobFromPrebuiltPipeline", async () => {
         const quickPick = vscode.window.createQuickPick();
         quickPick.title = "Select a Pipeline (1/2)";

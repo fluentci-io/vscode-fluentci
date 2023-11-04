@@ -55,10 +55,6 @@
         "title": "Fluent CI: Run a Job..."
       },
       {
-        "command": "fluentci.runJobWithParams",
-        "title": "Fluent CI: Run a Job with Parameters..."
-      },
-      {
         "command": "fluentci.init",
         "title": "Fluent CI: Initialize a New Pipeline..."
       },

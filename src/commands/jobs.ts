@@ -57,8 +57,6 @@ export function registerJobsCommands() {
     quickPick.show();
   });
 
-  vscode.commands.registerCommand("fluentci.runJobWithParams", () => {});
-
   vscode.commands.registerCommand(
     "fluentci.runJobFromPrebuiltPipeline",
     async () => {
