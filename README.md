@@ -2,6 +2,8 @@
 
 The FluentCI extension for VS Code provides a set of commands for interacting with the [FluentCI](https://fluentci.io) Pipelines.
 
+![image](resources/preview.png)
+
 ## Getting Started
 
 1. [Setup FluentCI](https://docs.fluentci.io/tutorial-extras/initializing-a-project) in your project if you haven't.
