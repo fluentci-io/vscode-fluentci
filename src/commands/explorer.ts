@@ -67,7 +67,7 @@ export function registerExplorerCommands() {
     (args: Pipeline) => {
       const panel = vscode.window.createWebviewPanel(
         "markdownPreview",
-        `${args.name} Docs`,
+        `${args.name} docs`,
         vscode.ViewColumn.One,
         {}
       );

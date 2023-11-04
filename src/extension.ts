@@ -10,6 +10,7 @@ import { registerConfigsCommand } from "./commands/configs";
 import { registerPipelineCommands } from "./commands/pipeline";
 import { registerJobsCommands } from "./commands/jobs";
 import { registerDocsCommands } from "./commands/docs";
+import { registerDoctorCommand } from "./commands/doctor";
 
 const outputChannel = vscode.window.createOutputChannel("Fluent CI");
 const terminal = vscode.window.createTerminal("Fluent CI");
@@ -32,6 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerJobsCommands();
   registerDocsCommands();
   registerConfigsCommand();
+  registerDoctorCommand();
 }
 
 // This method is called when your extension is deactivated

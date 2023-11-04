@@ -33,15 +33,16 @@ exports.deactivate = exports.activate = void 0;
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(__webpack_require__(1));
-const icons_1 = __webpack_require__(76);
-const outputChannel_1 = __webpack_require__(77);
-const terminal_1 = __webpack_require__(79);
-const explorer_1 = __webpack_require__(276);
-const views_1 = __webpack_require__(277);
-const configs_1 = __webpack_require__(278);
-const pipeline_1 = __webpack_require__(279);
-const jobs_1 = __webpack_require__(280);
-const docs_1 = __webpack_require__(281);
+const icons_1 = __webpack_require__(2);
+const outputChannel_1 = __webpack_require__(3);
+const terminal_1 = __webpack_require__(4);
+const explorer_1 = __webpack_require__(5);
+const views_1 = __webpack_require__(275);
+const configs_1 = __webpack_require__(279);
+const pipeline_1 = __webpack_require__(281);
+const jobs_1 = __webpack_require__(282);
+const docs_1 = __webpack_require__(283);
+const doctor_1 = __webpack_require__(284);
 const outputChannel = vscode.window.createOutputChannel("Fluent CI");
 const terminal = vscode.window.createTerminal("Fluent CI");
 // This method is called when your extension is activated
@@ -59,6 +60,7 @@ function activate(context) {
     (0, jobs_1.registerJobsCommands)();
     (0, docs_1.registerDocsCommands)();
     (0, configs_1.registerConfigsCommand)();
+    (0, doctor_1.registerDoctorCommand)();
 }
 exports.activate = activate;
 // This method is called when your extension is deactivated
@@ -75,225 +77,261 @@ module.exports = require("vscode");
 
 /***/ }),
 /* 2 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getIconPath = exports.initResources = void 0;
+const vscode = __importStar(__webpack_require__(1));
+let _context;
+function initResources(context) {
+    _context = context;
+}
+exports.initResources = initResources;
+function getIconPath(iconName) {
+    return vscode.Uri.joinPath(_context.extensionUri, "resources", "icons", "light", iconName);
+}
+exports.getIconPath = getIconPath;
+
+
+/***/ }),
+/* 3 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.pipelines = void 0;
-exports.pipelines = [
-    {
-        label: "Basic",
-        description: "A Minimal Pipeline to get you started",
-        name: "base_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/rust-pipeline@v0.6.3/README.md",
-        url: "https://pkg.fluentci.io/base_pipeline@v0.5.2",
-    },
-    {
-        label: "Codecov",
-        description: "A ready-to-use Pipeline that uploads coverage to Codecov",
-        name: "codecov_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/codecov-pipeline@v0.5.1/README.md",
-        url: "https://pkg.fluentci.io/codecov_pipeline@v0.5.1",
-    },
-    {
-        label: "Github",
-        description: "A ready-to-use Pipeline for uploading assets to Github Releases",
-        name: "github_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/github-pipeline@v0.1.1/README.md",
-        url: "https://pkg.fluentci.io/github_pipeline@v0.1.1",
-    },
-    {
-        label: "Deno",
-        description: "A ready-to-use Pipeline for Deno Projects",
-        name: "deno_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/deno-pipeline@v0.5.5/README.md",
-        url: "https://pkg.fluentci.io/deno_pipeline@v0.5.5",
-    },
-    {
-        label: "Chromatic",
-        description: "A ready-to-use Pipeline for uploading Storybook to Chromatic",
-        name: "chromatic_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/chromatic-pipeline@v0.6.6/README.md",
-        url: "https://pkg.fluentci.io/chromatic_pipeline@v0.6.6",
-    },
-    {
-        label: "Bun",
-        description: "A ready-to-use Pipeline for Bun",
-        name: "bun_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/bun-pipeline@v0.3.3/README.md",
-        url: "https://pkg.fluentci.io/bun_pipeline@v0.3.3",
-    },
-    {
-        label: "NodeJS",
-        description: "A ready-to-use Pipeline for NodeJS Projects",
-        name: "nodejs_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/nodejs-pipeline@v0.4.1/README.md",
-        url: "https://pkg.fluentci.io/nodejs_pipeline@v0.4.1",
-    },
-    {
-        label: "DrizzleKit",
-        description: "A ready-to-use Pipeline for managing your database migrations with Drizzle Kit",
-        name: "drizzlekit_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/drizzlekit-pipeline@v0.4.2/README.md",
-        url: "https://pkg.fluentci.io/drizzlekit_pipeline@v0.4.2",
-    },
-    {
-        label: "Prisma",
-        description: "A ready-to-use Pipeline for managing your database migrations with Prisma",
-        name: "prisma_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/prisma-pipeline@v0.4.1/README.md",
-        url: "https://pkg.fluentci.io/prisma_pipeline@v0.4.1",
-    },
-    {
-        label: "Fastlane",
-        description: "A ready-to-use Pipeline for Fastlane",
-        name: "fastlane_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/fastlane-pipeline@v0.7.2/README.md",
-        url: "https://pkg.fluentci.io/fastlane_pipeline@v0.7.2",
-    },
-    {
-        label: "Bazel",
-        description: "A ready-to-use Pipeline for Bazel Projects",
-        name: "bazel_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/bazel-pipeline@v0.3.1/README.md",
-        url: "https://pkg.fluentci.io/bazel_pipeline@v0.3.1",
-    },
-    {
-        label: "Buf",
-        description: "A ready-to-use Pipeline for Linting and and Pushing Protobuf files to Buf Registry",
-        name: "buf_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/buf-pipeline@v0.3.1/README.md",
-        url: "https://pkg.fluentci.io/buf_pipeline@v0.3.1",
-    },
-    {
-        label: "Terraform",
-        description: "A ready-to-use Pipeline for Terraform",
-        name: "terraform_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/terraform-pipeline@v0.4.1/README.md",
-        url: "https://pkg.fluentci.io/terraform_pipeline@v0.4.1",
-    },
-    {
-        label: "Go",
-        description: "A ready-to-use Pipeline for Go",
-        name: "go_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/go-pipeline@v0.6.1/README.md",
-        url: "https://pkg.fluentci.io/go_pipeline@v0.6.1",
-    },
-    {
-        label: "Cloudflare",
-        description: "A ready-to-use Pipeline for Cloudflare",
-        name: "cloudflare_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/cloudflare-pipeline@v0.6.4/README.md",
-        url: "https://pkg.fluentci.io/cloudflare_pipeline@v0.6.4",
-    },
-    {
-        label: "Terragrunt",
-        description: "A ready-to-use Pipeline for managing your infrastructure with Terragrunt",
-        name: "terragrunt_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/terragrunt-pipeline@v0.4.1/README.md",
-        url: "https://pkg.fluentci.io/terragrunt_pipeline@v0.4.1",
-    },
-    {
-        label: "Rust",
-        description: "A ready-to-use Pipeline for Rust Projects",
-        name: "rust_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/rust-pipeline@v0.6.3/README.md",
-        url: "https://pkg.fluentci.io/rust_pipeline@v0.6.3",
-    },
-    {
-        label: "Supabase",
-        description: "A ready-to-use Pipeline for deploying functions to Supabase",
-        name: "supabase_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/supabase-pipeline@v0.1.0/README.md",
-        url: "https://pkg.fluentci.io/supabase_pipeline@v0.1.0",
-    },
-    {
-        label: "Flutter",
-        description: "A ready-to-use Pipeline for Flutter Projects",
-        name: "flutter_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/flutter-pipeline@v0.5.1/README.md",
-        url: "https://pkg.fluentci.io/flutter_pipeline@v0.5.1",
-    },
-    {
-        label: "Pulumi",
-        description: "A ready-to-use Pipeline for managing your infrastructure with Pulumi",
-        name: "pulumi_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/pulumi-pipeline@v0.2.0/README.md",
-        url: "https://pkg.fluentci.io/pulumi_pipeline@v0.2.0",
-    },
-    {
-        label: "Snyk",
-        description: "A ready-to-use Pipeline for scanning vulnerabilities with Snyk",
-        name: "snyk_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/snyk-pipeline@v0.2.1/README.md",
-        url: "https://pkg.fluentci.io/snyk_pipeline@v0.2.1",
-    },
-    {
-        label: "Firebase",
-        description: "A ready-to-use Pipeline for deploying to Firebase Hosting",
-        name: "firebase_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/firebase-pipeline@v0.1.0/README.md",
-        url: "https://pkg.fluentci.io/firebase_pipeline@v0.1.0",
-    },
-    {
-        label: "Android",
-        description: "A ready-to-use Pipeline for Android Projects",
-        name: "android_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/android-pipeline@v0.7.1/README.md",
-        url: "https://pkg.fluentci.io/android_pipeline@v0.7.1",
-    },
-    {
-        label: "Spin",
-        description: "A ready-to-use Pipeline for building and deploying your Spin applications to Fermyon Platform",
-        name: "spin_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/spin-pipeline@v0.6.1/README.md",
-        url: "https://pkg.fluentci.io/spin_pipeline@v0.6.1",
-    },
-    {
-        label: "Gradle",
-        description: "A ready-to-use Pipeline for Gradle Projects",
-        name: "gradle_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/gradle-pipeline@v0.4.1/README.md",
-        url: "https://pkg.fluentci.io/gradle_pipeline@v0.4.1",
-    },
-    {
-        label: "Sonar",
-        description: "A ready-to-use Pipeline for analyzing your code with SonarCloud",
-        name: "sonar_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/sonar-pipeline@v0.3.1/README.md",
-        url: "https://pkg.fluentci.io/sonar_pipeline@v0.3.1",
-    },
-    {
-        label: "Gitlab",
-        description: "A ready-to-use Pipeline for uploading assets to Gitlab Releases",
-        name: "gitlab_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/gitlab-pipeline@v0.1.1/README.md",
-        url: "https://pkg.fluentci.io/gitlab_pipeline@v0.1.1",
-    },
-    {
-        label: "Railway",
-        description: "A ready-to-use Pipeline for deploying to Railway",
-        name: "railway_pipeline",
-        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/railway-pipeline@v0.6.0/README.md",
-        url: "https://pkg.fluentci.io/railway_pipeline@v0.6.0",
-    },
-];
+exports.showOutputChannel = exports.appendLineToOutputChannel = exports.initOutputChannel = void 0;
+let _outputChannel;
+function initOutputChannel(outputChannel) {
+    _outputChannel = outputChannel;
+}
+exports.initOutputChannel = initOutputChannel;
+function appendLineToOutputChannel(line) {
+    _outputChannel.appendLine(line);
+}
+exports.appendLineToOutputChannel = appendLineToOutputChannel;
+function showOutputChannel(preserveFocus) {
+    _outputChannel.show(preserveFocus);
+}
+exports.showOutputChannel = showOutputChannel;
 
 
 /***/ }),
-/* 3 */
+/* 4 */
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.sendTextToTerminal = exports.showTerminal = exports.initTerminal = void 0;
+let _terminal;
+function initTerminal(terminal) {
+    _terminal = terminal;
+}
+exports.initTerminal = initTerminal;
+function showTerminal(preserveFocus) {
+    _terminal.show(preserveFocus);
+}
+exports.showTerminal = showTerminal;
+function sendTextToTerminal(text) {
+    _terminal.sendText(text);
+}
+exports.sendTextToTerminal = sendTextToTerminal;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.registerExplorerCommands = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const terminal_1 = __webpack_require__(4);
+const mdEngine_1 = __webpack_require__(6);
+const fs_1 = __webpack_require__(273);
+const workspace_1 = __webpack_require__(274);
+function registerExplorerCommands() {
+    vscode.commands.registerCommand("fluentci-explorer.runJob", (args) => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)(`fluentci run . ${args.name}`);
+    });
+    vscode.commands.registerCommand("fluentci-explorer.runCurrentPipeline", (_args) => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)("fluentci run .");
+    });
+    vscode.commands.registerCommand("fluentci-explorer.runPrebuiltPipeline", (args) => {
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)(`fluentci run ${args.name}`);
+    });
+    vscode.commands.registerCommand("fluentci-explorer.runJobFromPrebuiltPipeline", (args) => {
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)(`fluentci run ${args.pipeline} ${args.name}`);
+    });
+    vscode.commands.registerCommand("fluentci-explorer.showDocs", (_args) => {
+        if (!(0, workspace_1.verifyWorkspace)()) {
+            return;
+        }
+        const panel = vscode.window.createWebviewPanel("markdownPreview", "Pipeline Docs", vscode.ViewColumn.One, {});
+        // open the readme file from the fluentci directory
+        const data = (0, fs_1.readFileSync)(`${workspace_1.workspaceFolder?.uri.fsPath}/.fluentci/README.md`);
+        panel.webview.html = (0, mdEngine_1.renderMarkdown)(data.toString());
+    });
+    vscode.commands.registerCommand("fluentci-explorer.showPrebuiltPipelineDocs", (args) => {
+        const panel = vscode.window.createWebviewPanel("markdownPreview", `${args.name} docs`, vscode.ViewColumn.One, {});
+        fetch(`https://cdn.jsdelivr.net/gh/${args.repo_name}@${args.version}/README.md`)
+            .then((response) => response.text())
+            .then((text) => {
+            panel.webview.html = (0, mdEngine_1.renderMarkdown)(text);
+        });
+    });
+}
+exports.registerExplorerCommands = registerExplorerCommands;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.renderMarkdown = void 0;
+const markdown_it_1 = __importDefault(__webpack_require__(7));
+const markdown_it_external_links_1 = __importDefault(__webpack_require__(76));
+function normalizeHighlightLang(lang) {
+    switch (lang && lang.toLowerCase()) {
+        case "tsx":
+        case "typescriptreact":
+            return "jsx";
+        case "json5":
+        case "jsonc":
+            return "json";
+        case "c#":
+        case "csharp":
+            return "cs";
+        default:
+            return lang;
+    }
+}
+function renderMarkdown(markdownContent) {
+    const hljs = __webpack_require__(77);
+    const md = new markdown_it_1.default({
+        html: true,
+        highlight: (str, lang) => {
+            if (lang && hljs.getLanguage(normalizeHighlightLang(lang))) {
+                try {
+                    return ('<pre class="hljs"><code>' +
+                        hljs.highlight(normalizeHighlightLang(lang), str).value +
+                        "</code></pre>");
+                }
+                catch (error) { }
+            }
+            return ('<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>");
+        },
+    });
+    md.use(markdown_it_external_links_1.default, {
+        externalTarget: "_blank",
+        externalRel: "noopener noreferrer",
+    });
+    md.use(__webpack_require__(271), {
+        multiline: true,
+        headerless: false, // Render tables without headers
+    });
+    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">';
+    const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
+    const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
+    const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
+    const html = `<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>${""}</title>
+        ${markdownCss}
+        ${highlightCss}
+        ${katexCss}
+        ${copyTeXCss}
+    </head>
+    <body class="vscode-body">
+        ${md.render(markdownContent)}
+    </body>
+    </html>`;
+    return html;
+}
+exports.renderMarkdown = renderMarkdown;
+
+
+/***/ }),
+/* 7 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
 
-module.exports = __webpack_require__(4);
+module.exports = __webpack_require__(8);
 
 
 /***/ }),
-/* 4 */
+/* 8 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -302,21 +340,21 @@ module.exports = __webpack_require__(4);
 
 
 
-var utils        = __webpack_require__(5);
-var helpers      = __webpack_require__(19);
-var Renderer     = __webpack_require__(23);
-var ParserCore   = __webpack_require__(24);
-var ParserBlock  = __webpack_require__(35);
-var ParserInline = __webpack_require__(50);
-var LinkifyIt    = __webpack_require__(66);
-var mdurl        = __webpack_require__(9);
-var punycode     = __webpack_require__(68);
+var utils        = __webpack_require__(9);
+var helpers      = __webpack_require__(23);
+var Renderer     = __webpack_require__(27);
+var ParserCore   = __webpack_require__(28);
+var ParserBlock  = __webpack_require__(39);
+var ParserInline = __webpack_require__(54);
+var LinkifyIt    = __webpack_require__(70);
+var mdurl        = __webpack_require__(13);
+var punycode     = __webpack_require__(72);
 
 
 var config = {
-  default: __webpack_require__(69),
-  zero: __webpack_require__(70),
-  commonmark: __webpack_require__(71)
+  default: __webpack_require__(73),
+  zero: __webpack_require__(74),
+  commonmark: __webpack_require__(75)
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -882,7 +920,7 @@ module.exports = MarkdownIt;
 
 
 /***/ }),
-/* 5 */
+/* 9 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -965,7 +1003,7 @@ var UNESCAPE_ALL_RE = new RegExp(UNESCAPE_MD_RE.source + '|' + ENTITY_RE.source,
 
 var DIGITAL_ENTITY_TEST_RE = /^#((?:x[a-f0-9]{1,8}|[0-9]{1,8}))$/i;
 
-var entities = __webpack_require__(6);
+var entities = __webpack_require__(10);
 
 function replaceEntityPattern(match, name) {
   var code;
@@ -1070,7 +1108,7 @@ function isWhiteSpace(code) {
 ////////////////////////////////////////////////////////////////////////////////
 
 /*eslint-disable max-len*/
-var UNICODE_PUNCT_RE = __webpack_require__(8);
+var UNICODE_PUNCT_RE = __webpack_require__(12);
 
 // Currently without astral characters support.
 function isPunctChar(ch) {
@@ -1184,8 +1222,8 @@ function normalizeReference(str) {
 // bundled size (e.g. a browser build).
 //
 exports.lib                 = {};
-exports.lib.mdurl = __webpack_require__(9);
-exports.lib.ucmicro = __webpack_require__(14);
+exports.lib.mdurl = __webpack_require__(13);
+exports.lib.ucmicro = __webpack_require__(18);
 
 exports.assign              = assign;
 exports.isString            = isString;
@@ -1206,7 +1244,7 @@ exports.normalizeReference  = normalizeReference;
 
 
 /***/ }),
-/* 6 */
+/* 10 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -1215,38 +1253,38 @@ exports.normalizeReference  = normalizeReference;
 
 
 /*eslint quotes:0*/
-module.exports = __webpack_require__(7);
+module.exports = __webpack_require__(11);
 
 
 /***/ }),
-/* 7 */
+/* 11 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = JSON.parse('{"Aacute":"Á","aacute":"á","Abreve":"Ă","abreve":"ă","ac":"∾","acd":"∿","acE":"∾̳","Acirc":"Â","acirc":"â","acute":"´","Acy":"А","acy":"а","AElig":"Æ","aelig":"æ","af":"⁡","Afr":"𝔄","afr":"𝔞","Agrave":"À","agrave":"à","alefsym":"ℵ","aleph":"ℵ","Alpha":"Α","alpha":"α","Amacr":"Ā","amacr":"ā","amalg":"⨿","amp":"&","AMP":"&","andand":"⩕","And":"⩓","and":"∧","andd":"⩜","andslope":"⩘","andv":"⩚","ang":"∠","ange":"⦤","angle":"∠","angmsdaa":"⦨","angmsdab":"⦩","angmsdac":"⦪","angmsdad":"⦫","angmsdae":"⦬","angmsdaf":"⦭","angmsdag":"⦮","angmsdah":"⦯","angmsd":"∡","angrt":"∟","angrtvb":"⊾","angrtvbd":"⦝","angsph":"∢","angst":"Å","angzarr":"⍼","Aogon":"Ą","aogon":"ą","Aopf":"𝔸","aopf":"𝕒","apacir":"⩯","ap":"≈","apE":"⩰","ape":"≊","apid":"≋","apos":"\'","ApplyFunction":"⁡","approx":"≈","approxeq":"≊","Aring":"Å","aring":"å","Ascr":"𝒜","ascr":"𝒶","Assign":"≔","ast":"*","asymp":"≈","asympeq":"≍","Atilde":"Ã","atilde":"ã","Auml":"Ä","auml":"ä","awconint":"∳","awint":"⨑","backcong":"≌","backepsilon":"϶","backprime":"‵","backsim":"∽","backsimeq":"⋍","Backslash":"∖","Barv":"⫧","barvee":"⊽","barwed":"⌅","Barwed":"⌆","barwedge":"⌅","bbrk":"⎵","bbrktbrk":"⎶","bcong":"≌","Bcy":"Б","bcy":"б","bdquo":"„","becaus":"∵","because":"∵","Because":"∵","bemptyv":"⦰","bepsi":"϶","bernou":"ℬ","Bernoullis":"ℬ","Beta":"Β","beta":"β","beth":"ℶ","between":"≬","Bfr":"𝔅","bfr":"𝔟","bigcap":"⋂","bigcirc":"◯","bigcup":"⋃","bigodot":"⨀","bigoplus":"⨁","bigotimes":"⨂","bigsqcup":"⨆","bigstar":"★","bigtriangledown":"▽","bigtriangleup":"△","biguplus":"⨄","bigvee":"⋁","bigwedge":"⋀","bkarow":"⤍","blacklozenge":"⧫","blacksquare":"▪","blacktriangle":"▴","blacktriangledown":"▾","blacktriangleleft":"◂","blacktriangleright":"▸","blank":"␣","blk12":"▒","blk14":"░","blk34":"▓","block":"█","bne":"=⃥","bnequiv":"≡⃥","bNot":"⫭","bnot":"⌐","Bopf":"𝔹","bopf":"𝕓","bot":"⊥","bottom":"⊥","bowtie":"⋈","boxbox":"⧉","boxdl":"┐","boxdL":"╕","boxDl":"╖","boxDL":"╗","boxdr":"┌","boxdR":"╒","boxDr":"╓","boxDR":"╔","boxh":"─","boxH":"═","boxhd":"┬","boxHd":"╤","boxhD":"╥","boxHD":"╦","boxhu":"┴","boxHu":"╧","boxhU":"╨","boxHU":"╩","boxminus":"⊟","boxplus":"⊞","boxtimes":"⊠","boxul":"┘","boxuL":"╛","boxUl":"╜","boxUL":"╝","boxur":"└","boxuR":"╘","boxUr":"╙","boxUR":"╚","boxv":"│","boxV":"║","boxvh":"┼","boxvH":"╪","boxVh":"╫","boxVH":"╬","boxvl":"┤","boxvL":"╡","boxVl":"╢","boxVL":"╣","boxvr":"├","boxvR":"╞","boxVr":"╟","boxVR":"╠","bprime":"‵","breve":"˘","Breve":"˘","brvbar":"¦","bscr":"𝒷","Bscr":"ℬ","bsemi":"⁏","bsim":"∽","bsime":"⋍","bsolb":"⧅","bsol":"\\\\","bsolhsub":"⟈","bull":"•","bullet":"•","bump":"≎","bumpE":"⪮","bumpe":"≏","Bumpeq":"≎","bumpeq":"≏","Cacute":"Ć","cacute":"ć","capand":"⩄","capbrcup":"⩉","capcap":"⩋","cap":"∩","Cap":"⋒","capcup":"⩇","capdot":"⩀","CapitalDifferentialD":"ⅅ","caps":"∩︀","caret":"⁁","caron":"ˇ","Cayleys":"ℭ","ccaps":"⩍","Ccaron":"Č","ccaron":"č","Ccedil":"Ç","ccedil":"ç","Ccirc":"Ĉ","ccirc":"ĉ","Cconint":"∰","ccups":"⩌","ccupssm":"⩐","Cdot":"Ċ","cdot":"ċ","cedil":"¸","Cedilla":"¸","cemptyv":"⦲","cent":"¢","centerdot":"·","CenterDot":"·","cfr":"𝔠","Cfr":"ℭ","CHcy":"Ч","chcy":"ч","check":"✓","checkmark":"✓","Chi":"Χ","chi":"χ","circ":"ˆ","circeq":"≗","circlearrowleft":"↺","circlearrowright":"↻","circledast":"⊛","circledcirc":"⊚","circleddash":"⊝","CircleDot":"⊙","circledR":"®","circledS":"Ⓢ","CircleMinus":"⊖","CirclePlus":"⊕","CircleTimes":"⊗","cir":"○","cirE":"⧃","cire":"≗","cirfnint":"⨐","cirmid":"⫯","cirscir":"⧂","ClockwiseContourIntegral":"∲","CloseCurlyDoubleQuote":"”","CloseCurlyQuote":"’","clubs":"♣","clubsuit":"♣","colon":":","Colon":"∷","Colone":"⩴","colone":"≔","coloneq":"≔","comma":",","commat":"@","comp":"∁","compfn":"∘","complement":"∁","complexes":"ℂ","cong":"≅","congdot":"⩭","Congruent":"≡","conint":"∮","Conint":"∯","ContourIntegral":"∮","copf":"𝕔","Copf":"ℂ","coprod":"∐","Coproduct":"∐","copy":"©","COPY":"©","copysr":"℗","CounterClockwiseContourIntegral":"∳","crarr":"↵","cross":"✗","Cross":"⨯","Cscr":"𝒞","cscr":"𝒸","csub":"⫏","csube":"⫑","csup":"⫐","csupe":"⫒","ctdot":"⋯","cudarrl":"⤸","cudarrr":"⤵","cuepr":"⋞","cuesc":"⋟","cularr":"↶","cularrp":"⤽","cupbrcap":"⩈","cupcap":"⩆","CupCap":"≍","cup":"∪","Cup":"⋓","cupcup":"⩊","cupdot":"⊍","cupor":"⩅","cups":"∪︀","curarr":"↷","curarrm":"⤼","curlyeqprec":"⋞","curlyeqsucc":"⋟","curlyvee":"⋎","curlywedge":"⋏","curren":"¤","curvearrowleft":"↶","curvearrowright":"↷","cuvee":"⋎","cuwed":"⋏","cwconint":"∲","cwint":"∱","cylcty":"⌭","dagger":"†","Dagger":"‡","daleth":"ℸ","darr":"↓","Darr":"↡","dArr":"⇓","dash":"‐","Dashv":"⫤","dashv":"⊣","dbkarow":"⤏","dblac":"˝","Dcaron":"Ď","dcaron":"ď","Dcy":"Д","dcy":"д","ddagger":"‡","ddarr":"⇊","DD":"ⅅ","dd":"ⅆ","DDotrahd":"⤑","ddotseq":"⩷","deg":"°","Del":"∇","Delta":"Δ","delta":"δ","demptyv":"⦱","dfisht":"⥿","Dfr":"𝔇","dfr":"𝔡","dHar":"⥥","dharl":"⇃","dharr":"⇂","DiacriticalAcute":"´","DiacriticalDot":"˙","DiacriticalDoubleAcute":"˝","DiacriticalGrave":"`","DiacriticalTilde":"˜","diam":"⋄","diamond":"⋄","Diamond":"⋄","diamondsuit":"♦","diams":"♦","die":"¨","DifferentialD":"ⅆ","digamma":"ϝ","disin":"⋲","div":"÷","divide":"÷","divideontimes":"⋇","divonx":"⋇","DJcy":"Ђ","djcy":"ђ","dlcorn":"⌞","dlcrop":"⌍","dollar":"$","Dopf":"𝔻","dopf":"𝕕","Dot":"¨","dot":"˙","DotDot":"⃜","doteq":"≐","doteqdot":"≑","DotEqual":"≐","dotminus":"∸","dotplus":"∔","dotsquare":"⊡","doublebarwedge":"⌆","DoubleContourIntegral":"∯","DoubleDot":"¨","DoubleDownArrow":"⇓","DoubleLeftArrow":"⇐","DoubleLeftRightArrow":"⇔","DoubleLeftTee":"⫤","DoubleLongLeftArrow":"⟸","DoubleLongLeftRightArrow":"⟺","DoubleLongRightArrow":"⟹","DoubleRightArrow":"⇒","DoubleRightTee":"⊨","DoubleUpArrow":"⇑","DoubleUpDownArrow":"⇕","DoubleVerticalBar":"∥","DownArrowBar":"⤓","downarrow":"↓","DownArrow":"↓","Downarrow":"⇓","DownArrowUpArrow":"⇵","DownBreve":"̑","downdownarrows":"⇊","downharpoonleft":"⇃","downharpoonright":"⇂","DownLeftRightVector":"⥐","DownLeftTeeVector":"⥞","DownLeftVectorBar":"⥖","DownLeftVector":"↽","DownRightTeeVector":"⥟","DownRightVectorBar":"⥗","DownRightVector":"⇁","DownTeeArrow":"↧","DownTee":"⊤","drbkarow":"⤐","drcorn":"⌟","drcrop":"⌌","Dscr":"𝒟","dscr":"𝒹","DScy":"Ѕ","dscy":"ѕ","dsol":"⧶","Dstrok":"Đ","dstrok":"đ","dtdot":"⋱","dtri":"▿","dtrif":"▾","duarr":"⇵","duhar":"⥯","dwangle":"⦦","DZcy":"Џ","dzcy":"џ","dzigrarr":"⟿","Eacute":"É","eacute":"é","easter":"⩮","Ecaron":"Ě","ecaron":"ě","Ecirc":"Ê","ecirc":"ê","ecir":"≖","ecolon":"≕","Ecy":"Э","ecy":"э","eDDot":"⩷","Edot":"Ė","edot":"ė","eDot":"≑","ee":"ⅇ","efDot":"≒","Efr":"𝔈","efr":"𝔢","eg":"⪚","Egrave":"È","egrave":"è","egs":"⪖","egsdot":"⪘","el":"⪙","Element":"∈","elinters":"⏧","ell":"ℓ","els":"⪕","elsdot":"⪗","Emacr":"Ē","emacr":"ē","empty":"∅","emptyset":"∅","EmptySmallSquare":"◻","emptyv":"∅","EmptyVerySmallSquare":"▫","emsp13":" ","emsp14":" ","emsp":" ","ENG":"Ŋ","eng":"ŋ","ensp":" ","Eogon":"Ę","eogon":"ę","Eopf":"𝔼","eopf":"𝕖","epar":"⋕","eparsl":"⧣","eplus":"⩱","epsi":"ε","Epsilon":"Ε","epsilon":"ε","epsiv":"ϵ","eqcirc":"≖","eqcolon":"≕","eqsim":"≂","eqslantgtr":"⪖","eqslantless":"⪕","Equal":"⩵","equals":"=","EqualTilde":"≂","equest":"≟","Equilibrium":"⇌","equiv":"≡","equivDD":"⩸","eqvparsl":"⧥","erarr":"⥱","erDot":"≓","escr":"ℯ","Escr":"ℰ","esdot":"≐","Esim":"⩳","esim":"≂","Eta":"Η","eta":"η","ETH":"Ð","eth":"ð","Euml":"Ë","euml":"ë","euro":"€","excl":"!","exist":"∃","Exists":"∃","expectation":"ℰ","exponentiale":"ⅇ","ExponentialE":"ⅇ","fallingdotseq":"≒","Fcy":"Ф","fcy":"ф","female":"♀","ffilig":"ﬃ","fflig":"ﬀ","ffllig":"ﬄ","Ffr":"𝔉","ffr":"𝔣","filig":"ﬁ","FilledSmallSquare":"◼","FilledVerySmallSquare":"▪","fjlig":"fj","flat":"♭","fllig":"ﬂ","fltns":"▱","fnof":"ƒ","Fopf":"𝔽","fopf":"𝕗","forall":"∀","ForAll":"∀","fork":"⋔","forkv":"⫙","Fouriertrf":"ℱ","fpartint":"⨍","frac12":"½","frac13":"⅓","frac14":"¼","frac15":"⅕","frac16":"⅙","frac18":"⅛","frac23":"⅔","frac25":"⅖","frac34":"¾","frac35":"⅗","frac38":"⅜","frac45":"⅘","frac56":"⅚","frac58":"⅝","frac78":"⅞","frasl":"⁄","frown":"⌢","fscr":"𝒻","Fscr":"ℱ","gacute":"ǵ","Gamma":"Γ","gamma":"γ","Gammad":"Ϝ","gammad":"ϝ","gap":"⪆","Gbreve":"Ğ","gbreve":"ğ","Gcedil":"Ģ","Gcirc":"Ĝ","gcirc":"ĝ","Gcy":"Г","gcy":"г","Gdot":"Ġ","gdot":"ġ","ge":"≥","gE":"≧","gEl":"⪌","gel":"⋛","geq":"≥","geqq":"≧","geqslant":"⩾","gescc":"⪩","ges":"⩾","gesdot":"⪀","gesdoto":"⪂","gesdotol":"⪄","gesl":"⋛︀","gesles":"⪔","Gfr":"𝔊","gfr":"𝔤","gg":"≫","Gg":"⋙","ggg":"⋙","gimel":"ℷ","GJcy":"Ѓ","gjcy":"ѓ","gla":"⪥","gl":"≷","glE":"⪒","glj":"⪤","gnap":"⪊","gnapprox":"⪊","gne":"⪈","gnE":"≩","gneq":"⪈","gneqq":"≩","gnsim":"⋧","Gopf":"𝔾","gopf":"𝕘","grave":"`","GreaterEqual":"≥","GreaterEqualLess":"⋛","GreaterFullEqual":"≧","GreaterGreater":"⪢","GreaterLess":"≷","GreaterSlantEqual":"⩾","GreaterTilde":"≳","Gscr":"𝒢","gscr":"ℊ","gsim":"≳","gsime":"⪎","gsiml":"⪐","gtcc":"⪧","gtcir":"⩺","gt":">","GT":">","Gt":"≫","gtdot":"⋗","gtlPar":"⦕","gtquest":"⩼","gtrapprox":"⪆","gtrarr":"⥸","gtrdot":"⋗","gtreqless":"⋛","gtreqqless":"⪌","gtrless":"≷","gtrsim":"≳","gvertneqq":"≩︀","gvnE":"≩︀","Hacek":"ˇ","hairsp":" ","half":"½","hamilt":"ℋ","HARDcy":"Ъ","hardcy":"ъ","harrcir":"⥈","harr":"↔","hArr":"⇔","harrw":"↭","Hat":"^","hbar":"ℏ","Hcirc":"Ĥ","hcirc":"ĥ","hearts":"♥","heartsuit":"♥","hellip":"…","hercon":"⊹","hfr":"𝔥","Hfr":"ℌ","HilbertSpace":"ℋ","hksearow":"⤥","hkswarow":"⤦","hoarr":"⇿","homtht":"∻","hookleftarrow":"↩","hookrightarrow":"↪","hopf":"𝕙","Hopf":"ℍ","horbar":"―","HorizontalLine":"─","hscr":"𝒽","Hscr":"ℋ","hslash":"ℏ","Hstrok":"Ħ","hstrok":"ħ","HumpDownHump":"≎","HumpEqual":"≏","hybull":"⁃","hyphen":"‐","Iacute":"Í","iacute":"í","ic":"⁣","Icirc":"Î","icirc":"î","Icy":"И","icy":"и","Idot":"İ","IEcy":"Е","iecy":"е","iexcl":"¡","iff":"⇔","ifr":"𝔦","Ifr":"ℑ","Igrave":"Ì","igrave":"ì","ii":"ⅈ","iiiint":"⨌","iiint":"∭","iinfin":"⧜","iiota":"℩","IJlig":"Ĳ","ijlig":"ĳ","Imacr":"Ī","imacr":"ī","image":"ℑ","ImaginaryI":"ⅈ","imagline":"ℐ","imagpart":"ℑ","imath":"ı","Im":"ℑ","imof":"⊷","imped":"Ƶ","Implies":"⇒","incare":"℅","in":"∈","infin":"∞","infintie":"⧝","inodot":"ı","intcal":"⊺","int":"∫","Int":"∬","integers":"ℤ","Integral":"∫","intercal":"⊺","Intersection":"⋂","intlarhk":"⨗","intprod":"⨼","InvisibleComma":"⁣","InvisibleTimes":"⁢","IOcy":"Ё","iocy":"ё","Iogon":"Į","iogon":"į","Iopf":"𝕀","iopf":"𝕚","Iota":"Ι","iota":"ι","iprod":"⨼","iquest":"¿","iscr":"𝒾","Iscr":"ℐ","isin":"∈","isindot":"⋵","isinE":"⋹","isins":"⋴","isinsv":"⋳","isinv":"∈","it":"⁢","Itilde":"Ĩ","itilde":"ĩ","Iukcy":"І","iukcy":"і","Iuml":"Ï","iuml":"ï","Jcirc":"Ĵ","jcirc":"ĵ","Jcy":"Й","jcy":"й","Jfr":"𝔍","jfr":"𝔧","jmath":"ȷ","Jopf":"𝕁","jopf":"𝕛","Jscr":"𝒥","jscr":"𝒿","Jsercy":"Ј","jsercy":"ј","Jukcy":"Є","jukcy":"є","Kappa":"Κ","kappa":"κ","kappav":"ϰ","Kcedil":"Ķ","kcedil":"ķ","Kcy":"К","kcy":"к","Kfr":"𝔎","kfr":"𝔨","kgreen":"ĸ","KHcy":"Х","khcy":"х","KJcy":"Ќ","kjcy":"ќ","Kopf":"𝕂","kopf":"𝕜","Kscr":"𝒦","kscr":"𝓀","lAarr":"⇚","Lacute":"Ĺ","lacute":"ĺ","laemptyv":"⦴","lagran":"ℒ","Lambda":"Λ","lambda":"λ","lang":"⟨","Lang":"⟪","langd":"⦑","langle":"⟨","lap":"⪅","Laplacetrf":"ℒ","laquo":"«","larrb":"⇤","larrbfs":"⤟","larr":"←","Larr":"↞","lArr":"⇐","larrfs":"⤝","larrhk":"↩","larrlp":"↫","larrpl":"⤹","larrsim":"⥳","larrtl":"↢","latail":"⤙","lAtail":"⤛","lat":"⪫","late":"⪭","lates":"⪭︀","lbarr":"⤌","lBarr":"⤎","lbbrk":"❲","lbrace":"{","lbrack":"[","lbrke":"⦋","lbrksld":"⦏","lbrkslu":"⦍","Lcaron":"Ľ","lcaron":"ľ","Lcedil":"Ļ","lcedil":"ļ","lceil":"⌈","lcub":"{","Lcy":"Л","lcy":"л","ldca":"⤶","ldquo":"“","ldquor":"„","ldrdhar":"⥧","ldrushar":"⥋","ldsh":"↲","le":"≤","lE":"≦","LeftAngleBracket":"⟨","LeftArrowBar":"⇤","leftarrow":"←","LeftArrow":"←","Leftarrow":"⇐","LeftArrowRightArrow":"⇆","leftarrowtail":"↢","LeftCeiling":"⌈","LeftDoubleBracket":"⟦","LeftDownTeeVector":"⥡","LeftDownVectorBar":"⥙","LeftDownVector":"⇃","LeftFloor":"⌊","leftharpoondown":"↽","leftharpoonup":"↼","leftleftarrows":"⇇","leftrightarrow":"↔","LeftRightArrow":"↔","Leftrightarrow":"⇔","leftrightarrows":"⇆","leftrightharpoons":"⇋","leftrightsquigarrow":"↭","LeftRightVector":"⥎","LeftTeeArrow":"↤","LeftTee":"⊣","LeftTeeVector":"⥚","leftthreetimes":"⋋","LeftTriangleBar":"⧏","LeftTriangle":"⊲","LeftTriangleEqual":"⊴","LeftUpDownVector":"⥑","LeftUpTeeVector":"⥠","LeftUpVectorBar":"⥘","LeftUpVector":"↿","LeftVectorBar":"⥒","LeftVector":"↼","lEg":"⪋","leg":"⋚","leq":"≤","leqq":"≦","leqslant":"⩽","lescc":"⪨","les":"⩽","lesdot":"⩿","lesdoto":"⪁","lesdotor":"⪃","lesg":"⋚︀","lesges":"⪓","lessapprox":"⪅","lessdot":"⋖","lesseqgtr":"⋚","lesseqqgtr":"⪋","LessEqualGreater":"⋚","LessFullEqual":"≦","LessGreater":"≶","lessgtr":"≶","LessLess":"⪡","lesssim":"≲","LessSlantEqual":"⩽","LessTilde":"≲","lfisht":"⥼","lfloor":"⌊","Lfr":"𝔏","lfr":"𝔩","lg":"≶","lgE":"⪑","lHar":"⥢","lhard":"↽","lharu":"↼","lharul":"⥪","lhblk":"▄","LJcy":"Љ","ljcy":"љ","llarr":"⇇","ll":"≪","Ll":"⋘","llcorner":"⌞","Lleftarrow":"⇚","llhard":"⥫","lltri":"◺","Lmidot":"Ŀ","lmidot":"ŀ","lmoustache":"⎰","lmoust":"⎰","lnap":"⪉","lnapprox":"⪉","lne":"⪇","lnE":"≨","lneq":"⪇","lneqq":"≨","lnsim":"⋦","loang":"⟬","loarr":"⇽","lobrk":"⟦","longleftarrow":"⟵","LongLeftArrow":"⟵","Longleftarrow":"⟸","longleftrightarrow":"⟷","LongLeftRightArrow":"⟷","Longleftrightarrow":"⟺","longmapsto":"⟼","longrightarrow":"⟶","LongRightArrow":"⟶","Longrightarrow":"⟹","looparrowleft":"↫","looparrowright":"↬","lopar":"⦅","Lopf":"𝕃","lopf":"𝕝","loplus":"⨭","lotimes":"⨴","lowast":"∗","lowbar":"_","LowerLeftArrow":"↙","LowerRightArrow":"↘","loz":"◊","lozenge":"◊","lozf":"⧫","lpar":"(","lparlt":"⦓","lrarr":"⇆","lrcorner":"⌟","lrhar":"⇋","lrhard":"⥭","lrm":"‎","lrtri":"⊿","lsaquo":"‹","lscr":"𝓁","Lscr":"ℒ","lsh":"↰","Lsh":"↰","lsim":"≲","lsime":"⪍","lsimg":"⪏","lsqb":"[","lsquo":"‘","lsquor":"‚","Lstrok":"Ł","lstrok":"ł","ltcc":"⪦","ltcir":"⩹","lt":"<","LT":"<","Lt":"≪","ltdot":"⋖","lthree":"⋋","ltimes":"⋉","ltlarr":"⥶","ltquest":"⩻","ltri":"◃","ltrie":"⊴","ltrif":"◂","ltrPar":"⦖","lurdshar":"⥊","luruhar":"⥦","lvertneqq":"≨︀","lvnE":"≨︀","macr":"¯","male":"♂","malt":"✠","maltese":"✠","Map":"⤅","map":"↦","mapsto":"↦","mapstodown":"↧","mapstoleft":"↤","mapstoup":"↥","marker":"▮","mcomma":"⨩","Mcy":"М","mcy":"м","mdash":"—","mDDot":"∺","measuredangle":"∡","MediumSpace":" ","Mellintrf":"ℳ","Mfr":"𝔐","mfr":"𝔪","mho":"℧","micro":"µ","midast":"*","midcir":"⫰","mid":"∣","middot":"·","minusb":"⊟","minus":"−","minusd":"∸","minusdu":"⨪","MinusPlus":"∓","mlcp":"⫛","mldr":"…","mnplus":"∓","models":"⊧","Mopf":"𝕄","mopf":"𝕞","mp":"∓","mscr":"𝓂","Mscr":"ℳ","mstpos":"∾","Mu":"Μ","mu":"μ","multimap":"⊸","mumap":"⊸","nabla":"∇","Nacute":"Ń","nacute":"ń","nang":"∠⃒","nap":"≉","napE":"⩰̸","napid":"≋̸","napos":"ŉ","napprox":"≉","natural":"♮","naturals":"ℕ","natur":"♮","nbsp":" ","nbump":"≎̸","nbumpe":"≏̸","ncap":"⩃","Ncaron":"Ň","ncaron":"ň","Ncedil":"Ņ","ncedil":"ņ","ncong":"≇","ncongdot":"⩭̸","ncup":"⩂","Ncy":"Н","ncy":"н","ndash":"–","nearhk":"⤤","nearr":"↗","neArr":"⇗","nearrow":"↗","ne":"≠","nedot":"≐̸","NegativeMediumSpace":"​","NegativeThickSpace":"​","NegativeThinSpace":"​","NegativeVeryThinSpace":"​","nequiv":"≢","nesear":"⤨","nesim":"≂̸","NestedGreaterGreater":"≫","NestedLessLess":"≪","NewLine":"\\n","nexist":"∄","nexists":"∄","Nfr":"𝔑","nfr":"𝔫","ngE":"≧̸","nge":"≱","ngeq":"≱","ngeqq":"≧̸","ngeqslant":"⩾̸","nges":"⩾̸","nGg":"⋙̸","ngsim":"≵","nGt":"≫⃒","ngt":"≯","ngtr":"≯","nGtv":"≫̸","nharr":"↮","nhArr":"⇎","nhpar":"⫲","ni":"∋","nis":"⋼","nisd":"⋺","niv":"∋","NJcy":"Њ","njcy":"њ","nlarr":"↚","nlArr":"⇍","nldr":"‥","nlE":"≦̸","nle":"≰","nleftarrow":"↚","nLeftarrow":"⇍","nleftrightarrow":"↮","nLeftrightarrow":"⇎","nleq":"≰","nleqq":"≦̸","nleqslant":"⩽̸","nles":"⩽̸","nless":"≮","nLl":"⋘̸","nlsim":"≴","nLt":"≪⃒","nlt":"≮","nltri":"⋪","nltrie":"⋬","nLtv":"≪̸","nmid":"∤","NoBreak":"⁠","NonBreakingSpace":" ","nopf":"𝕟","Nopf":"ℕ","Not":"⫬","not":"¬","NotCongruent":"≢","NotCupCap":"≭","NotDoubleVerticalBar":"∦","NotElement":"∉","NotEqual":"≠","NotEqualTilde":"≂̸","NotExists":"∄","NotGreater":"≯","NotGreaterEqual":"≱","NotGreaterFullEqual":"≧̸","NotGreaterGreater":"≫̸","NotGreaterLess":"≹","NotGreaterSlantEqual":"⩾̸","NotGreaterTilde":"≵","NotHumpDownHump":"≎̸","NotHumpEqual":"≏̸","notin":"∉","notindot":"⋵̸","notinE":"⋹̸","notinva":"∉","notinvb":"⋷","notinvc":"⋶","NotLeftTriangleBar":"⧏̸","NotLeftTriangle":"⋪","NotLeftTriangleEqual":"⋬","NotLess":"≮","NotLessEqual":"≰","NotLessGreater":"≸","NotLessLess":"≪̸","NotLessSlantEqual":"⩽̸","NotLessTilde":"≴","NotNestedGreaterGreater":"⪢̸","NotNestedLessLess":"⪡̸","notni":"∌","notniva":"∌","notnivb":"⋾","notnivc":"⋽","NotPrecedes":"⊀","NotPrecedesEqual":"⪯̸","NotPrecedesSlantEqual":"⋠","NotReverseElement":"∌","NotRightTriangleBar":"⧐̸","NotRightTriangle":"⋫","NotRightTriangleEqual":"⋭","NotSquareSubset":"⊏̸","NotSquareSubsetEqual":"⋢","NotSquareSuperset":"⊐̸","NotSquareSupersetEqual":"⋣","NotSubset":"⊂⃒","NotSubsetEqual":"⊈","NotSucceeds":"⊁","NotSucceedsEqual":"⪰̸","NotSucceedsSlantEqual":"⋡","NotSucceedsTilde":"≿̸","NotSuperset":"⊃⃒","NotSupersetEqual":"⊉","NotTilde":"≁","NotTildeEqual":"≄","NotTildeFullEqual":"≇","NotTildeTilde":"≉","NotVerticalBar":"∤","nparallel":"∦","npar":"∦","nparsl":"⫽⃥","npart":"∂̸","npolint":"⨔","npr":"⊀","nprcue":"⋠","nprec":"⊀","npreceq":"⪯̸","npre":"⪯̸","nrarrc":"⤳̸","nrarr":"↛","nrArr":"⇏","nrarrw":"↝̸","nrightarrow":"↛","nRightarrow":"⇏","nrtri":"⋫","nrtrie":"⋭","nsc":"⊁","nsccue":"⋡","nsce":"⪰̸","Nscr":"𝒩","nscr":"𝓃","nshortmid":"∤","nshortparallel":"∦","nsim":"≁","nsime":"≄","nsimeq":"≄","nsmid":"∤","nspar":"∦","nsqsube":"⋢","nsqsupe":"⋣","nsub":"⊄","nsubE":"⫅̸","nsube":"⊈","nsubset":"⊂⃒","nsubseteq":"⊈","nsubseteqq":"⫅̸","nsucc":"⊁","nsucceq":"⪰̸","nsup":"⊅","nsupE":"⫆̸","nsupe":"⊉","nsupset":"⊃⃒","nsupseteq":"⊉","nsupseteqq":"⫆̸","ntgl":"≹","Ntilde":"Ñ","ntilde":"ñ","ntlg":"≸","ntriangleleft":"⋪","ntrianglelefteq":"⋬","ntriangleright":"⋫","ntrianglerighteq":"⋭","Nu":"Ν","nu":"ν","num":"#","numero":"№","numsp":" ","nvap":"≍⃒","nvdash":"⊬","nvDash":"⊭","nVdash":"⊮","nVDash":"⊯","nvge":"≥⃒","nvgt":">⃒","nvHarr":"⤄","nvinfin":"⧞","nvlArr":"⤂","nvle":"≤⃒","nvlt":"<⃒","nvltrie":"⊴⃒","nvrArr":"⤃","nvrtrie":"⊵⃒","nvsim":"∼⃒","nwarhk":"⤣","nwarr":"↖","nwArr":"⇖","nwarrow":"↖","nwnear":"⤧","Oacute":"Ó","oacute":"ó","oast":"⊛","Ocirc":"Ô","ocirc":"ô","ocir":"⊚","Ocy":"О","ocy":"о","odash":"⊝","Odblac":"Ő","odblac":"ő","odiv":"⨸","odot":"⊙","odsold":"⦼","OElig":"Œ","oelig":"œ","ofcir":"⦿","Ofr":"𝔒","ofr":"𝔬","ogon":"˛","Ograve":"Ò","ograve":"ò","ogt":"⧁","ohbar":"⦵","ohm":"Ω","oint":"∮","olarr":"↺","olcir":"⦾","olcross":"⦻","oline":"‾","olt":"⧀","Omacr":"Ō","omacr":"ō","Omega":"Ω","omega":"ω","Omicron":"Ο","omicron":"ο","omid":"⦶","ominus":"⊖","Oopf":"𝕆","oopf":"𝕠","opar":"⦷","OpenCurlyDoubleQuote":"“","OpenCurlyQuote":"‘","operp":"⦹","oplus":"⊕","orarr":"↻","Or":"⩔","or":"∨","ord":"⩝","order":"ℴ","orderof":"ℴ","ordf":"ª","ordm":"º","origof":"⊶","oror":"⩖","orslope":"⩗","orv":"⩛","oS":"Ⓢ","Oscr":"𝒪","oscr":"ℴ","Oslash":"Ø","oslash":"ø","osol":"⊘","Otilde":"Õ","otilde":"õ","otimesas":"⨶","Otimes":"⨷","otimes":"⊗","Ouml":"Ö","ouml":"ö","ovbar":"⌽","OverBar":"‾","OverBrace":"⏞","OverBracket":"⎴","OverParenthesis":"⏜","para":"¶","parallel":"∥","par":"∥","parsim":"⫳","parsl":"⫽","part":"∂","PartialD":"∂","Pcy":"П","pcy":"п","percnt":"%","period":".","permil":"‰","perp":"⊥","pertenk":"‱","Pfr":"𝔓","pfr":"𝔭","Phi":"Φ","phi":"φ","phiv":"ϕ","phmmat":"ℳ","phone":"☎","Pi":"Π","pi":"π","pitchfork":"⋔","piv":"ϖ","planck":"ℏ","planckh":"ℎ","plankv":"ℏ","plusacir":"⨣","plusb":"⊞","pluscir":"⨢","plus":"+","plusdo":"∔","plusdu":"⨥","pluse":"⩲","PlusMinus":"±","plusmn":"±","plussim":"⨦","plustwo":"⨧","pm":"±","Poincareplane":"ℌ","pointint":"⨕","popf":"𝕡","Popf":"ℙ","pound":"£","prap":"⪷","Pr":"⪻","pr":"≺","prcue":"≼","precapprox":"⪷","prec":"≺","preccurlyeq":"≼","Precedes":"≺","PrecedesEqual":"⪯","PrecedesSlantEqual":"≼","PrecedesTilde":"≾","preceq":"⪯","precnapprox":"⪹","precneqq":"⪵","precnsim":"⋨","pre":"⪯","prE":"⪳","precsim":"≾","prime":"′","Prime":"″","primes":"ℙ","prnap":"⪹","prnE":"⪵","prnsim":"⋨","prod":"∏","Product":"∏","profalar":"⌮","profline":"⌒","profsurf":"⌓","prop":"∝","Proportional":"∝","Proportion":"∷","propto":"∝","prsim":"≾","prurel":"⊰","Pscr":"𝒫","pscr":"𝓅","Psi":"Ψ","psi":"ψ","puncsp":" ","Qfr":"𝔔","qfr":"𝔮","qint":"⨌","qopf":"𝕢","Qopf":"ℚ","qprime":"⁗","Qscr":"𝒬","qscr":"𝓆","quaternions":"ℍ","quatint":"⨖","quest":"?","questeq":"≟","quot":"\\"","QUOT":"\\"","rAarr":"⇛","race":"∽̱","Racute":"Ŕ","racute":"ŕ","radic":"√","raemptyv":"⦳","rang":"⟩","Rang":"⟫","rangd":"⦒","range":"⦥","rangle":"⟩","raquo":"»","rarrap":"⥵","rarrb":"⇥","rarrbfs":"⤠","rarrc":"⤳","rarr":"→","Rarr":"↠","rArr":"⇒","rarrfs":"⤞","rarrhk":"↪","rarrlp":"↬","rarrpl":"⥅","rarrsim":"⥴","Rarrtl":"⤖","rarrtl":"↣","rarrw":"↝","ratail":"⤚","rAtail":"⤜","ratio":"∶","rationals":"ℚ","rbarr":"⤍","rBarr":"⤏","RBarr":"⤐","rbbrk":"❳","rbrace":"}","rbrack":"]","rbrke":"⦌","rbrksld":"⦎","rbrkslu":"⦐","Rcaron":"Ř","rcaron":"ř","Rcedil":"Ŗ","rcedil":"ŗ","rceil":"⌉","rcub":"}","Rcy":"Р","rcy":"р","rdca":"⤷","rdldhar":"⥩","rdquo":"”","rdquor":"”","rdsh":"↳","real":"ℜ","realine":"ℛ","realpart":"ℜ","reals":"ℝ","Re":"ℜ","rect":"▭","reg":"®","REG":"®","ReverseElement":"∋","ReverseEquilibrium":"⇋","ReverseUpEquilibrium":"⥯","rfisht":"⥽","rfloor":"⌋","rfr":"𝔯","Rfr":"ℜ","rHar":"⥤","rhard":"⇁","rharu":"⇀","rharul":"⥬","Rho":"Ρ","rho":"ρ","rhov":"ϱ","RightAngleBracket":"⟩","RightArrowBar":"⇥","rightarrow":"→","RightArrow":"→","Rightarrow":"⇒","RightArrowLeftArrow":"⇄","rightarrowtail":"↣","RightCeiling":"⌉","RightDoubleBracket":"⟧","RightDownTeeVector":"⥝","RightDownVectorBar":"⥕","RightDownVector":"⇂","RightFloor":"⌋","rightharpoondown":"⇁","rightharpoonup":"⇀","rightleftarrows":"⇄","rightleftharpoons":"⇌","rightrightarrows":"⇉","rightsquigarrow":"↝","RightTeeArrow":"↦","RightTee":"⊢","RightTeeVector":"⥛","rightthreetimes":"⋌","RightTriangleBar":"⧐","RightTriangle":"⊳","RightTriangleEqual":"⊵","RightUpDownVector":"⥏","RightUpTeeVector":"⥜","RightUpVectorBar":"⥔","RightUpVector":"↾","RightVectorBar":"⥓","RightVector":"⇀","ring":"˚","risingdotseq":"≓","rlarr":"⇄","rlhar":"⇌","rlm":"‏","rmoustache":"⎱","rmoust":"⎱","rnmid":"⫮","roang":"⟭","roarr":"⇾","robrk":"⟧","ropar":"⦆","ropf":"𝕣","Ropf":"ℝ","roplus":"⨮","rotimes":"⨵","RoundImplies":"⥰","rpar":")","rpargt":"⦔","rppolint":"⨒","rrarr":"⇉","Rrightarrow":"⇛","rsaquo":"›","rscr":"𝓇","Rscr":"ℛ","rsh":"↱","Rsh":"↱","rsqb":"]","rsquo":"’","rsquor":"’","rthree":"⋌","rtimes":"⋊","rtri":"▹","rtrie":"⊵","rtrif":"▸","rtriltri":"⧎","RuleDelayed":"⧴","ruluhar":"⥨","rx":"℞","Sacute":"Ś","sacute":"ś","sbquo":"‚","scap":"⪸","Scaron":"Š","scaron":"š","Sc":"⪼","sc":"≻","sccue":"≽","sce":"⪰","scE":"⪴","Scedil":"Ş","scedil":"ş","Scirc":"Ŝ","scirc":"ŝ","scnap":"⪺","scnE":"⪶","scnsim":"⋩","scpolint":"⨓","scsim":"≿","Scy":"С","scy":"с","sdotb":"⊡","sdot":"⋅","sdote":"⩦","searhk":"⤥","searr":"↘","seArr":"⇘","searrow":"↘","sect":"§","semi":";","seswar":"⤩","setminus":"∖","setmn":"∖","sext":"✶","Sfr":"𝔖","sfr":"𝔰","sfrown":"⌢","sharp":"♯","SHCHcy":"Щ","shchcy":"щ","SHcy":"Ш","shcy":"ш","ShortDownArrow":"↓","ShortLeftArrow":"←","shortmid":"∣","shortparallel":"∥","ShortRightArrow":"→","ShortUpArrow":"↑","shy":"­","Sigma":"Σ","sigma":"σ","sigmaf":"ς","sigmav":"ς","sim":"∼","simdot":"⩪","sime":"≃","simeq":"≃","simg":"⪞","simgE":"⪠","siml":"⪝","simlE":"⪟","simne":"≆","simplus":"⨤","simrarr":"⥲","slarr":"←","SmallCircle":"∘","smallsetminus":"∖","smashp":"⨳","smeparsl":"⧤","smid":"∣","smile":"⌣","smt":"⪪","smte":"⪬","smtes":"⪬︀","SOFTcy":"Ь","softcy":"ь","solbar":"⌿","solb":"⧄","sol":"/","Sopf":"𝕊","sopf":"𝕤","spades":"♠","spadesuit":"♠","spar":"∥","sqcap":"⊓","sqcaps":"⊓︀","sqcup":"⊔","sqcups":"⊔︀","Sqrt":"√","sqsub":"⊏","sqsube":"⊑","sqsubset":"⊏","sqsubseteq":"⊑","sqsup":"⊐","sqsupe":"⊒","sqsupset":"⊐","sqsupseteq":"⊒","square":"□","Square":"□","SquareIntersection":"⊓","SquareSubset":"⊏","SquareSubsetEqual":"⊑","SquareSuperset":"⊐","SquareSupersetEqual":"⊒","SquareUnion":"⊔","squarf":"▪","squ":"□","squf":"▪","srarr":"→","Sscr":"𝒮","sscr":"𝓈","ssetmn":"∖","ssmile":"⌣","sstarf":"⋆","Star":"⋆","star":"☆","starf":"★","straightepsilon":"ϵ","straightphi":"ϕ","strns":"¯","sub":"⊂","Sub":"⋐","subdot":"⪽","subE":"⫅","sube":"⊆","subedot":"⫃","submult":"⫁","subnE":"⫋","subne":"⊊","subplus":"⪿","subrarr":"⥹","subset":"⊂","Subset":"⋐","subseteq":"⊆","subseteqq":"⫅","SubsetEqual":"⊆","subsetneq":"⊊","subsetneqq":"⫋","subsim":"⫇","subsub":"⫕","subsup":"⫓","succapprox":"⪸","succ":"≻","succcurlyeq":"≽","Succeeds":"≻","SucceedsEqual":"⪰","SucceedsSlantEqual":"≽","SucceedsTilde":"≿","succeq":"⪰","succnapprox":"⪺","succneqq":"⪶","succnsim":"⋩","succsim":"≿","SuchThat":"∋","sum":"∑","Sum":"∑","sung":"♪","sup1":"¹","sup2":"²","sup3":"³","sup":"⊃","Sup":"⋑","supdot":"⪾","supdsub":"⫘","supE":"⫆","supe":"⊇","supedot":"⫄","Superset":"⊃","SupersetEqual":"⊇","suphsol":"⟉","suphsub":"⫗","suplarr":"⥻","supmult":"⫂","supnE":"⫌","supne":"⊋","supplus":"⫀","supset":"⊃","Supset":"⋑","supseteq":"⊇","supseteqq":"⫆","supsetneq":"⊋","supsetneqq":"⫌","supsim":"⫈","supsub":"⫔","supsup":"⫖","swarhk":"⤦","swarr":"↙","swArr":"⇙","swarrow":"↙","swnwar":"⤪","szlig":"ß","Tab":"\\t","target":"⌖","Tau":"Τ","tau":"τ","tbrk":"⎴","Tcaron":"Ť","tcaron":"ť","Tcedil":"Ţ","tcedil":"ţ","Tcy":"Т","tcy":"т","tdot":"⃛","telrec":"⌕","Tfr":"𝔗","tfr":"𝔱","there4":"∴","therefore":"∴","Therefore":"∴","Theta":"Θ","theta":"θ","thetasym":"ϑ","thetav":"ϑ","thickapprox":"≈","thicksim":"∼","ThickSpace":"  ","ThinSpace":" ","thinsp":" ","thkap":"≈","thksim":"∼","THORN":"Þ","thorn":"þ","tilde":"˜","Tilde":"∼","TildeEqual":"≃","TildeFullEqual":"≅","TildeTilde":"≈","timesbar":"⨱","timesb":"⊠","times":"×","timesd":"⨰","tint":"∭","toea":"⤨","topbot":"⌶","topcir":"⫱","top":"⊤","Topf":"𝕋","topf":"𝕥","topfork":"⫚","tosa":"⤩","tprime":"‴","trade":"™","TRADE":"™","triangle":"▵","triangledown":"▿","triangleleft":"◃","trianglelefteq":"⊴","triangleq":"≜","triangleright":"▹","trianglerighteq":"⊵","tridot":"◬","trie":"≜","triminus":"⨺","TripleDot":"⃛","triplus":"⨹","trisb":"⧍","tritime":"⨻","trpezium":"⏢","Tscr":"𝒯","tscr":"𝓉","TScy":"Ц","tscy":"ц","TSHcy":"Ћ","tshcy":"ћ","Tstrok":"Ŧ","tstrok":"ŧ","twixt":"≬","twoheadleftarrow":"↞","twoheadrightarrow":"↠","Uacute":"Ú","uacute":"ú","uarr":"↑","Uarr":"↟","uArr":"⇑","Uarrocir":"⥉","Ubrcy":"Ў","ubrcy":"ў","Ubreve":"Ŭ","ubreve":"ŭ","Ucirc":"Û","ucirc":"û","Ucy":"У","ucy":"у","udarr":"⇅","Udblac":"Ű","udblac":"ű","udhar":"⥮","ufisht":"⥾","Ufr":"𝔘","ufr":"𝔲","Ugrave":"Ù","ugrave":"ù","uHar":"⥣","uharl":"↿","uharr":"↾","uhblk":"▀","ulcorn":"⌜","ulcorner":"⌜","ulcrop":"⌏","ultri":"◸","Umacr":"Ū","umacr":"ū","uml":"¨","UnderBar":"_","UnderBrace":"⏟","UnderBracket":"⎵","UnderParenthesis":"⏝","Union":"⋃","UnionPlus":"⊎","Uogon":"Ų","uogon":"ų","Uopf":"𝕌","uopf":"𝕦","UpArrowBar":"⤒","uparrow":"↑","UpArrow":"↑","Uparrow":"⇑","UpArrowDownArrow":"⇅","updownarrow":"↕","UpDownArrow":"↕","Updownarrow":"⇕","UpEquilibrium":"⥮","upharpoonleft":"↿","upharpoonright":"↾","uplus":"⊎","UpperLeftArrow":"↖","UpperRightArrow":"↗","upsi":"υ","Upsi":"ϒ","upsih":"ϒ","Upsilon":"Υ","upsilon":"υ","UpTeeArrow":"↥","UpTee":"⊥","upuparrows":"⇈","urcorn":"⌝","urcorner":"⌝","urcrop":"⌎","Uring":"Ů","uring":"ů","urtri":"◹","Uscr":"𝒰","uscr":"𝓊","utdot":"⋰","Utilde":"Ũ","utilde":"ũ","utri":"▵","utrif":"▴","uuarr":"⇈","Uuml":"Ü","uuml":"ü","uwangle":"⦧","vangrt":"⦜","varepsilon":"ϵ","varkappa":"ϰ","varnothing":"∅","varphi":"ϕ","varpi":"ϖ","varpropto":"∝","varr":"↕","vArr":"⇕","varrho":"ϱ","varsigma":"ς","varsubsetneq":"⊊︀","varsubsetneqq":"⫋︀","varsupsetneq":"⊋︀","varsupsetneqq":"⫌︀","vartheta":"ϑ","vartriangleleft":"⊲","vartriangleright":"⊳","vBar":"⫨","Vbar":"⫫","vBarv":"⫩","Vcy":"В","vcy":"в","vdash":"⊢","vDash":"⊨","Vdash":"⊩","VDash":"⊫","Vdashl":"⫦","veebar":"⊻","vee":"∨","Vee":"⋁","veeeq":"≚","vellip":"⋮","verbar":"|","Verbar":"‖","vert":"|","Vert":"‖","VerticalBar":"∣","VerticalLine":"|","VerticalSeparator":"❘","VerticalTilde":"≀","VeryThinSpace":" ","Vfr":"𝔙","vfr":"𝔳","vltri":"⊲","vnsub":"⊂⃒","vnsup":"⊃⃒","Vopf":"𝕍","vopf":"𝕧","vprop":"∝","vrtri":"⊳","Vscr":"𝒱","vscr":"𝓋","vsubnE":"⫋︀","vsubne":"⊊︀","vsupnE":"⫌︀","vsupne":"⊋︀","Vvdash":"⊪","vzigzag":"⦚","Wcirc":"Ŵ","wcirc":"ŵ","wedbar":"⩟","wedge":"∧","Wedge":"⋀","wedgeq":"≙","weierp":"℘","Wfr":"𝔚","wfr":"𝔴","Wopf":"𝕎","wopf":"𝕨","wp":"℘","wr":"≀","wreath":"≀","Wscr":"𝒲","wscr":"𝓌","xcap":"⋂","xcirc":"◯","xcup":"⋃","xdtri":"▽","Xfr":"𝔛","xfr":"𝔵","xharr":"⟷","xhArr":"⟺","Xi":"Ξ","xi":"ξ","xlarr":"⟵","xlArr":"⟸","xmap":"⟼","xnis":"⋻","xodot":"⨀","Xopf":"𝕏","xopf":"𝕩","xoplus":"⨁","xotime":"⨂","xrarr":"⟶","xrArr":"⟹","Xscr":"𝒳","xscr":"𝓍","xsqcup":"⨆","xuplus":"⨄","xutri":"△","xvee":"⋁","xwedge":"⋀","Yacute":"Ý","yacute":"ý","YAcy":"Я","yacy":"я","Ycirc":"Ŷ","ycirc":"ŷ","Ycy":"Ы","ycy":"ы","yen":"¥","Yfr":"𝔜","yfr":"𝔶","YIcy":"Ї","yicy":"ї","Yopf":"𝕐","yopf":"𝕪","Yscr":"𝒴","yscr":"𝓎","YUcy":"Ю","yucy":"ю","yuml":"ÿ","Yuml":"Ÿ","Zacute":"Ź","zacute":"ź","Zcaron":"Ž","zcaron":"ž","Zcy":"З","zcy":"з","Zdot":"Ż","zdot":"ż","zeetrf":"ℨ","ZeroWidthSpace":"​","Zeta":"Ζ","zeta":"ζ","zfr":"𝔷","Zfr":"ℨ","ZHcy":"Ж","zhcy":"ж","zigrarr":"⇝","zopf":"𝕫","Zopf":"ℤ","Zscr":"𝒵","zscr":"𝓏","zwj":"‍","zwnj":"‌"}');
 
 /***/ }),
-/* 8 */
+/* 12 */
 /***/ ((module) => {
 
 module.exports=/[!-#%-\*,-\/:;\?@\[-\]_\{\}\xA1\xA7\xAB\xB6\xB7\xBB\xBF\u037E\u0387\u055A-\u055F\u0589\u058A\u05BE\u05C0\u05C3\u05C6\u05F3\u05F4\u0609\u060A\u060C\u060D\u061B\u061E\u061F\u066A-\u066D\u06D4\u0700-\u070D\u07F7-\u07F9\u0830-\u083E\u085E\u0964\u0965\u0970\u09FD\u0A76\u0AF0\u0C84\u0DF4\u0E4F\u0E5A\u0E5B\u0F04-\u0F12\u0F14\u0F3A-\u0F3D\u0F85\u0FD0-\u0FD4\u0FD9\u0FDA\u104A-\u104F\u10FB\u1360-\u1368\u1400\u166D\u166E\u169B\u169C\u16EB-\u16ED\u1735\u1736\u17D4-\u17D6\u17D8-\u17DA\u1800-\u180A\u1944\u1945\u1A1E\u1A1F\u1AA0-\u1AA6\u1AA8-\u1AAD\u1B5A-\u1B60\u1BFC-\u1BFF\u1C3B-\u1C3F\u1C7E\u1C7F\u1CC0-\u1CC7\u1CD3\u2010-\u2027\u2030-\u2043\u2045-\u2051\u2053-\u205E\u207D\u207E\u208D\u208E\u2308-\u230B\u2329\u232A\u2768-\u2775\u27C5\u27C6\u27E6-\u27EF\u2983-\u2998\u29D8-\u29DB\u29FC\u29FD\u2CF9-\u2CFC\u2CFE\u2CFF\u2D70\u2E00-\u2E2E\u2E30-\u2E4E\u3001-\u3003\u3008-\u3011\u3014-\u301F\u3030\u303D\u30A0\u30FB\uA4FE\uA4FF\uA60D-\uA60F\uA673\uA67E\uA6F2-\uA6F7\uA874-\uA877\uA8CE\uA8CF\uA8F8-\uA8FA\uA8FC\uA92E\uA92F\uA95F\uA9C1-\uA9CD\uA9DE\uA9DF\uAA5C-\uAA5F\uAADE\uAADF\uAAF0\uAAF1\uABEB\uFD3E\uFD3F\uFE10-\uFE19\uFE30-\uFE52\uFE54-\uFE61\uFE63\uFE68\uFE6A\uFE6B\uFF01-\uFF03\uFF05-\uFF0A\uFF0C-\uFF0F\uFF1A\uFF1B\uFF1F\uFF20\uFF3B-\uFF3D\uFF3F\uFF5B\uFF5D\uFF5F-\uFF65]|\uD800[\uDD00-\uDD02\uDF9F\uDFD0]|\uD801\uDD6F|\uD802[\uDC57\uDD1F\uDD3F\uDE50-\uDE58\uDE7F\uDEF0-\uDEF6\uDF39-\uDF3F\uDF99-\uDF9C]|\uD803[\uDF55-\uDF59]|\uD804[\uDC47-\uDC4D\uDCBB\uDCBC\uDCBE-\uDCC1\uDD40-\uDD43\uDD74\uDD75\uDDC5-\uDDC8\uDDCD\uDDDB\uDDDD-\uDDDF\uDE38-\uDE3D\uDEA9]|\uD805[\uDC4B-\uDC4F\uDC5B\uDC5D\uDCC6\uDDC1-\uDDD7\uDE41-\uDE43\uDE60-\uDE6C\uDF3C-\uDF3E]|\uD806[\uDC3B\uDE3F-\uDE46\uDE9A-\uDE9C\uDE9E-\uDEA2]|\uD807[\uDC41-\uDC45\uDC70\uDC71\uDEF7\uDEF8]|\uD809[\uDC70-\uDC74]|\uD81A[\uDE6E\uDE6F\uDEF5\uDF37-\uDF3B\uDF44]|\uD81B[\uDE97-\uDE9A]|\uD82F\uDC9F|\uD836[\uDE87-\uDE8B]|\uD83A[\uDD5E\uDD5F]/
 
 /***/ }),
-/* 9 */
+/* 13 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
 
-module.exports.encode = __webpack_require__(10);
-module.exports.decode = __webpack_require__(11);
-module.exports.format = __webpack_require__(12);
-module.exports.parse = __webpack_require__(13);
+module.exports.encode = __webpack_require__(14);
+module.exports.decode = __webpack_require__(15);
+module.exports.format = __webpack_require__(16);
+module.exports.parse = __webpack_require__(17);
 
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ ((module) => {
 
 "use strict";
@@ -1351,7 +1389,7 @@ module.exports = encode;
 
 
 /***/ }),
-/* 11 */
+/* 15 */
 /***/ ((module) => {
 
 "use strict";
@@ -1480,7 +1518,7 @@ module.exports = decode;
 
 
 /***/ }),
-/* 12 */
+/* 16 */
 /***/ ((module) => {
 
 "use strict";
@@ -1512,7 +1550,7 @@ module.exports = function format(url) {
 
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ ((module) => {
 
 "use strict";
@@ -1831,45 +1869,45 @@ module.exports = urlParse;
 
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 
-exports.Any = __webpack_require__(15);
-exports.Cc = __webpack_require__(16);
-exports.Cf = __webpack_require__(17);
-exports.P = __webpack_require__(8);
-exports.Z = __webpack_require__(18);
+exports.Any = __webpack_require__(19);
+exports.Cc = __webpack_require__(20);
+exports.Cf = __webpack_require__(21);
+exports.P = __webpack_require__(12);
+exports.Z = __webpack_require__(22);
 
 
 /***/ }),
-/* 15 */
+/* 19 */
 /***/ ((module) => {
 
 module.exports=/[\0-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]/
 
 /***/ }),
-/* 16 */
+/* 20 */
 /***/ ((module) => {
 
 module.exports=/[\0-\x1F\x7F-\x9F]/
 
 /***/ }),
-/* 17 */
+/* 21 */
 /***/ ((module) => {
 
 module.exports=/[\xAD\u0600-\u0605\u061C\u06DD\u070F\u08E2\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF\uFFF9-\uFFFB]|\uD804[\uDCBD\uDCCD]|\uD82F[\uDCA0-\uDCA3]|\uD834[\uDD73-\uDD7A]|\uDB40[\uDC01\uDC20-\uDC7F]/
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ ((module) => {
 
 module.exports=/[ \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1877,13 +1915,13 @@ module.exports=/[ \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/
 
 
 
-exports.parseLinkLabel = __webpack_require__(20);
-exports.parseLinkDestination = __webpack_require__(21);
-exports.parseLinkTitle = __webpack_require__(22);
+exports.parseLinkLabel = __webpack_require__(24);
+exports.parseLinkDestination = __webpack_require__(25);
+exports.parseLinkTitle = __webpack_require__(26);
 
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ ((module) => {
 
 "use strict";
@@ -1938,7 +1976,7 @@ module.exports = function parseLinkLabel(state, start, disableNested) {
 
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -1947,7 +1985,7 @@ module.exports = function parseLinkLabel(state, start, disableNested) {
 
 
 
-var unescapeAll = (__webpack_require__(5).unescapeAll);
+var unescapeAll = (__webpack_require__(9).unescapeAll);
 
 
 module.exports = function parseLinkDestination(str, start, max) {
@@ -2025,7 +2063,7 @@ module.exports = function parseLinkDestination(str, start, max) {
 
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -2034,7 +2072,7 @@ module.exports = function parseLinkDestination(str, start, max) {
 
 
 
-var unescapeAll = (__webpack_require__(5).unescapeAll);
+var unescapeAll = (__webpack_require__(9).unescapeAll);
 
 
 module.exports = function parseLinkTitle(str, start, max) {
@@ -2087,7 +2125,7 @@ module.exports = function parseLinkTitle(str, start, max) {
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -2101,9 +2139,9 @@ module.exports = function parseLinkTitle(str, start, max) {
 
 
 
-var assign          = (__webpack_require__(5).assign);
-var unescapeAll     = (__webpack_require__(5).unescapeAll);
-var escapeHtml      = (__webpack_require__(5).escapeHtml);
+var assign          = (__webpack_require__(9).assign);
+var unescapeAll     = (__webpack_require__(9).unescapeAll);
+var escapeHtml      = (__webpack_require__(9).escapeHtml);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2435,7 +2473,7 @@ module.exports = Renderer;
 
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -2448,19 +2486,19 @@ module.exports = Renderer;
 
 
 
-var Ruler  = __webpack_require__(25);
+var Ruler  = __webpack_require__(29);
 
 
 var _rules = [
-  [ 'normalize',      __webpack_require__(26)      ],
-  [ 'block',          __webpack_require__(27)          ],
-  [ 'inline',         __webpack_require__(28)         ],
-  [ 'linkify',        __webpack_require__(29)        ],
-  [ 'replacements',   __webpack_require__(30)   ],
-  [ 'smartquotes',    __webpack_require__(31)    ],
+  [ 'normalize',      __webpack_require__(30)      ],
+  [ 'block',          __webpack_require__(31)          ],
+  [ 'inline',         __webpack_require__(32)         ],
+  [ 'linkify',        __webpack_require__(33)        ],
+  [ 'replacements',   __webpack_require__(34)   ],
+  [ 'smartquotes',    __webpack_require__(35)    ],
   // `text_join` finds `text_special` tokens (for escape sequences)
   // and joins them with the rest of the text
-  [ 'text_join',      __webpack_require__(32)      ]
+  [ 'text_join',      __webpack_require__(36)      ]
 ];
 
 
@@ -2496,14 +2534,14 @@ Core.prototype.process = function (state) {
   }
 };
 
-Core.prototype.State = __webpack_require__(33);
+Core.prototype.State = __webpack_require__(37);
 
 
 module.exports = Core;
 
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ ((module) => {
 
 "use strict";
@@ -2862,7 +2900,7 @@ module.exports = Ruler;
 
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ ((module) => {
 
 "use strict";
@@ -2890,7 +2928,7 @@ module.exports = function normalize(state) {
 
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ ((module) => {
 
 "use strict";
@@ -2913,7 +2951,7 @@ module.exports = function block(state) {
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ ((module) => {
 
 "use strict";
@@ -2933,7 +2971,7 @@ module.exports = function inline(state) {
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -2944,7 +2982,7 @@ module.exports = function inline(state) {
 
 
 
-var arrayReplaceAt = (__webpack_require__(5).arrayReplaceAt);
+var arrayReplaceAt = (__webpack_require__(9).arrayReplaceAt);
 
 
 function isLinkOpen(str) {
@@ -3082,7 +3120,7 @@ module.exports = function linkify(state) {
 
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ ((module) => {
 
 "use strict";
@@ -3194,7 +3232,7 @@ module.exports = function replace(state) {
 
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -3203,9 +3241,9 @@ module.exports = function replace(state) {
 
 
 
-var isWhiteSpace   = (__webpack_require__(5).isWhiteSpace);
-var isPunctChar    = (__webpack_require__(5).isPunctChar);
-var isMdAsciiPunct = (__webpack_require__(5).isMdAsciiPunct);
+var isWhiteSpace   = (__webpack_require__(9).isWhiteSpace);
+var isPunctChar    = (__webpack_require__(9).isPunctChar);
+var isMdAsciiPunct = (__webpack_require__(9).isMdAsciiPunct);
 
 var QUOTE_TEST_RE = /['"]/;
 var QUOTE_RE = /['"]/g;
@@ -3402,7 +3440,7 @@ module.exports = function smartquotes(state) {
 
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ ((module) => {
 
 "use strict";
@@ -3454,7 +3492,7 @@ module.exports = function text_join(state) {
 
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -3462,7 +3500,7 @@ module.exports = function text_join(state) {
 //
 
 
-var Token = __webpack_require__(34);
+var Token = __webpack_require__(38);
 
 
 function StateCore(src, md, env) {
@@ -3481,7 +3519,7 @@ module.exports = StateCore;
 
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ ((module) => {
 
 "use strict";
@@ -3689,7 +3727,7 @@ module.exports = Token;
 
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -3701,23 +3739,23 @@ module.exports = Token;
 
 
 
-var Ruler           = __webpack_require__(25);
+var Ruler           = __webpack_require__(29);
 
 
 var _rules = [
   // First 2 params - rule name & source. Secondary array - list of rules,
   // which can be terminated by this one.
-  [ 'table',      __webpack_require__(36),      [ 'paragraph', 'reference' ] ],
-  [ 'code',       __webpack_require__(37) ],
-  [ 'fence',      __webpack_require__(38),      [ 'paragraph', 'reference', 'blockquote', 'list' ] ],
-  [ 'blockquote', __webpack_require__(39), [ 'paragraph', 'reference', 'blockquote', 'list' ] ],
-  [ 'hr',         __webpack_require__(40),         [ 'paragraph', 'reference', 'blockquote', 'list' ] ],
-  [ 'list',       __webpack_require__(41),       [ 'paragraph', 'reference', 'blockquote' ] ],
-  [ 'reference',  __webpack_require__(42) ],
-  [ 'html_block', __webpack_require__(43), [ 'paragraph', 'reference', 'blockquote' ] ],
-  [ 'heading',    __webpack_require__(46),    [ 'paragraph', 'reference', 'blockquote' ] ],
-  [ 'lheading',   __webpack_require__(47) ],
-  [ 'paragraph',  __webpack_require__(48) ]
+  [ 'table',      __webpack_require__(40),      [ 'paragraph', 'reference' ] ],
+  [ 'code',       __webpack_require__(41) ],
+  [ 'fence',      __webpack_require__(42),      [ 'paragraph', 'reference', 'blockquote', 'list' ] ],
+  [ 'blockquote', __webpack_require__(43), [ 'paragraph', 'reference', 'blockquote', 'list' ] ],
+  [ 'hr',         __webpack_require__(44),         [ 'paragraph', 'reference', 'blockquote', 'list' ] ],
+  [ 'list',       __webpack_require__(45),       [ 'paragraph', 'reference', 'blockquote' ] ],
+  [ 'reference',  __webpack_require__(46) ],
+  [ 'html_block', __webpack_require__(47), [ 'paragraph', 'reference', 'blockquote' ] ],
+  [ 'heading',    __webpack_require__(50),    [ 'paragraph', 'reference', 'blockquote' ] ],
+  [ 'lheading',   __webpack_require__(51) ],
+  [ 'paragraph',  __webpack_require__(52) ]
 ];
 
 
@@ -3820,14 +3858,14 @@ ParserBlock.prototype.parse = function (src, md, env, outTokens) {
 };
 
 
-ParserBlock.prototype.State = __webpack_require__(49);
+ParserBlock.prototype.State = __webpack_require__(53);
 
 
 module.exports = ParserBlock;
 
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -3835,7 +3873,7 @@ module.exports = ParserBlock;
 
 
 
-var isSpace = (__webpack_require__(5).isSpace);
+var isSpace = (__webpack_require__(9).isSpace);
 
 
 function getLine(state, line) {
@@ -4055,7 +4093,7 @@ module.exports = function table(state, startLine, endLine, silent) {
 
 
 /***/ }),
-/* 37 */
+/* 41 */
 /***/ ((module) => {
 
 "use strict";
@@ -4096,7 +4134,7 @@ module.exports = function code(state, startLine, endLine/*, silent*/) {
 
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ ((module) => {
 
 "use strict";
@@ -4201,7 +4239,7 @@ module.exports = function fence(state, startLine, endLine, silent) {
 
 
 /***/ }),
-/* 39 */
+/* 43 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -4209,7 +4247,7 @@ module.exports = function fence(state, startLine, endLine, silent) {
 
 
 
-var isSpace = (__webpack_require__(5).isSpace);
+var isSpace = (__webpack_require__(9).isSpace);
 
 
 module.exports = function blockquote(state, startLine, endLine, silent) {
@@ -4434,7 +4472,7 @@ module.exports = function blockquote(state, startLine, endLine, silent) {
 
 
 /***/ }),
-/* 40 */
+/* 44 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -4442,7 +4480,7 @@ module.exports = function blockquote(state, startLine, endLine, silent) {
 
 
 
-var isSpace = (__webpack_require__(5).isSpace);
+var isSpace = (__webpack_require__(9).isSpace);
 
 
 module.exports = function hr(state, startLine, endLine, silent) {
@@ -4486,7 +4524,7 @@ module.exports = function hr(state, startLine, endLine, silent) {
 
 
 /***/ }),
-/* 41 */
+/* 45 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -4494,7 +4532,7 @@ module.exports = function hr(state, startLine, endLine, silent) {
 
 
 
-var isSpace = (__webpack_require__(5).isSpace);
+var isSpace = (__webpack_require__(9).isSpace);
 
 
 // Search `[-+*][\n ]`, returns next pos after marker on success
@@ -4855,15 +4893,15 @@ module.exports = function list(state, startLine, endLine, silent) {
 
 
 /***/ }),
-/* 42 */
+/* 46 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
 
-var normalizeReference   = (__webpack_require__(5).normalizeReference);
-var isSpace              = (__webpack_require__(5).isSpace);
+var normalizeReference   = (__webpack_require__(9).normalizeReference);
+var isSpace              = (__webpack_require__(9).isSpace);
 
 
 module.exports = function reference(state, startLine, _endLine, silent) {
@@ -5060,7 +5098,7 @@ module.exports = function reference(state, startLine, _endLine, silent) {
 
 
 /***/ }),
-/* 43 */
+/* 47 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -5069,8 +5107,8 @@ module.exports = function reference(state, startLine, _endLine, silent) {
 
 
 
-var block_names = __webpack_require__(44);
-var HTML_OPEN_CLOSE_TAG_RE = (__webpack_require__(45).HTML_OPEN_CLOSE_TAG_RE);
+var block_names = __webpack_require__(48);
+var HTML_OPEN_CLOSE_TAG_RE = (__webpack_require__(49).HTML_OPEN_CLOSE_TAG_RE);
 
 // An array of opening and corresponding closing sequences for html tags,
 // last argument defines whether it can terminate a paragraph or not
@@ -5141,7 +5179,7 @@ module.exports = function html_block(state, startLine, endLine, silent) {
 
 
 /***/ }),
-/* 44 */
+/* 48 */
 /***/ ((module) => {
 
 "use strict";
@@ -5218,7 +5256,7 @@ module.exports = [
 
 
 /***/ }),
-/* 45 */
+/* 49 */
 /***/ ((module) => {
 
 "use strict";
@@ -5253,7 +5291,7 @@ module.exports.HTML_OPEN_CLOSE_TAG_RE = HTML_OPEN_CLOSE_TAG_RE;
 
 
 /***/ }),
-/* 46 */
+/* 50 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -5261,7 +5299,7 @@ module.exports.HTML_OPEN_CLOSE_TAG_RE = HTML_OPEN_CLOSE_TAG_RE;
 
 
 
-var isSpace = (__webpack_require__(5).isSpace);
+var isSpace = (__webpack_require__(9).isSpace);
 
 
 module.exports = function heading(state, startLine, endLine, silent) {
@@ -5315,7 +5353,7 @@ module.exports = function heading(state, startLine, endLine, silent) {
 
 
 /***/ }),
-/* 47 */
+/* 51 */
 /***/ ((module) => {
 
 "use strict";
@@ -5405,7 +5443,7 @@ module.exports = function lheading(state, startLine, endLine/*, silent*/) {
 
 
 /***/ }),
-/* 48 */
+/* 52 */
 /***/ ((module) => {
 
 "use strict";
@@ -5463,7 +5501,7 @@ module.exports = function paragraph(state, startLine, endLine) {
 
 
 /***/ }),
-/* 49 */
+/* 53 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -5471,8 +5509,8 @@ module.exports = function paragraph(state, startLine, endLine) {
 
 
 
-var Token = __webpack_require__(34);
-var isSpace = (__webpack_require__(5).isSpace);
+var Token = __webpack_require__(38);
+var isSpace = (__webpack_require__(9).isSpace);
 
 
 function StateBlock(src, md, env, tokens) {
@@ -5701,7 +5739,7 @@ module.exports = StateBlock;
 
 
 /***/ }),
-/* 50 */
+/* 54 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -5713,25 +5751,25 @@ module.exports = StateBlock;
 
 
 
-var Ruler           = __webpack_require__(25);
+var Ruler           = __webpack_require__(29);
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Parser rules
 
 var _rules = [
-  [ 'text',            __webpack_require__(51) ],
-  [ 'linkify',         __webpack_require__(52) ],
-  [ 'newline',         __webpack_require__(53) ],
-  [ 'escape',          __webpack_require__(54) ],
-  [ 'backticks',       __webpack_require__(55) ],
-  [ 'strikethrough',   (__webpack_require__(56).tokenize) ],
-  [ 'emphasis',        (__webpack_require__(57).tokenize) ],
-  [ 'link',            __webpack_require__(58) ],
-  [ 'image',           __webpack_require__(59) ],
-  [ 'autolink',        __webpack_require__(60) ],
-  [ 'html_inline',     __webpack_require__(61) ],
-  [ 'entity',          __webpack_require__(62) ]
+  [ 'text',            __webpack_require__(55) ],
+  [ 'linkify',         __webpack_require__(56) ],
+  [ 'newline',         __webpack_require__(57) ],
+  [ 'escape',          __webpack_require__(58) ],
+  [ 'backticks',       __webpack_require__(59) ],
+  [ 'strikethrough',   (__webpack_require__(60).tokenize) ],
+  [ 'emphasis',        (__webpack_require__(61).tokenize) ],
+  [ 'link',            __webpack_require__(62) ],
+  [ 'image',           __webpack_require__(63) ],
+  [ 'autolink',        __webpack_require__(64) ],
+  [ 'html_inline',     __webpack_require__(65) ],
+  [ 'entity',          __webpack_require__(66) ]
 ];
 
 // `rule2` ruleset was created specifically for emphasis/strikethrough
@@ -5740,12 +5778,12 @@ var _rules = [
 // Don't use this for anything except pairs (plugins working with `balance_pairs`).
 //
 var _rules2 = [
-  [ 'balance_pairs',   __webpack_require__(63) ],
-  [ 'strikethrough',   (__webpack_require__(56).postProcess) ],
-  [ 'emphasis',        (__webpack_require__(57).postProcess) ],
+  [ 'balance_pairs',   __webpack_require__(67) ],
+  [ 'strikethrough',   (__webpack_require__(60).postProcess) ],
+  [ 'emphasis',        (__webpack_require__(61).postProcess) ],
   // rules for pairs separate '**' into its own text tokens, which may be left unused,
   // rule below merges unused segments back with the rest of the text
-  [ 'fragments_join',  __webpack_require__(64) ]
+  [ 'fragments_join',  __webpack_require__(68) ]
 ];
 
 
@@ -5893,14 +5931,14 @@ ParserInline.prototype.parse = function (str, md, env, outTokens) {
 };
 
 
-ParserInline.prototype.State = __webpack_require__(65);
+ParserInline.prototype.State = __webpack_require__(69);
 
 
 module.exports = ParserInline;
 
 
 /***/ }),
-/* 51 */
+/* 55 */
 /***/ ((module) => {
 
 "use strict";
@@ -5996,7 +6034,7 @@ module.exports = function text(state, silent) {
 
 
 /***/ }),
-/* 52 */
+/* 56 */
 /***/ ((module) => {
 
 "use strict";
@@ -6065,7 +6103,7 @@ module.exports = function linkify(state, silent) {
 
 
 /***/ }),
-/* 53 */
+/* 57 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -6073,7 +6111,7 @@ module.exports = function linkify(state, silent) {
 
 
 
-var isSpace = (__webpack_require__(5).isSpace);
+var isSpace = (__webpack_require__(9).isSpace);
 
 
 module.exports = function newline(state, silent) {
@@ -6118,7 +6156,7 @@ module.exports = function newline(state, silent) {
 
 
 /***/ }),
-/* 54 */
+/* 58 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -6126,7 +6164,7 @@ module.exports = function newline(state, silent) {
 
 
 
-var isSpace = (__webpack_require__(5).isSpace);
+var isSpace = (__webpack_require__(9).isSpace);
 
 var ESCAPED = [];
 
@@ -6196,7 +6234,7 @@ module.exports = function escape(state, silent) {
 
 
 /***/ }),
-/* 55 */
+/* 59 */
 /***/ ((module) => {
 
 "use strict";
@@ -6266,7 +6304,7 @@ module.exports = function backtick(state, silent) {
 
 
 /***/ }),
-/* 56 */
+/* 60 */
 /***/ ((module) => {
 
 "use strict";
@@ -6403,7 +6441,7 @@ module.exports.postProcess = function strikethrough(state) {
 
 
 /***/ }),
-/* 57 */
+/* 61 */
 /***/ ((module) => {
 
 "use strict";
@@ -6540,7 +6578,7 @@ module.exports.postProcess = function emphasis(state) {
 
 
 /***/ }),
-/* 58 */
+/* 62 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -6548,8 +6586,8 @@ module.exports.postProcess = function emphasis(state) {
 
 
 
-var normalizeReference   = (__webpack_require__(5).normalizeReference);
-var isSpace              = (__webpack_require__(5).isSpace);
+var normalizeReference   = (__webpack_require__(9).normalizeReference);
+var isSpace              = (__webpack_require__(9).isSpace);
 
 
 module.exports = function link(state, silent) {
@@ -6697,7 +6735,7 @@ module.exports = function link(state, silent) {
 
 
 /***/ }),
-/* 59 */
+/* 63 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -6705,8 +6743,8 @@ module.exports = function link(state, silent) {
 
 
 
-var normalizeReference   = (__webpack_require__(5).normalizeReference);
-var isSpace              = (__webpack_require__(5).isSpace);
+var normalizeReference   = (__webpack_require__(9).normalizeReference);
+var isSpace              = (__webpack_require__(9).isSpace);
 
 
 module.exports = function image(state, silent) {
@@ -6856,7 +6894,7 @@ module.exports = function image(state, silent) {
 
 
 /***/ }),
-/* 60 */
+/* 64 */
 /***/ ((module) => {
 
 "use strict";
@@ -6939,7 +6977,7 @@ module.exports = function autolink(state, silent) {
 
 
 /***/ }),
-/* 61 */
+/* 65 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -6948,7 +6986,7 @@ module.exports = function autolink(state, silent) {
 
 
 
-var HTML_TAG_RE = (__webpack_require__(45).HTML_TAG_RE);
+var HTML_TAG_RE = (__webpack_require__(49).HTML_TAG_RE);
 
 
 function isLinkOpen(str) {
@@ -7004,7 +7042,7 @@ module.exports = function html_inline(state, silent) {
 
 
 /***/ }),
-/* 62 */
+/* 66 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -7012,10 +7050,10 @@ module.exports = function html_inline(state, silent) {
 
 
 
-var entities          = __webpack_require__(6);
-var has               = (__webpack_require__(5).has);
-var isValidEntityCode = (__webpack_require__(5).isValidEntityCode);
-var fromCodePoint     = (__webpack_require__(5).fromCodePoint);
+var entities          = __webpack_require__(10);
+var has               = (__webpack_require__(9).has);
+var isValidEntityCode = (__webpack_require__(9).isValidEntityCode);
+var fromCodePoint     = (__webpack_require__(9).fromCodePoint);
 
 
 var DIGITAL_RE = /^&#((?:x[a-f0-9]{1,6}|[0-9]{1,7}));/i;
@@ -7066,7 +7104,7 @@ module.exports = function entity(state, silent) {
 
 
 /***/ }),
-/* 63 */
+/* 67 */
 /***/ ((module) => {
 
 "use strict";
@@ -7203,7 +7241,7 @@ module.exports = function link_pairs(state) {
 
 
 /***/ }),
-/* 64 */
+/* 68 */
 /***/ ((module) => {
 
 "use strict";
@@ -7251,7 +7289,7 @@ module.exports = function fragments_join(state) {
 
 
 /***/ }),
-/* 65 */
+/* 69 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -7260,10 +7298,10 @@ module.exports = function fragments_join(state) {
 
 
 
-var Token          = __webpack_require__(34);
-var isWhiteSpace   = (__webpack_require__(5).isWhiteSpace);
-var isPunctChar    = (__webpack_require__(5).isPunctChar);
-var isMdAsciiPunct = (__webpack_require__(5).isMdAsciiPunct);
+var Token          = __webpack_require__(38);
+var isWhiteSpace   = (__webpack_require__(9).isWhiteSpace);
+var isPunctChar    = (__webpack_require__(9).isPunctChar);
+var isMdAsciiPunct = (__webpack_require__(9).isMdAsciiPunct);
 
 
 function StateInline(src, md, env, outTokens) {
@@ -7416,7 +7454,7 @@ module.exports = StateInline;
 
 
 /***/ }),
-/* 66 */
+/* 70 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -7572,7 +7610,7 @@ function createNormalizer() {
 function compile(self) {
 
   // Load & clone RE patterns.
-  var re = self.re = __webpack_require__(67)(self.__opts__);
+  var re = self.re = __webpack_require__(71)(self.__opts__);
 
   // Define dynamic patterns
   var tlds = self.__tlds__.slice();
@@ -8087,7 +8125,7 @@ module.exports = LinkifyIt;
 
 
 /***/ }),
-/* 67 */
+/* 71 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -8099,10 +8137,10 @@ module.exports = function (opts) {
   opts = opts || {};
 
   // Use direct extract instead of `regenerate` to reduse browserified size
-  re.src_Any = (__webpack_require__(15).source);
-  re.src_Cc  = (__webpack_require__(16).source);
-  re.src_Z   = (__webpack_require__(18).source);
-  re.src_P   = (__webpack_require__(8).source);
+  re.src_Any = (__webpack_require__(19).source);
+  re.src_Cc  = (__webpack_require__(20).source);
+  re.src_Z   = (__webpack_require__(22).source);
+  re.src_P   = (__webpack_require__(12).source);
 
   // \p{\Z\P\Cc\CF} (white spaces + control + format + punctuation)
   re.src_ZPCc = [ re.src_Z, re.src_P, re.src_Cc ].join('|');
@@ -8277,14 +8315,14 @@ module.exports = function (opts) {
 
 
 /***/ }),
-/* 68 */
+/* 72 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("punycode");
 
 /***/ }),
-/* 69 */
+/* 73 */
 /***/ ((module) => {
 
 "use strict";
@@ -8332,7 +8370,7 @@ module.exports = {
 
 
 /***/ }),
-/* 70 */
+/* 74 */
 /***/ ((module) => {
 
 "use strict";
@@ -8402,7 +8440,7 @@ module.exports = {
 
 
 /***/ }),
-/* 71 */
+/* 75 */
 /***/ ((module) => {
 
 "use strict";
@@ -8490,7 +8528,7 @@ module.exports = {
 
 
 /***/ }),
-/* 72 */
+/* 76 */
 /***/ ((module) => {
 
 "use strict";
@@ -8586,514 +8624,210 @@ module.exports = externalLinksPlugin;
 
 
 /***/ }),
-/* 73 */
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");
-
-/***/ }),
-/* 74 */
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs");
-
-/***/ }),
-/* 75 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JobsTreeProvider = void 0;
-const vscode = __importStar(__webpack_require__(1));
-const icons_1 = __webpack_require__(76);
-const child_process_1 = __webpack_require__(73);
-const outputChannel_1 = __webpack_require__(77);
-const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-class JobsTreeProvider {
-    onDidChangeTreeData;
-    getTreeItem(element) {
-        return {
-            label: element.name,
-            tooltip: element.description,
-            collapsibleState: element.children && element.children.length > 0
-                ? vscode.TreeItemCollapsibleState.Expanded
-                : vscode.TreeItemCollapsibleState.None,
-            contextValue: element.children && element.children.length > 0
-                ? "fluentci-pipeline"
-                : "fluentci-job",
-            iconPath: (0, icons_1.getIconPath)("steps/step_success.svg"),
-        };
-    }
-    getChildren(element) {
-        if (!element) {
-            const childProcess = (0, child_process_1.spawn)("deno", [
-                "eval",
-                `
-     import { pipelineName } from './.fluentci/src/dagger/jobs.ts';
-     import { runnableJobs , jobDescriptions } from './.fluentci/src/dagger/jobs.ts';
-     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ pipelineName, name: x, description: jobDescriptions[x]}))));`,
-            ], {
-                cwd: workspaceFolder?.uri.fsPath,
-            });
-            const jobs = new Promise((resolve, _reject) => {
-                childProcess.stdout.on("data", (data) => {
-                    const jobs = JSON.parse(data.toString());
-                    (0, outputChannel_1.appendLineToOutputChannel)(`=> ${jobs[0].pipelineName || "default_pipeline"} Jobs:`);
-                    (0, outputChannel_1.appendLineToOutputChannel)(JSON.stringify(jobs, null, 2));
-                    resolve([
-                        {
-                            name: jobs[0].pipelineName || "default_pipeline",
-                            children: jobs,
-                        },
-                    ]);
-                });
-                childProcess.stderr.on("data", (data) => {
-                    (0, outputChannel_1.showOutputChannel)(true);
-                    (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
-                    if (data.toString().includes("error")) {
-                        resolve([]);
-                    }
-                });
-            });
-            return jobs;
-        }
-        return element.children || [];
-    }
-    getParent(element) {
-        throw new Error("Method not implemented. 3");
-    }
-    resolveTreeItem(item, element, token) {
-        throw new Error("Method not implemented. 4");
-    }
-}
-exports.JobsTreeProvider = JobsTreeProvider;
-
-
-/***/ }),
-/* 76 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getIconPath = exports.initResources = void 0;
-const vscode = __importStar(__webpack_require__(1));
-let _context;
-function initResources(context) {
-    _context = context;
-}
-exports.initResources = initResources;
-function getIconPath(iconName) {
-    return vscode.Uri.joinPath(_context.extensionUri, "resources", "icons", "light", iconName);
-}
-exports.getIconPath = getIconPath;
-
-
-/***/ }),
 /* 77 */
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.showOutputChannel = exports.appendLineToOutputChannel = exports.initOutputChannel = void 0;
-let _outputChannel;
-function initOutputChannel(outputChannel) {
-    _outputChannel = outputChannel;
-}
-exports.initOutputChannel = initOutputChannel;
-function appendLineToOutputChannel(line) {
-    _outputChannel.appendLine(line);
-}
-exports.appendLineToOutputChannel = appendLineToOutputChannel;
-function showOutputChannel(preserveFocus) {
-    _outputChannel.show(preserveFocus);
-}
-exports.showOutputChannel = showOutputChannel;
-
-
-/***/ }),
-/* 78 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PipelinesTreeProvider = void 0;
-const vscode = __importStar(__webpack_require__(1));
-const icons_1 = __webpack_require__(76);
-const outputChannel_1 = __webpack_require__(77);
-const child_process_1 = __webpack_require__(73);
-const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-class PipelinesTreeProvider {
-    onDidChangeTreeData;
-    getTreeItem(element) {
-        return {
-            label: element.name,
-            tooltip: element.description,
-            collapsibleState: element.repo_name
-                ? vscode.TreeItemCollapsibleState.Collapsed
-                : vscode.TreeItemCollapsibleState.None,
-            contextValue: element.repo_name
-                ? "fluentci-prebuilt-pipeline"
-                : "fluentci-pp-job",
-            iconPath: element.repo_name
-                ? new vscode.ThemeIcon("layers")
-                : (0, icons_1.getIconPath)("steps/step_success.svg"),
-        };
-    }
-    getChildren(element) {
-        if (!element) {
-            return fetch("https://api.fluentci.io/v1/pipelines?limit=100")
-                .then((response) => response.json())
-                .then((data) => data
-                .filter((x) => x.name !== "nix_installer_pipeline")
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((x) => ({
-                name: x.name,
-                description: x.description,
-                repo_name: x.repo_name,
-                version: x.version,
-            })));
-        }
-        vscode.window.setStatusBarMessage("Fetching Jobs...");
-        const childProcess = (0, child_process_1.spawn)("deno", [
-            "eval",
-            `
-     import { runnableJobs , jobDescriptions } from 'https://pkg.fluentci.io/${element.name}@${element.version}/src/dagger/jobs.ts';
-     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
-        ], {
-            cwd: workspaceFolder?.uri.fsPath,
-        });
-        const jobs = new Promise((resolve) => {
-            childProcess.stdout.on("data", (data) => {
-                const jobs = JSON.parse(data.toString());
-                (0, outputChannel_1.appendLineToOutputChannel)(`=> ${element.name}@${element.version} Jobs:`);
-                (0, outputChannel_1.appendLineToOutputChannel)(JSON.stringify(jobs, null, 2));
-                resolve(jobs.map((x) => ({ ...x, pipeline: element.name })));
-            });
-            childProcess.stderr.on("data", (data) => {
-                (0, outputChannel_1.showOutputChannel)(true);
-                (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
-                if (data.toString().includes("error")) {
-                    resolve([]);
-                }
-            });
-        });
-        vscode.window.setStatusBarMessage("Jobs Fetched!");
-        vscode.window.setStatusBarMessage("");
-        return jobs;
-    }
-    getParent(element) {
-        throw new Error("Method not implemented. 3");
-    }
-    resolveTreeItem(item, element, token) {
-        throw new Error("Method not implemented. 4");
-    }
-}
-exports.PipelinesTreeProvider = PipelinesTreeProvider;
-
-
-/***/ }),
-/* 79 */
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sendTextToTerminal = exports.showTerminal = exports.initTerminal = void 0;
-let _terminal;
-function initTerminal(terminal) {
-    _terminal = terminal;
-}
-exports.initTerminal = initTerminal;
-function showTerminal(preserveFocus) {
-    _terminal.show(preserveFocus);
-}
-exports.showTerminal = showTerminal;
-function sendTextToTerminal(text) {
-    _terminal.sendText(text);
-}
-exports.sendTextToTerminal = sendTextToTerminal;
-
-
-/***/ }),
-/* 80 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var hljs = __webpack_require__(81);
+var hljs = __webpack_require__(78);
 
-hljs.registerLanguage('1c', __webpack_require__(82));
-hljs.registerLanguage('abnf', __webpack_require__(83));
-hljs.registerLanguage('accesslog', __webpack_require__(84));
-hljs.registerLanguage('actionscript', __webpack_require__(85));
-hljs.registerLanguage('ada', __webpack_require__(86));
-hljs.registerLanguage('angelscript', __webpack_require__(87));
-hljs.registerLanguage('apache', __webpack_require__(88));
-hljs.registerLanguage('applescript', __webpack_require__(89));
-hljs.registerLanguage('arcade', __webpack_require__(90));
-hljs.registerLanguage('arduino', __webpack_require__(91));
-hljs.registerLanguage('armasm', __webpack_require__(92));
-hljs.registerLanguage('xml', __webpack_require__(93));
-hljs.registerLanguage('asciidoc', __webpack_require__(94));
-hljs.registerLanguage('aspectj', __webpack_require__(95));
-hljs.registerLanguage('autohotkey', __webpack_require__(96));
-hljs.registerLanguage('autoit', __webpack_require__(97));
-hljs.registerLanguage('avrasm', __webpack_require__(98));
-hljs.registerLanguage('awk', __webpack_require__(99));
-hljs.registerLanguage('axapta', __webpack_require__(100));
-hljs.registerLanguage('bash', __webpack_require__(101));
-hljs.registerLanguage('basic', __webpack_require__(102));
-hljs.registerLanguage('bnf', __webpack_require__(103));
-hljs.registerLanguage('brainfuck', __webpack_require__(104));
-hljs.registerLanguage('c', __webpack_require__(105));
-hljs.registerLanguage('cal', __webpack_require__(106));
-hljs.registerLanguage('capnproto', __webpack_require__(107));
-hljs.registerLanguage('ceylon', __webpack_require__(108));
-hljs.registerLanguage('clean', __webpack_require__(109));
-hljs.registerLanguage('clojure', __webpack_require__(110));
-hljs.registerLanguage('clojure-repl', __webpack_require__(111));
-hljs.registerLanguage('cmake', __webpack_require__(112));
-hljs.registerLanguage('coffeescript', __webpack_require__(113));
-hljs.registerLanguage('coq', __webpack_require__(114));
-hljs.registerLanguage('cos', __webpack_require__(115));
-hljs.registerLanguage('cpp', __webpack_require__(116));
-hljs.registerLanguage('crmsh', __webpack_require__(117));
-hljs.registerLanguage('crystal', __webpack_require__(118));
-hljs.registerLanguage('csharp', __webpack_require__(119));
-hljs.registerLanguage('csp', __webpack_require__(120));
-hljs.registerLanguage('css', __webpack_require__(121));
-hljs.registerLanguage('d', __webpack_require__(122));
-hljs.registerLanguage('markdown', __webpack_require__(123));
-hljs.registerLanguage('dart', __webpack_require__(124));
-hljs.registerLanguage('delphi', __webpack_require__(125));
-hljs.registerLanguage('diff', __webpack_require__(126));
-hljs.registerLanguage('django', __webpack_require__(127));
-hljs.registerLanguage('dns', __webpack_require__(128));
-hljs.registerLanguage('dockerfile', __webpack_require__(129));
-hljs.registerLanguage('dos', __webpack_require__(130));
-hljs.registerLanguage('dsconfig', __webpack_require__(131));
-hljs.registerLanguage('dts', __webpack_require__(132));
-hljs.registerLanguage('dust', __webpack_require__(133));
-hljs.registerLanguage('ebnf', __webpack_require__(134));
-hljs.registerLanguage('elixir', __webpack_require__(135));
-hljs.registerLanguage('elm', __webpack_require__(136));
-hljs.registerLanguage('ruby', __webpack_require__(137));
-hljs.registerLanguage('erb', __webpack_require__(138));
-hljs.registerLanguage('erlang-repl', __webpack_require__(139));
-hljs.registerLanguage('erlang', __webpack_require__(140));
-hljs.registerLanguage('excel', __webpack_require__(141));
-hljs.registerLanguage('fix', __webpack_require__(142));
-hljs.registerLanguage('flix', __webpack_require__(143));
-hljs.registerLanguage('fortran', __webpack_require__(144));
-hljs.registerLanguage('fsharp', __webpack_require__(145));
-hljs.registerLanguage('gams', __webpack_require__(146));
-hljs.registerLanguage('gauss', __webpack_require__(147));
-hljs.registerLanguage('gcode', __webpack_require__(148));
-hljs.registerLanguage('gherkin', __webpack_require__(149));
-hljs.registerLanguage('glsl', __webpack_require__(150));
-hljs.registerLanguage('gml', __webpack_require__(151));
-hljs.registerLanguage('go', __webpack_require__(152));
-hljs.registerLanguage('golo', __webpack_require__(153));
-hljs.registerLanguage('gradle', __webpack_require__(154));
-hljs.registerLanguage('graphql', __webpack_require__(155));
-hljs.registerLanguage('groovy', __webpack_require__(156));
-hljs.registerLanguage('haml', __webpack_require__(157));
-hljs.registerLanguage('handlebars', __webpack_require__(158));
-hljs.registerLanguage('haskell', __webpack_require__(159));
-hljs.registerLanguage('haxe', __webpack_require__(160));
-hljs.registerLanguage('hsp', __webpack_require__(161));
-hljs.registerLanguage('http', __webpack_require__(162));
-hljs.registerLanguage('hy', __webpack_require__(163));
-hljs.registerLanguage('inform7', __webpack_require__(164));
-hljs.registerLanguage('ini', __webpack_require__(165));
-hljs.registerLanguage('irpf90', __webpack_require__(166));
-hljs.registerLanguage('isbl', __webpack_require__(167));
-hljs.registerLanguage('java', __webpack_require__(168));
-hljs.registerLanguage('javascript', __webpack_require__(169));
-hljs.registerLanguage('jboss-cli', __webpack_require__(170));
-hljs.registerLanguage('json', __webpack_require__(171));
-hljs.registerLanguage('julia', __webpack_require__(172));
-hljs.registerLanguage('julia-repl', __webpack_require__(173));
-hljs.registerLanguage('kotlin', __webpack_require__(174));
-hljs.registerLanguage('lasso', __webpack_require__(175));
-hljs.registerLanguage('latex', __webpack_require__(176));
-hljs.registerLanguage('ldif', __webpack_require__(177));
-hljs.registerLanguage('leaf', __webpack_require__(178));
-hljs.registerLanguage('less', __webpack_require__(179));
-hljs.registerLanguage('lisp', __webpack_require__(180));
-hljs.registerLanguage('livecodeserver', __webpack_require__(181));
-hljs.registerLanguage('livescript', __webpack_require__(182));
-hljs.registerLanguage('llvm', __webpack_require__(183));
-hljs.registerLanguage('lsl', __webpack_require__(184));
-hljs.registerLanguage('lua', __webpack_require__(185));
-hljs.registerLanguage('makefile', __webpack_require__(186));
-hljs.registerLanguage('mathematica', __webpack_require__(187));
-hljs.registerLanguage('matlab', __webpack_require__(188));
-hljs.registerLanguage('maxima', __webpack_require__(189));
-hljs.registerLanguage('mel', __webpack_require__(190));
-hljs.registerLanguage('mercury', __webpack_require__(191));
-hljs.registerLanguage('mipsasm', __webpack_require__(192));
-hljs.registerLanguage('mizar', __webpack_require__(193));
-hljs.registerLanguage('perl', __webpack_require__(194));
-hljs.registerLanguage('mojolicious', __webpack_require__(195));
-hljs.registerLanguage('monkey', __webpack_require__(196));
-hljs.registerLanguage('moonscript', __webpack_require__(197));
-hljs.registerLanguage('n1ql', __webpack_require__(198));
-hljs.registerLanguage('nestedtext', __webpack_require__(199));
-hljs.registerLanguage('nginx', __webpack_require__(200));
-hljs.registerLanguage('nim', __webpack_require__(201));
-hljs.registerLanguage('nix', __webpack_require__(202));
-hljs.registerLanguage('node-repl', __webpack_require__(203));
-hljs.registerLanguage('nsis', __webpack_require__(204));
-hljs.registerLanguage('objectivec', __webpack_require__(205));
-hljs.registerLanguage('ocaml', __webpack_require__(206));
-hljs.registerLanguage('openscad', __webpack_require__(207));
-hljs.registerLanguage('oxygene', __webpack_require__(208));
-hljs.registerLanguage('parser3', __webpack_require__(209));
-hljs.registerLanguage('pf', __webpack_require__(210));
-hljs.registerLanguage('pgsql', __webpack_require__(211));
-hljs.registerLanguage('php', __webpack_require__(212));
-hljs.registerLanguage('php-template', __webpack_require__(213));
-hljs.registerLanguage('plaintext', __webpack_require__(214));
-hljs.registerLanguage('pony', __webpack_require__(215));
-hljs.registerLanguage('powershell', __webpack_require__(216));
-hljs.registerLanguage('processing', __webpack_require__(217));
-hljs.registerLanguage('profile', __webpack_require__(218));
-hljs.registerLanguage('prolog', __webpack_require__(219));
-hljs.registerLanguage('properties', __webpack_require__(220));
-hljs.registerLanguage('protobuf', __webpack_require__(221));
-hljs.registerLanguage('puppet', __webpack_require__(222));
-hljs.registerLanguage('purebasic', __webpack_require__(223));
-hljs.registerLanguage('python', __webpack_require__(224));
-hljs.registerLanguage('python-repl', __webpack_require__(225));
-hljs.registerLanguage('q', __webpack_require__(226));
-hljs.registerLanguage('qml', __webpack_require__(227));
-hljs.registerLanguage('r', __webpack_require__(228));
-hljs.registerLanguage('reasonml', __webpack_require__(229));
-hljs.registerLanguage('rib', __webpack_require__(230));
-hljs.registerLanguage('roboconf', __webpack_require__(231));
-hljs.registerLanguage('routeros', __webpack_require__(232));
-hljs.registerLanguage('rsl', __webpack_require__(233));
-hljs.registerLanguage('ruleslanguage', __webpack_require__(234));
-hljs.registerLanguage('rust', __webpack_require__(235));
-hljs.registerLanguage('sas', __webpack_require__(236));
-hljs.registerLanguage('scala', __webpack_require__(237));
-hljs.registerLanguage('scheme', __webpack_require__(238));
-hljs.registerLanguage('scilab', __webpack_require__(239));
-hljs.registerLanguage('scss', __webpack_require__(240));
-hljs.registerLanguage('shell', __webpack_require__(241));
-hljs.registerLanguage('smali', __webpack_require__(242));
-hljs.registerLanguage('smalltalk', __webpack_require__(243));
-hljs.registerLanguage('sml', __webpack_require__(244));
-hljs.registerLanguage('sqf', __webpack_require__(245));
-hljs.registerLanguage('sql', __webpack_require__(246));
-hljs.registerLanguage('stan', __webpack_require__(247));
-hljs.registerLanguage('stata', __webpack_require__(248));
-hljs.registerLanguage('step21', __webpack_require__(249));
-hljs.registerLanguage('stylus', __webpack_require__(250));
-hljs.registerLanguage('subunit', __webpack_require__(251));
-hljs.registerLanguage('swift', __webpack_require__(252));
-hljs.registerLanguage('taggerscript', __webpack_require__(253));
-hljs.registerLanguage('yaml', __webpack_require__(254));
-hljs.registerLanguage('tap', __webpack_require__(255));
-hljs.registerLanguage('tcl', __webpack_require__(256));
-hljs.registerLanguage('thrift', __webpack_require__(257));
-hljs.registerLanguage('tp', __webpack_require__(258));
-hljs.registerLanguage('twig', __webpack_require__(259));
-hljs.registerLanguage('typescript', __webpack_require__(260));
-hljs.registerLanguage('vala', __webpack_require__(261));
-hljs.registerLanguage('vbnet', __webpack_require__(262));
-hljs.registerLanguage('vbscript', __webpack_require__(263));
-hljs.registerLanguage('vbscript-html', __webpack_require__(264));
-hljs.registerLanguage('verilog', __webpack_require__(265));
-hljs.registerLanguage('vhdl', __webpack_require__(266));
-hljs.registerLanguage('vim', __webpack_require__(267));
-hljs.registerLanguage('wasm', __webpack_require__(268));
-hljs.registerLanguage('wren', __webpack_require__(269));
-hljs.registerLanguage('x86asm', __webpack_require__(270));
-hljs.registerLanguage('xl', __webpack_require__(271));
-hljs.registerLanguage('xquery', __webpack_require__(272));
-hljs.registerLanguage('zephir', __webpack_require__(273));
+hljs.registerLanguage('1c', __webpack_require__(79));
+hljs.registerLanguage('abnf', __webpack_require__(80));
+hljs.registerLanguage('accesslog', __webpack_require__(81));
+hljs.registerLanguage('actionscript', __webpack_require__(82));
+hljs.registerLanguage('ada', __webpack_require__(83));
+hljs.registerLanguage('angelscript', __webpack_require__(84));
+hljs.registerLanguage('apache', __webpack_require__(85));
+hljs.registerLanguage('applescript', __webpack_require__(86));
+hljs.registerLanguage('arcade', __webpack_require__(87));
+hljs.registerLanguage('arduino', __webpack_require__(88));
+hljs.registerLanguage('armasm', __webpack_require__(89));
+hljs.registerLanguage('xml', __webpack_require__(90));
+hljs.registerLanguage('asciidoc', __webpack_require__(91));
+hljs.registerLanguage('aspectj', __webpack_require__(92));
+hljs.registerLanguage('autohotkey', __webpack_require__(93));
+hljs.registerLanguage('autoit', __webpack_require__(94));
+hljs.registerLanguage('avrasm', __webpack_require__(95));
+hljs.registerLanguage('awk', __webpack_require__(96));
+hljs.registerLanguage('axapta', __webpack_require__(97));
+hljs.registerLanguage('bash', __webpack_require__(98));
+hljs.registerLanguage('basic', __webpack_require__(99));
+hljs.registerLanguage('bnf', __webpack_require__(100));
+hljs.registerLanguage('brainfuck', __webpack_require__(101));
+hljs.registerLanguage('c', __webpack_require__(102));
+hljs.registerLanguage('cal', __webpack_require__(103));
+hljs.registerLanguage('capnproto', __webpack_require__(104));
+hljs.registerLanguage('ceylon', __webpack_require__(105));
+hljs.registerLanguage('clean', __webpack_require__(106));
+hljs.registerLanguage('clojure', __webpack_require__(107));
+hljs.registerLanguage('clojure-repl', __webpack_require__(108));
+hljs.registerLanguage('cmake', __webpack_require__(109));
+hljs.registerLanguage('coffeescript', __webpack_require__(110));
+hljs.registerLanguage('coq', __webpack_require__(111));
+hljs.registerLanguage('cos', __webpack_require__(112));
+hljs.registerLanguage('cpp', __webpack_require__(113));
+hljs.registerLanguage('crmsh', __webpack_require__(114));
+hljs.registerLanguage('crystal', __webpack_require__(115));
+hljs.registerLanguage('csharp', __webpack_require__(116));
+hljs.registerLanguage('csp', __webpack_require__(117));
+hljs.registerLanguage('css', __webpack_require__(118));
+hljs.registerLanguage('d', __webpack_require__(119));
+hljs.registerLanguage('markdown', __webpack_require__(120));
+hljs.registerLanguage('dart', __webpack_require__(121));
+hljs.registerLanguage('delphi', __webpack_require__(122));
+hljs.registerLanguage('diff', __webpack_require__(123));
+hljs.registerLanguage('django', __webpack_require__(124));
+hljs.registerLanguage('dns', __webpack_require__(125));
+hljs.registerLanguage('dockerfile', __webpack_require__(126));
+hljs.registerLanguage('dos', __webpack_require__(127));
+hljs.registerLanguage('dsconfig', __webpack_require__(128));
+hljs.registerLanguage('dts', __webpack_require__(129));
+hljs.registerLanguage('dust', __webpack_require__(130));
+hljs.registerLanguage('ebnf', __webpack_require__(131));
+hljs.registerLanguage('elixir', __webpack_require__(132));
+hljs.registerLanguage('elm', __webpack_require__(133));
+hljs.registerLanguage('ruby', __webpack_require__(134));
+hljs.registerLanguage('erb', __webpack_require__(135));
+hljs.registerLanguage('erlang-repl', __webpack_require__(136));
+hljs.registerLanguage('erlang', __webpack_require__(137));
+hljs.registerLanguage('excel', __webpack_require__(138));
+hljs.registerLanguage('fix', __webpack_require__(139));
+hljs.registerLanguage('flix', __webpack_require__(140));
+hljs.registerLanguage('fortran', __webpack_require__(141));
+hljs.registerLanguage('fsharp', __webpack_require__(142));
+hljs.registerLanguage('gams', __webpack_require__(143));
+hljs.registerLanguage('gauss', __webpack_require__(144));
+hljs.registerLanguage('gcode', __webpack_require__(145));
+hljs.registerLanguage('gherkin', __webpack_require__(146));
+hljs.registerLanguage('glsl', __webpack_require__(147));
+hljs.registerLanguage('gml', __webpack_require__(148));
+hljs.registerLanguage('go', __webpack_require__(149));
+hljs.registerLanguage('golo', __webpack_require__(150));
+hljs.registerLanguage('gradle', __webpack_require__(151));
+hljs.registerLanguage('graphql', __webpack_require__(152));
+hljs.registerLanguage('groovy', __webpack_require__(153));
+hljs.registerLanguage('haml', __webpack_require__(154));
+hljs.registerLanguage('handlebars', __webpack_require__(155));
+hljs.registerLanguage('haskell', __webpack_require__(156));
+hljs.registerLanguage('haxe', __webpack_require__(157));
+hljs.registerLanguage('hsp', __webpack_require__(158));
+hljs.registerLanguage('http', __webpack_require__(159));
+hljs.registerLanguage('hy', __webpack_require__(160));
+hljs.registerLanguage('inform7', __webpack_require__(161));
+hljs.registerLanguage('ini', __webpack_require__(162));
+hljs.registerLanguage('irpf90', __webpack_require__(163));
+hljs.registerLanguage('isbl', __webpack_require__(164));
+hljs.registerLanguage('java', __webpack_require__(165));
+hljs.registerLanguage('javascript', __webpack_require__(166));
+hljs.registerLanguage('jboss-cli', __webpack_require__(167));
+hljs.registerLanguage('json', __webpack_require__(168));
+hljs.registerLanguage('julia', __webpack_require__(169));
+hljs.registerLanguage('julia-repl', __webpack_require__(170));
+hljs.registerLanguage('kotlin', __webpack_require__(171));
+hljs.registerLanguage('lasso', __webpack_require__(172));
+hljs.registerLanguage('latex', __webpack_require__(173));
+hljs.registerLanguage('ldif', __webpack_require__(174));
+hljs.registerLanguage('leaf', __webpack_require__(175));
+hljs.registerLanguage('less', __webpack_require__(176));
+hljs.registerLanguage('lisp', __webpack_require__(177));
+hljs.registerLanguage('livecodeserver', __webpack_require__(178));
+hljs.registerLanguage('livescript', __webpack_require__(179));
+hljs.registerLanguage('llvm', __webpack_require__(180));
+hljs.registerLanguage('lsl', __webpack_require__(181));
+hljs.registerLanguage('lua', __webpack_require__(182));
+hljs.registerLanguage('makefile', __webpack_require__(183));
+hljs.registerLanguage('mathematica', __webpack_require__(184));
+hljs.registerLanguage('matlab', __webpack_require__(185));
+hljs.registerLanguage('maxima', __webpack_require__(186));
+hljs.registerLanguage('mel', __webpack_require__(187));
+hljs.registerLanguage('mercury', __webpack_require__(188));
+hljs.registerLanguage('mipsasm', __webpack_require__(189));
+hljs.registerLanguage('mizar', __webpack_require__(190));
+hljs.registerLanguage('perl', __webpack_require__(191));
+hljs.registerLanguage('mojolicious', __webpack_require__(192));
+hljs.registerLanguage('monkey', __webpack_require__(193));
+hljs.registerLanguage('moonscript', __webpack_require__(194));
+hljs.registerLanguage('n1ql', __webpack_require__(195));
+hljs.registerLanguage('nestedtext', __webpack_require__(196));
+hljs.registerLanguage('nginx', __webpack_require__(197));
+hljs.registerLanguage('nim', __webpack_require__(198));
+hljs.registerLanguage('nix', __webpack_require__(199));
+hljs.registerLanguage('node-repl', __webpack_require__(200));
+hljs.registerLanguage('nsis', __webpack_require__(201));
+hljs.registerLanguage('objectivec', __webpack_require__(202));
+hljs.registerLanguage('ocaml', __webpack_require__(203));
+hljs.registerLanguage('openscad', __webpack_require__(204));
+hljs.registerLanguage('oxygene', __webpack_require__(205));
+hljs.registerLanguage('parser3', __webpack_require__(206));
+hljs.registerLanguage('pf', __webpack_require__(207));
+hljs.registerLanguage('pgsql', __webpack_require__(208));
+hljs.registerLanguage('php', __webpack_require__(209));
+hljs.registerLanguage('php-template', __webpack_require__(210));
+hljs.registerLanguage('plaintext', __webpack_require__(211));
+hljs.registerLanguage('pony', __webpack_require__(212));
+hljs.registerLanguage('powershell', __webpack_require__(213));
+hljs.registerLanguage('processing', __webpack_require__(214));
+hljs.registerLanguage('profile', __webpack_require__(215));
+hljs.registerLanguage('prolog', __webpack_require__(216));
+hljs.registerLanguage('properties', __webpack_require__(217));
+hljs.registerLanguage('protobuf', __webpack_require__(218));
+hljs.registerLanguage('puppet', __webpack_require__(219));
+hljs.registerLanguage('purebasic', __webpack_require__(220));
+hljs.registerLanguage('python', __webpack_require__(221));
+hljs.registerLanguage('python-repl', __webpack_require__(222));
+hljs.registerLanguage('q', __webpack_require__(223));
+hljs.registerLanguage('qml', __webpack_require__(224));
+hljs.registerLanguage('r', __webpack_require__(225));
+hljs.registerLanguage('reasonml', __webpack_require__(226));
+hljs.registerLanguage('rib', __webpack_require__(227));
+hljs.registerLanguage('roboconf', __webpack_require__(228));
+hljs.registerLanguage('routeros', __webpack_require__(229));
+hljs.registerLanguage('rsl', __webpack_require__(230));
+hljs.registerLanguage('ruleslanguage', __webpack_require__(231));
+hljs.registerLanguage('rust', __webpack_require__(232));
+hljs.registerLanguage('sas', __webpack_require__(233));
+hljs.registerLanguage('scala', __webpack_require__(234));
+hljs.registerLanguage('scheme', __webpack_require__(235));
+hljs.registerLanguage('scilab', __webpack_require__(236));
+hljs.registerLanguage('scss', __webpack_require__(237));
+hljs.registerLanguage('shell', __webpack_require__(238));
+hljs.registerLanguage('smali', __webpack_require__(239));
+hljs.registerLanguage('smalltalk', __webpack_require__(240));
+hljs.registerLanguage('sml', __webpack_require__(241));
+hljs.registerLanguage('sqf', __webpack_require__(242));
+hljs.registerLanguage('sql', __webpack_require__(243));
+hljs.registerLanguage('stan', __webpack_require__(244));
+hljs.registerLanguage('stata', __webpack_require__(245));
+hljs.registerLanguage('step21', __webpack_require__(246));
+hljs.registerLanguage('stylus', __webpack_require__(247));
+hljs.registerLanguage('subunit', __webpack_require__(248));
+hljs.registerLanguage('swift', __webpack_require__(249));
+hljs.registerLanguage('taggerscript', __webpack_require__(250));
+hljs.registerLanguage('yaml', __webpack_require__(251));
+hljs.registerLanguage('tap', __webpack_require__(252));
+hljs.registerLanguage('tcl', __webpack_require__(253));
+hljs.registerLanguage('thrift', __webpack_require__(254));
+hljs.registerLanguage('tp', __webpack_require__(255));
+hljs.registerLanguage('twig', __webpack_require__(256));
+hljs.registerLanguage('typescript', __webpack_require__(257));
+hljs.registerLanguage('vala', __webpack_require__(258));
+hljs.registerLanguage('vbnet', __webpack_require__(259));
+hljs.registerLanguage('vbscript', __webpack_require__(260));
+hljs.registerLanguage('vbscript-html', __webpack_require__(261));
+hljs.registerLanguage('verilog', __webpack_require__(262));
+hljs.registerLanguage('vhdl', __webpack_require__(263));
+hljs.registerLanguage('vim', __webpack_require__(264));
+hljs.registerLanguage('wasm', __webpack_require__(265));
+hljs.registerLanguage('wren', __webpack_require__(266));
+hljs.registerLanguage('x86asm', __webpack_require__(267));
+hljs.registerLanguage('xl', __webpack_require__(268));
+hljs.registerLanguage('xquery', __webpack_require__(269));
+hljs.registerLanguage('zephir', __webpack_require__(270));
 
 hljs.HighlightJS = hljs
 hljs.default = hljs
 module.exports = hljs;
 
 /***/ }),
-/* 81 */
+/* 78 */
 /***/ ((module) => {
 
 /* eslint-disable no-multi-assign */
@@ -11696,7 +11430,7 @@ highlight.default = highlight;
 
 
 /***/ }),
-/* 82 */
+/* 79 */
 /***/ ((module) => {
 
 /*
@@ -12239,7 +11973,7 @@ module.exports = _1c;
 
 
 /***/ }),
-/* 83 */
+/* 80 */
 /***/ ((module) => {
 
 /*
@@ -12327,7 +12061,7 @@ module.exports = abnf;
 
 
 /***/ }),
-/* 84 */
+/* 81 */
 /***/ ((module) => {
 
 /*
@@ -12425,7 +12159,7 @@ module.exports = accesslog;
 
 
 /***/ }),
-/* 85 */
+/* 82 */
 /***/ ((module) => {
 
 /*
@@ -12584,7 +12318,7 @@ module.exports = actionscript;
 
 
 /***/ }),
-/* 86 */
+/* 83 */
 /***/ ((module) => {
 
 /*
@@ -12855,7 +12589,7 @@ module.exports = ada;
 
 
 /***/ }),
-/* 87 */
+/* 84 */
 /***/ ((module) => {
 
 /*
@@ -13039,7 +12773,7 @@ module.exports = angelscript;
 
 
 /***/ }),
-/* 88 */
+/* 85 */
 /***/ ((module) => {
 
 /*
@@ -13146,7 +12880,7 @@ module.exports = apache;
 
 
 /***/ }),
-/* 89 */
+/* 86 */
 /***/ ((module) => {
 
 /*
@@ -13301,7 +13035,7 @@ module.exports = applescript;
 
 
 /***/ }),
-/* 90 */
+/* 87 */
 /***/ ((module) => {
 
 /*
@@ -13668,7 +13402,7 @@ module.exports = arcade;
 
 
 /***/ }),
-/* 91 */
+/* 88 */
 /***/ ((module) => {
 
 /*
@@ -14644,7 +14378,7 @@ module.exports = arduino;
 
 
 /***/ }),
-/* 92 */
+/* 89 */
 /***/ ((module) => {
 
 /*
@@ -14774,7 +14508,7 @@ module.exports = armasm;
 
 
 /***/ }),
-/* 93 */
+/* 90 */
 /***/ ((module) => {
 
 /*
@@ -15021,7 +14755,7 @@ module.exports = xml;
 
 
 /***/ }),
-/* 94 */
+/* 91 */
 /***/ ((module) => {
 
 /*
@@ -15288,7 +15022,7 @@ module.exports = asciidoc;
 
 
 /***/ }),
-/* 95 */
+/* 92 */
 /***/ ((module) => {
 
 /*
@@ -15524,7 +15258,7 @@ module.exports = aspectj;
 
 
 /***/ }),
-/* 96 */
+/* 93 */
 /***/ ((module) => {
 
 /*
@@ -15605,7 +15339,7 @@ module.exports = autohotkey;
 
 
 /***/ }),
-/* 97 */
+/* 94 */
 /***/ ((module) => {
 
 /*
@@ -15789,7 +15523,7 @@ module.exports = autoit;
 
 
 /***/ }),
-/* 98 */
+/* 95 */
 /***/ ((module) => {
 
 /*
@@ -15873,7 +15607,7 @@ module.exports = avrasm;
 
 
 /***/ }),
-/* 99 */
+/* 96 */
 /***/ ((module) => {
 
 /*
@@ -15946,7 +15680,7 @@ module.exports = awk;
 
 
 /***/ }),
-/* 100 */
+/* 97 */
 /***/ ((module) => {
 
 /*
@@ -16140,7 +15874,7 @@ module.exports = axapta;
 
 
 /***/ }),
-/* 101 */
+/* 98 */
 /***/ ((module) => {
 
 /*
@@ -16537,7 +16271,7 @@ module.exports = bash;
 
 
 /***/ }),
-/* 102 */
+/* 99 */
 /***/ ((module) => {
 
 /*
@@ -16772,7 +16506,7 @@ module.exports = basic;
 
 
 /***/ }),
-/* 103 */
+/* 100 */
 /***/ ((module) => {
 
 /*
@@ -16816,7 +16550,7 @@ module.exports = bnf;
 
 
 /***/ }),
-/* 104 */
+/* 101 */
 /***/ ((module) => {
 
 /*
@@ -16876,7 +16610,7 @@ module.exports = brainfuck;
 
 
 /***/ }),
-/* 105 */
+/* 102 */
 /***/ ((module) => {
 
 /*
@@ -17200,7 +16934,7 @@ module.exports = c;
 
 
 /***/ }),
-/* 106 */
+/* 103 */
 /***/ ((module) => {
 
 /*
@@ -17365,7 +17099,7 @@ module.exports = cal;
 
 
 /***/ }),
-/* 107 */
+/* 104 */
 /***/ ((module) => {
 
 /*
@@ -17470,7 +17204,7 @@ module.exports = capnproto;
 
 
 /***/ }),
-/* 108 */
+/* 105 */
 /***/ ((module) => {
 
 /*
@@ -17615,7 +17349,7 @@ module.exports = ceylon;
 
 
 /***/ }),
-/* 109 */
+/* 106 */
 /***/ ((module) => {
 
 /*
@@ -17688,7 +17422,7 @@ module.exports = clean;
 
 
 /***/ }),
-/* 110 */
+/* 107 */
 /***/ ((module) => {
 
 /*
@@ -17878,7 +17612,7 @@ module.exports = clojure;
 
 
 /***/ }),
-/* 111 */
+/* 108 */
 /***/ ((module) => {
 
 /*
@@ -17911,7 +17645,7 @@ module.exports = clojureRepl;
 
 
 /***/ }),
-/* 112 */
+/* 109 */
 /***/ ((module) => {
 
 /*
@@ -17980,7 +17714,7 @@ module.exports = cmake;
 
 
 /***/ }),
-/* 113 */
+/* 110 */
 /***/ ((module) => {
 
 const KEYWORDS = [
@@ -18352,7 +18086,7 @@ module.exports = coffeescript;
 
 
 /***/ }),
-/* 114 */
+/* 111 */
 /***/ ((module) => {
 
 /*
@@ -18803,7 +18537,7 @@ module.exports = coq;
 
 
 /***/ }),
-/* 115 */
+/* 112 */
 /***/ ((module) => {
 
 /*
@@ -18949,7 +18683,7 @@ module.exports = cos;
 
 
 /***/ }),
-/* 116 */
+/* 113 */
 /***/ ((module) => {
 
 /*
@@ -19523,7 +19257,7 @@ module.exports = cpp;
 
 
 /***/ }),
-/* 117 */
+/* 114 */
 /***/ ((module) => {
 
 /*
@@ -19629,7 +19363,7 @@ module.exports = crmsh;
 
 
 /***/ }),
-/* 118 */
+/* 115 */
 /***/ ((module) => {
 
 /*
@@ -19946,7 +19680,7 @@ module.exports = crystal;
 
 
 /***/ }),
-/* 119 */
+/* 116 */
 /***/ ((module) => {
 
 /*
@@ -20352,7 +20086,7 @@ module.exports = csharp;
 
 
 /***/ }),
-/* 120 */
+/* 117 */
 /***/ ((module) => {
 
 /*
@@ -20415,7 +20149,7 @@ module.exports = csp;
 
 
 /***/ }),
-/* 121 */
+/* 118 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -21159,7 +20893,7 @@ module.exports = css;
 
 
 /***/ }),
-/* 122 */
+/* 119 */
 /***/ ((module) => {
 
 /*
@@ -21436,7 +21170,7 @@ module.exports = d;
 
 
 /***/ }),
-/* 123 */
+/* 120 */
 /***/ ((module) => {
 
 /*
@@ -21683,7 +21417,7 @@ module.exports = markdown;
 
 
 /***/ }),
-/* 124 */
+/* 121 */
 /***/ ((module) => {
 
 /*
@@ -21951,7 +21685,7 @@ module.exports = dart;
 
 
 /***/ }),
-/* 125 */
+/* 122 */
 /***/ ((module) => {
 
 /*
@@ -22187,7 +21921,7 @@ module.exports = delphi;
 
 
 /***/ }),
-/* 126 */
+/* 123 */
 /***/ ((module) => {
 
 /*
@@ -22255,7 +21989,7 @@ module.exports = diff;
 
 
 /***/ }),
-/* 127 */
+/* 124 */
 /***/ ((module) => {
 
 /*
@@ -22336,7 +22070,7 @@ module.exports = django;
 
 
 /***/ }),
-/* 128 */
+/* 125 */
 /***/ ((module) => {
 
 /*
@@ -22420,7 +22154,7 @@ module.exports = dns;
 
 
 /***/ }),
-/* 129 */
+/* 126 */
 /***/ ((module) => {
 
 /*
@@ -22470,7 +22204,7 @@ module.exports = dockerfile;
 
 
 /***/ }),
-/* 130 */
+/* 127 */
 /***/ ((module) => {
 
 /*
@@ -22642,7 +22376,7 @@ module.exports = dos;
 
 
 /***/ }),
-/* 131 */
+/* 128 */
 /***/ ((module) => {
 
 /*
@@ -22714,7 +22448,7 @@ module.exports = dsconfig;
 
 
 /***/ }),
-/* 132 */
+/* 129 */
 /***/ ((module) => {
 
 /*
@@ -22877,7 +22611,7 @@ module.exports = dts;
 
 
 /***/ }),
-/* 133 */
+/* 130 */
 /***/ ((module) => {
 
 /*
@@ -22930,7 +22664,7 @@ module.exports = dust;
 
 
 /***/ }),
-/* 134 */
+/* 131 */
 /***/ ((module) => {
 
 /*
@@ -22989,7 +22723,7 @@ module.exports = ebnf;
 
 
 /***/ }),
-/* 135 */
+/* 132 */
 /***/ ((module) => {
 
 /*
@@ -23274,7 +23008,7 @@ module.exports = elixir;
 
 
 /***/ }),
-/* 136 */
+/* 133 */
 /***/ ((module) => {
 
 /*
@@ -23423,7 +23157,7 @@ module.exports = elm;
 
 
 /***/ }),
-/* 137 */
+/* 134 */
 /***/ ((module) => {
 
 /*
@@ -23877,7 +23611,7 @@ module.exports = ruby;
 
 
 /***/ }),
-/* 138 */
+/* 135 */
 /***/ ((module) => {
 
 /*
@@ -23912,7 +23646,7 @@ module.exports = erb;
 
 
 /***/ }),
-/* 139 */
+/* 136 */
 /***/ ((module) => {
 
 /*
@@ -23972,7 +23706,7 @@ module.exports = erlangRepl;
 
 
 /***/ }),
-/* 140 */
+/* 137 */
 /***/ ((module) => {
 
 /*
@@ -24169,7 +23903,7 @@ module.exports = erlang;
 
 
 /***/ }),
-/* 141 */
+/* 138 */
 /***/ ((module) => {
 
 /*
@@ -24719,7 +24453,7 @@ module.exports = excel;
 
 
 /***/ }),
-/* 142 */
+/* 139 */
 /***/ ((module) => {
 
 /*
@@ -24764,7 +24498,7 @@ module.exports = fix;
 
 
 /***/ }),
-/* 143 */
+/* 140 */
 /***/ ((module) => {
 
 /*
@@ -24849,7 +24583,7 @@ module.exports = flix;
 
 
 /***/ }),
-/* 144 */
+/* 141 */
 /***/ ((module) => {
 
 /*
@@ -25428,7 +25162,7 @@ module.exports = fortran;
 
 
 /***/ }),
-/* 145 */
+/* 142 */
 /***/ ((module) => {
 
 /**
@@ -26061,7 +25795,7 @@ module.exports = fsharp;
 
 
 /***/ }),
-/* 146 */
+/* 143 */
 /***/ ((module) => {
 
 /*
@@ -26248,7 +25982,7 @@ module.exports = gams;
 
 
 /***/ }),
-/* 147 */
+/* 144 */
 /***/ ((module) => {
 
 /*
@@ -26560,7 +26294,7 @@ module.exports = gauss;
 
 
 /***/ }),
-/* 148 */
+/* 145 */
 /***/ ((module) => {
 
 /*
@@ -26646,7 +26380,7 @@ module.exports = gcode;
 
 
 /***/ }),
-/* 149 */
+/* 146 */
 /***/ ((module) => {
 
 /*
@@ -26701,7 +26435,7 @@ module.exports = gherkin;
 
 
 /***/ }),
-/* 150 */
+/* 147 */
 /***/ ((module) => {
 
 /*
@@ -26835,7 +26569,7 @@ module.exports = glsl;
 
 
 /***/ }),
-/* 151 */
+/* 148 */
 /***/ ((module) => {
 
 /*
@@ -29657,7 +29391,7 @@ module.exports = gml;
 
 
 /***/ }),
-/* 152 */
+/* 149 */
 /***/ ((module) => {
 
 /*
@@ -29804,7 +29538,7 @@ module.exports = go;
 
 
 /***/ }),
-/* 153 */
+/* 150 */
 /***/ ((module) => {
 
 /*
@@ -29890,7 +29624,7 @@ module.exports = golo;
 
 
 /***/ }),
-/* 154 */
+/* 151 */
 /***/ ((module) => {
 
 /*
@@ -30085,7 +29819,7 @@ module.exports = gradle;
 
 
 /***/ }),
-/* 155 */
+/* 152 */
 /***/ ((module) => {
 
 /*
@@ -30169,7 +29903,7 @@ module.exports = graphql;
 
 
 /***/ }),
-/* 156 */
+/* 153 */
 /***/ ((module) => {
 
 /*
@@ -30364,7 +30098,7 @@ module.exports = groovy;
 
 
 /***/ }),
-/* 157 */
+/* 154 */
 /***/ ((module) => {
 
 /*
@@ -30483,7 +30217,7 @@ module.exports = haml;
 
 
 /***/ }),
-/* 158 */
+/* 155 */
 /***/ ((module) => {
 
 /*
@@ -30747,7 +30481,7 @@ module.exports = handlebars;
 
 
 /***/ }),
-/* 159 */
+/* 156 */
 /***/ ((module) => {
 
 /*
@@ -30970,7 +30704,7 @@ module.exports = haskell;
 
 
 /***/ }),
-/* 160 */
+/* 157 */
 /***/ ((module) => {
 
 /*
@@ -31142,7 +30876,7 @@ module.exports = haxe;
 
 
 /***/ }),
-/* 161 */
+/* 158 */
 /***/ ((module) => {
 
 /*
@@ -31207,7 +30941,7 @@ module.exports = hsp;
 
 
 /***/ }),
-/* 162 */
+/* 159 */
 /***/ ((module) => {
 
 /*
@@ -31310,7 +31044,7 @@ module.exports = http;
 
 
 /***/ }),
-/* 163 */
+/* 160 */
 /***/ ((module) => {
 
 /*
@@ -31453,7 +31187,7 @@ module.exports = hy;
 
 
 /***/ }),
-/* 164 */
+/* 161 */
 /***/ ((module) => {
 
 /*
@@ -31528,7 +31262,7 @@ module.exports = inform7;
 
 
 /***/ }),
-/* 165 */
+/* 162 */
 /***/ ((module) => {
 
 /*
@@ -31655,7 +31389,7 @@ module.exports = ini;
 
 
 /***/ }),
-/* 166 */
+/* 163 */
 /***/ ((module) => {
 
 /*
@@ -31768,7 +31502,7 @@ module.exports = irpf90;
 
 
 /***/ }),
-/* 167 */
+/* 164 */
 /***/ ((module) => {
 
 /*
@@ -34979,7 +34713,7 @@ module.exports = isbl;
 
 
 /***/ }),
-/* 168 */
+/* 165 */
 /***/ ((module) => {
 
 // https://docs.oracle.com/javase/specs/jls/se15/html/jls-3.html#jls-3.10
@@ -35274,7 +35008,7 @@ module.exports = java;
 
 
 /***/ }),
-/* 169 */
+/* 166 */
 /***/ ((module) => {
 
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
@@ -36046,7 +35780,7 @@ module.exports = javascript;
 
 
 /***/ }),
-/* 170 */
+/* 167 */
 /***/ ((module) => {
 
 /*
@@ -36115,7 +35849,7 @@ module.exports = jbossCli;
 
 
 /***/ }),
-/* 171 */
+/* 168 */
 /***/ ((module) => {
 
 /*
@@ -36174,7 +35908,7 @@ module.exports = json;
 
 
 /***/ }),
-/* 172 */
+/* 169 */
 /***/ ((module) => {
 
 /*
@@ -36621,7 +36355,7 @@ module.exports = julia;
 
 
 /***/ }),
-/* 173 */
+/* 170 */
 /***/ ((module) => {
 
 /*
@@ -36677,7 +36411,7 @@ module.exports = juliaRepl;
 
 
 /***/ }),
-/* 174 */
+/* 171 */
 /***/ ((module) => {
 
 // https://docs.oracle.com/javase/specs/jls/se15/html/jls-3.html#jls-3.10
@@ -36969,7 +36703,7 @@ module.exports = kotlin;
 
 
 /***/ }),
-/* 175 */
+/* 172 */
 /***/ ((module) => {
 
 /*
@@ -37145,7 +36879,7 @@ module.exports = lasso;
 
 
 /***/ }),
-/* 176 */
+/* 173 */
 /***/ ((module) => {
 
 /*
@@ -37429,7 +37163,7 @@ module.exports = latex;
 
 
 /***/ }),
-/* 177 */
+/* 174 */
 /***/ ((module) => {
 
 /*
@@ -37466,7 +37200,7 @@ module.exports = ldif;
 
 
 /***/ }),
-/* 178 */
+/* 175 */
 /***/ ((module) => {
 
 /*
@@ -37569,7 +37303,7 @@ module.exports = leaf;
 
 
 /***/ }),
-/* 179 */
+/* 176 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -38414,7 +38148,7 @@ module.exports = less;
 
 
 /***/ }),
-/* 180 */
+/* 177 */
 /***/ ((module) => {
 
 /*
@@ -38559,7 +38293,7 @@ module.exports = lisp;
 
 
 /***/ }),
-/* 181 */
+/* 178 */
 /***/ ((module) => {
 
 /*
@@ -38738,7 +38472,7 @@ module.exports = livecodeserver;
 
 
 /***/ }),
-/* 182 */
+/* 179 */
 /***/ ((module) => {
 
 const KEYWORDS = [
@@ -39122,7 +38856,7 @@ module.exports = livescript;
 
 
 /***/ }),
-/* 183 */
+/* 180 */
 /***/ ((module) => {
 
 /*
@@ -39260,7 +38994,7 @@ module.exports = llvm;
 
 
 /***/ }),
-/* 184 */
+/* 181 */
 /***/ ((module) => {
 
 /*
@@ -39342,7 +39076,7 @@ module.exports = lsl;
 
 
 /***/ }),
-/* 185 */
+/* 182 */
 /***/ ((module) => {
 
 /*
@@ -39428,7 +39162,7 @@ module.exports = lua;
 
 
 /***/ }),
-/* 186 */
+/* 183 */
 /***/ ((module) => {
 
 /*
@@ -39520,7 +39254,7 @@ module.exports = makefile;
 
 
 /***/ }),
-/* 187 */
+/* 184 */
 /***/ ((module) => {
 
 const SYSTEM_SYMBOLS = [
@@ -46885,7 +46619,7 @@ module.exports = mathematica;
 
 
 /***/ }),
-/* 188 */
+/* 185 */
 /***/ ((module) => {
 
 /*
@@ -46998,7 +46732,7 @@ module.exports = matlab;
 
 
 /***/ }),
-/* 189 */
+/* 186 */
 /***/ ((module) => {
 
 /*
@@ -47418,7 +47152,7 @@ module.exports = maxima;
 
 
 /***/ }),
-/* 190 */
+/* 187 */
 /***/ ((module) => {
 
 /*
@@ -47659,7 +47393,7 @@ module.exports = mel;
 
 
 /***/ }),
-/* 191 */
+/* 188 */
 /***/ ((module) => {
 
 /*
@@ -47772,7 +47506,7 @@ module.exports = mercury;
 
 
 /***/ }),
-/* 192 */
+/* 189 */
 /***/ ((module) => {
 
 /*
@@ -47882,7 +47616,7 @@ module.exports = mipsasm;
 
 
 /***/ }),
-/* 193 */
+/* 190 */
 /***/ ((module) => {
 
 /*
@@ -47915,7 +47649,7 @@ module.exports = mizar;
 
 
 /***/ }),
-/* 194 */
+/* 191 */
 /***/ ((module) => {
 
 /*
@@ -48392,7 +48126,7 @@ module.exports = perl;
 
 
 /***/ }),
-/* 195 */
+/* 192 */
 /***/ ((module) => {
 
 /*
@@ -48434,7 +48168,7 @@ module.exports = mojolicious;
 
 
 /***/ }),
-/* 196 */
+/* 193 */
 /***/ ((module) => {
 
 /*
@@ -48623,7 +48357,7 @@ module.exports = monkey;
 
 
 /***/ }),
-/* 197 */
+/* 194 */
 /***/ ((module) => {
 
 /*
@@ -48770,7 +48504,7 @@ module.exports = moonscript;
 
 
 /***/ }),
-/* 198 */
+/* 195 */
 /***/ ((module) => {
 
 /*
@@ -49140,7 +48874,7 @@ module.exports = n1ql;
 
 
 /***/ }),
-/* 199 */
+/* 196 */
 /***/ ((module) => {
 
 /*
@@ -49229,7 +48963,7 @@ module.exports = nestedtext;
 
 
 /***/ }),
-/* 200 */
+/* 197 */
 /***/ ((module) => {
 
 /*
@@ -49388,7 +49122,7 @@ module.exports = nginx;
 
 
 /***/ }),
-/* 201 */
+/* 198 */
 /***/ ((module) => {
 
 /*
@@ -49579,7 +49313,7 @@ module.exports = nim;
 
 
 /***/ }),
-/* 202 */
+/* 199 */
 /***/ ((module) => {
 
 /*
@@ -49679,7 +49413,7 @@ module.exports = nix;
 
 
 /***/ }),
-/* 203 */
+/* 200 */
 /***/ ((module) => {
 
 /*
@@ -49718,7 +49452,7 @@ module.exports = nodeRepl;
 
 
 /***/ }),
-/* 204 */
+/* 201 */
 /***/ ((module) => {
 
 /*
@@ -50280,7 +50014,7 @@ module.exports = nsis;
 
 
 /***/ }),
-/* 205 */
+/* 202 */
 /***/ ((module) => {
 
 /*
@@ -50539,7 +50273,7 @@ module.exports = objectivec;
 
 
 /***/ }),
-/* 206 */
+/* 203 */
 /***/ ((module) => {
 
 /*
@@ -50628,7 +50362,7 @@ module.exports = ocaml;
 
 
 /***/ }),
-/* 207 */
+/* 204 */
 /***/ ((module) => {
 
 /*
@@ -50711,7 +50445,7 @@ module.exports = openscad;
 
 
 /***/ }),
-/* 208 */
+/* 205 */
 /***/ ((module) => {
 
 /*
@@ -50803,7 +50537,7 @@ module.exports = oxygene;
 
 
 /***/ }),
-/* 209 */
+/* 206 */
 /***/ ((module) => {
 
 /*
@@ -50864,7 +50598,7 @@ module.exports = parser3;
 
 
 /***/ }),
-/* 210 */
+/* 207 */
 /***/ ((module) => {
 
 /*
@@ -50930,7 +50664,7 @@ module.exports = pf;
 
 
 /***/ }),
-/* 211 */
+/* 208 */
 /***/ ((module) => {
 
 /*
@@ -51460,7 +51194,7 @@ module.exports = pgsql;
 
 
 /***/ }),
-/* 212 */
+/* 209 */
 /***/ ((module) => {
 
 /*
@@ -52079,7 +51813,7 @@ module.exports = php;
 
 
 /***/ }),
-/* 213 */
+/* 210 */
 /***/ ((module) => {
 
 /*
@@ -52139,7 +51873,7 @@ module.exports = phpTemplate;
 
 
 /***/ }),
-/* 214 */
+/* 211 */
 /***/ ((module) => {
 
 /*
@@ -52164,7 +51898,7 @@ module.exports = plaintext;
 
 
 /***/ }),
-/* 215 */
+/* 212 */
 /***/ ((module) => {
 
 /*
@@ -52259,7 +51993,7 @@ module.exports = pony;
 
 
 /***/ }),
-/* 216 */
+/* 213 */
 /***/ ((module) => {
 
 /*
@@ -52581,7 +52315,7 @@ module.exports = powershell;
 
 
 /***/ }),
-/* 217 */
+/* 214 */
 /***/ ((module) => {
 
 /*
@@ -53021,7 +52755,7 @@ module.exports = processing;
 
 
 /***/ }),
-/* 218 */
+/* 215 */
 /***/ ((module) => {
 
 /*
@@ -53070,7 +52804,7 @@ module.exports = profile;
 
 
 /***/ }),
-/* 219 */
+/* 216 */
 /***/ ((module) => {
 
 /*
@@ -53172,7 +52906,7 @@ module.exports = prolog;
 
 
 /***/ }),
-/* 220 */
+/* 217 */
 /***/ ((module) => {
 
 /*
@@ -53246,7 +52980,7 @@ module.exports = properties;
 
 
 /***/ }),
-/* 221 */
+/* 218 */
 /***/ ((module) => {
 
 /*
@@ -53331,7 +53065,7 @@ module.exports = protobuf;
 
 
 /***/ }),
-/* 222 */
+/* 219 */
 /***/ ((module) => {
 
 /*
@@ -53483,7 +53217,7 @@ module.exports = puppet;
 
 
 /***/ }),
-/* 223 */
+/* 220 */
 /***/ ((module) => {
 
 /*
@@ -53588,7 +53322,7 @@ module.exports = purebasic;
 
 
 /***/ }),
-/* 224 */
+/* 221 */
 /***/ ((module) => {
 
 /*
@@ -54028,7 +53762,7 @@ module.exports = python;
 
 
 /***/ }),
-/* 225 */
+/* 222 */
 /***/ ((module) => {
 
 /*
@@ -54066,7 +53800,7 @@ module.exports = pythonRepl;
 
 
 /***/ }),
-/* 226 */
+/* 223 */
 /***/ ((module) => {
 
 /*
@@ -54109,7 +53843,7 @@ module.exports = q;
 
 
 /***/ }),
-/* 227 */
+/* 224 */
 /***/ ((module) => {
 
 /*
@@ -54304,7 +54038,7 @@ module.exports = qml;
 
 
 /***/ }),
-/* 228 */
+/* 225 */
 /***/ ((module) => {
 
 /*
@@ -54567,7 +54301,7 @@ module.exports = r;
 
 
 /***/ }),
-/* 229 */
+/* 226 */
 /***/ ((module) => {
 
 /*
@@ -54715,7 +54449,7 @@ module.exports = reasonml;
 
 
 /***/ }),
-/* 230 */
+/* 227 */
 /***/ ((module) => {
 
 /*
@@ -54758,7 +54492,7 @@ module.exports = rib;
 
 
 /***/ }),
-/* 231 */
+/* 228 */
 /***/ ((module) => {
 
 /*
@@ -54846,7 +54580,7 @@ module.exports = roboconf;
 
 
 /***/ }),
-/* 232 */
+/* 229 */
 /***/ ((module) => {
 
 /*
@@ -55015,7 +54749,7 @@ module.exports = routeros;
 
 
 /***/ }),
-/* 233 */
+/* 230 */
 /***/ ((module) => {
 
 /*
@@ -55170,7 +54904,7 @@ module.exports = rsl;
 
 
 /***/ }),
-/* 234 */
+/* 231 */
 /***/ ((module) => {
 
 /*
@@ -55252,7 +54986,7 @@ module.exports = ruleslanguage;
 
 
 /***/ }),
-/* 235 */
+/* 232 */
 /***/ ((module) => {
 
 /*
@@ -55563,7 +55297,7 @@ module.exports = rust;
 
 
 /***/ }),
-/* 236 */
+/* 233 */
 /***/ ((module) => {
 
 /*
@@ -56125,7 +55859,7 @@ module.exports = sas;
 
 
 /***/ }),
-/* 237 */
+/* 234 */
 /***/ ((module) => {
 
 /*
@@ -56345,7 +56079,7 @@ module.exports = scala;
 
 
 /***/ }),
-/* 238 */
+/* 235 */
 /***/ ((module) => {
 
 /*
@@ -56547,7 +56281,7 @@ module.exports = scheme;
 
 
 /***/ }),
-/* 239 */
+/* 236 */
 /***/ ((module) => {
 
 /*
@@ -56626,7 +56360,7 @@ module.exports = scilab;
 
 
 /***/ }),
-/* 240 */
+/* 237 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -57360,7 +57094,7 @@ module.exports = scss;
 
 
 /***/ }),
-/* 241 */
+/* 238 */
 /***/ ((module) => {
 
 /*
@@ -57399,7 +57133,7 @@ module.exports = shell;
 
 
 /***/ }),
-/* 242 */
+/* 239 */
 /***/ ((module) => {
 
 /*
@@ -57530,7 +57264,7 @@ module.exports = smali;
 
 
 /***/ }),
-/* 243 */
+/* 240 */
 /***/ ((module) => {
 
 /*
@@ -57604,7 +57338,7 @@ module.exports = smalltalk;
 
 
 /***/ }),
-/* 244 */
+/* 241 */
 /***/ ((module) => {
 
 /*
@@ -57685,7 +57419,7 @@ module.exports = sml;
 
 
 /***/ }),
-/* 245 */
+/* 242 */
 /***/ ((module) => {
 
 /*
@@ -60353,7 +60087,7 @@ module.exports = sqf;
 
 
 /***/ }),
-/* 246 */
+/* 243 */
 /***/ ((module) => {
 
 /*
@@ -61041,7 +60775,7 @@ module.exports = sql;
 
 
 /***/ }),
-/* 247 */
+/* 244 */
 /***/ ((module) => {
 
 /*
@@ -61568,7 +61302,7 @@ module.exports = stan;
 
 
 /***/ }),
-/* 248 */
+/* 245 */
 /***/ ((module) => {
 
 /*
@@ -61627,7 +61361,7 @@ module.exports = stata;
 
 
 /***/ }),
-/* 249 */
+/* 246 */
 /***/ ((module) => {
 
 /*
@@ -61699,7 +61433,7 @@ module.exports = step21;
 
 
 /***/ }),
-/* 250 */
+/* 247 */
 /***/ ((module) => {
 
 const MODES = (hljs) => {
@@ -62493,7 +62227,7 @@ module.exports = stylus;
 
 
 /***/ }),
-/* 251 */
+/* 248 */
 /***/ ((module) => {
 
 /*
@@ -62542,7 +62276,7 @@ module.exports = subunit;
 
 
 /***/ }),
-/* 252 */
+/* 249 */
 /***/ ((module) => {
 
 /**
@@ -63468,7 +63202,7 @@ module.exports = swift;
 
 
 /***/ }),
-/* 253 */
+/* 250 */
 /***/ ((module) => {
 
 /*
@@ -63532,7 +63266,7 @@ module.exports = taggerscript;
 
 
 /***/ }),
-/* 254 */
+/* 251 */
 /***/ ((module) => {
 
 /*
@@ -63732,7 +63466,7 @@ module.exports = yaml;
 
 
 /***/ }),
-/* 255 */
+/* 252 */
 /***/ ((module) => {
 
 /*
@@ -63785,7 +63519,7 @@ module.exports = tap;
 
 
 /***/ }),
-/* 256 */
+/* 253 */
 /***/ ((module) => {
 
 /*
@@ -63981,7 +63715,7 @@ module.exports = tcl;
 
 
 /***/ }),
-/* 257 */
+/* 254 */
 /***/ ((module) => {
 
 /*
@@ -64064,7 +63798,7 @@ module.exports = thrift;
 
 
 /***/ }),
-/* 258 */
+/* 255 */
 /***/ ((module) => {
 
 /*
@@ -64241,7 +63975,7 @@ module.exports = tp;
 
 
 /***/ }),
-/* 259 */
+/* 256 */
 /***/ ((module) => {
 
 /*
@@ -64507,7 +64241,7 @@ module.exports = twig;
 
 
 /***/ }),
-/* 260 */
+/* 257 */
 /***/ ((module) => {
 
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
@@ -65393,7 +65127,7 @@ module.exports = typescript;
 
 
 /***/ }),
-/* 261 */
+/* 258 */
 /***/ ((module) => {
 
 /*
@@ -65459,7 +65193,7 @@ module.exports = vala;
 
 
 /***/ }),
-/* 262 */
+/* 259 */
 /***/ ((module) => {
 
 /*
@@ -65622,7 +65356,7 @@ module.exports = vbnet;
 
 
 /***/ }),
-/* 263 */
+/* 260 */
 /***/ ((module) => {
 
 /*
@@ -65848,7 +65582,7 @@ module.exports = vbscript;
 
 
 /***/ }),
-/* 264 */
+/* 261 */
 /***/ ((module) => {
 
 /*
@@ -65878,7 +65612,7 @@ module.exports = vbscriptHtml;
 
 
 /***/ }),
-/* 265 */
+/* 262 */
 /***/ ((module) => {
 
 /*
@@ -66433,7 +66167,7 @@ module.exports = verilog;
 
 
 /***/ }),
-/* 266 */
+/* 263 */
 /***/ ((module) => {
 
 /*
@@ -66654,7 +66388,7 @@ module.exports = vhdl;
 
 
 /***/ }),
-/* 267 */
+/* 264 */
 /***/ ((module) => {
 
 /*
@@ -66789,7 +66523,7 @@ module.exports = vim;
 
 
 /***/ }),
-/* 268 */
+/* 265 */
 /***/ ((module) => {
 
 /*
@@ -66934,7 +66668,7 @@ module.exports = wasm;
 
 
 /***/ }),
-/* 269 */
+/* 266 */
 /***/ ((module) => {
 
 /*
@@ -67242,7 +66976,7 @@ module.exports = wren;
 
 
 /***/ }),
-/* 270 */
+/* 267 */
 /***/ ((module) => {
 
 /*
@@ -67401,7 +67135,7 @@ module.exports = x86asm;
 
 
 /***/ }),
-/* 271 */
+/* 268 */
 /***/ ((module) => {
 
 /*
@@ -67612,7 +67346,7 @@ module.exports = xl;
 
 
 /***/ }),
-/* 272 */
+/* 269 */
 /***/ ((module) => {
 
 /*
@@ -67978,7 +67712,7 @@ module.exports = xquery;
 
 
 /***/ }),
-/* 273 */
+/* 270 */
 /***/ ((module) => {
 
 /*
@@ -68112,12 +67846,12 @@ module.exports = zephir;
 
 
 /***/ }),
-/* 274 */
+/* 271 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
-var DFA = __webpack_require__(275);
+var DFA = __webpack_require__(272);
 
 module.exports = function multimd_table_plugin(md, options) {
   var defaults = {
@@ -68509,7 +68243,7 @@ module.exports = function multimd_table_plugin(md, options) {
 
 
 /***/ }),
-/* 275 */
+/* 272 */
 /***/ ((module) => {
 
 "use strict";
@@ -68588,7 +68322,14 @@ module.exports = DFA;
 
 
 /***/ }),
-/* 276 */
+/* 273 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+/* 274 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -68617,58 +68358,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.registerExplorerCommands = void 0;
+exports.verifyWorkspace = exports.workspaceFolder = void 0;
+const fs_1 = __webpack_require__(273);
 const vscode = __importStar(__webpack_require__(1));
-const terminal_1 = __webpack_require__(79);
-const mdEngine_1 = __webpack_require__(282);
-const fs_1 = __webpack_require__(74);
-const workspace_1 = __webpack_require__(283);
-function registerExplorerCommands() {
-    vscode.commands.registerCommand("fluentci-explorer.runJob", (args) => {
-        if (!(0, workspace_1.verifyWorkspace)()) {
-            return;
-        }
-        (0, terminal_1.showTerminal)(true);
-        (0, terminal_1.sendTextToTerminal)(`fluentci run . ${args.name}`);
-    });
-    vscode.commands.registerCommand("fluentci-explorer.runCurrentPipeline", (_args) => {
-        if (!(0, workspace_1.verifyWorkspace)()) {
-            return;
-        }
-        (0, terminal_1.showTerminal)(true);
-        (0, terminal_1.sendTextToTerminal)("fluentci run .");
-    });
-    vscode.commands.registerCommand("fluentci-explorer.runPrebuiltPipeline", (args) => {
-        (0, terminal_1.showTerminal)(true);
-        (0, terminal_1.sendTextToTerminal)(`fluentci run ${args.name}`);
-    });
-    vscode.commands.registerCommand("fluentci-explorer.runJobFromPrebuiltPipeline", (args) => {
-        (0, terminal_1.showTerminal)(true);
-        (0, terminal_1.sendTextToTerminal)(`fluentci run ${args.pipeline} ${args.name}`);
-    });
-    vscode.commands.registerCommand("fluentci-explorer.showDocs", (_args) => {
-        if (!(0, workspace_1.verifyWorkspace)()) {
-            return;
-        }
-        const panel = vscode.window.createWebviewPanel("markdownPreview", "Pipeline Docs", vscode.ViewColumn.One, {});
-        // open the readme file from the fluentci directory
-        const data = (0, fs_1.readFileSync)(`${workspace_1.workspaceFolder?.uri.fsPath}/.fluentci/README.md`);
-        panel.webview.html = (0, mdEngine_1.renderMarkdown)(data.toString());
-    });
-    vscode.commands.registerCommand("fluentci-explorer.showPrebuiltPipelineDocs", (args) => {
-        const panel = vscode.window.createWebviewPanel("markdownPreview", `${args.name} Docs`, vscode.ViewColumn.One, {});
-        fetch(`https://cdn.jsdelivr.net/gh/${args.repo_name}@${args.version}/README.md`)
-            .then((response) => response.text())
-            .then((text) => {
-            panel.webview.html = (0, mdEngine_1.renderMarkdown)(text);
-        });
-    });
+exports.workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+function verifyWorkspace() {
+    if (!exports.workspaceFolder) {
+        vscode.window.showErrorMessage("No workspace folder found");
+        return false;
+    }
+    if (!(0, fs_1.existsSync)(`${exports.workspaceFolder.uri.fsPath}/.fluentci`)) {
+        vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
+        return false;
+    }
+    return true;
 }
-exports.registerExplorerCommands = registerExplorerCommands;
+exports.verifyWorkspace = verifyWorkspace;
 
 
 /***/ }),
-/* 277 */
+/* 275 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -68699,8 +68408,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.registerExplorerViews = void 0;
 const vscode = __importStar(__webpack_require__(1));
-const jobsTreeView_1 = __webpack_require__(75);
-const pipelinesTreeView_1 = __webpack_require__(78);
+const jobsTreeView_1 = __webpack_require__(276);
+const pipelinesTreeView_1 = __webpack_require__(278);
 function registerExplorerViews(context) {
     context.subscriptions.push(vscode.window.createTreeView("fluentci-explorer.jobs", {
         treeDataProvider: new jobsTreeView_1.JobsTreeProvider(),
@@ -68711,6 +68420,109 @@ function registerExplorerViews(context) {
 }
 exports.registerExplorerViews = registerExplorerViews;
 
+
+/***/ }),
+/* 276 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JobsTreeProvider = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const icons_1 = __webpack_require__(2);
+const child_process_1 = __webpack_require__(277);
+const outputChannel_1 = __webpack_require__(3);
+const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+class JobsTreeProvider {
+    onDidChangeTreeData;
+    getTreeItem(element) {
+        return {
+            label: element.name,
+            tooltip: element.description,
+            collapsibleState: element.children && element.children.length > 0
+                ? vscode.TreeItemCollapsibleState.Expanded
+                : vscode.TreeItemCollapsibleState.None,
+            contextValue: element.children && element.children.length > 0
+                ? "fluentci-pipeline"
+                : "fluentci-job",
+            iconPath: (0, icons_1.getIconPath)("steps/step_success.svg"),
+        };
+    }
+    getChildren(element) {
+        if (!element) {
+            const childProcess = (0, child_process_1.spawn)("deno", [
+                "eval",
+                `
+     import { pipelineName } from './.fluentci/src/dagger/jobs.ts';
+     import { runnableJobs , jobDescriptions } from './.fluentci/src/dagger/jobs.ts';
+     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ pipelineName, name: x, description: jobDescriptions[x]}))));`,
+            ], {
+                cwd: workspaceFolder?.uri.fsPath,
+            });
+            const jobs = new Promise((resolve, _reject) => {
+                childProcess.stdout.on("data", (data) => {
+                    const jobs = JSON.parse(data.toString());
+                    (0, outputChannel_1.appendLineToOutputChannel)(`=> ${jobs[0].pipelineName || "default_pipeline"} Jobs:`);
+                    (0, outputChannel_1.appendLineToOutputChannel)(JSON.stringify(jobs, null, 2));
+                    resolve([
+                        {
+                            name: jobs[0].pipelineName || "default_pipeline",
+                            children: jobs,
+                        },
+                    ]);
+                });
+                childProcess.stderr.on("data", (data) => {
+                    (0, outputChannel_1.showOutputChannel)(true);
+                    (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
+                    if (data.toString().includes("error")) {
+                        resolve([]);
+                    }
+                });
+            });
+            return jobs;
+        }
+        return element.children || [];
+    }
+    getParent(element) {
+        throw new Error("Method not implemented. 3");
+    }
+    resolveTreeItem(item, element, token) {
+        throw new Error("Method not implemented. 4");
+    }
+}
+exports.JobsTreeProvider = JobsTreeProvider;
+
+
+/***/ }),
+/* 277 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 /* 278 */
@@ -68742,14 +68554,119 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PipelinesTreeProvider = void 0;
+const vscode = __importStar(__webpack_require__(1));
+const icons_1 = __webpack_require__(2);
+const outputChannel_1 = __webpack_require__(3);
+const child_process_1 = __webpack_require__(277);
+const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+class PipelinesTreeProvider {
+    onDidChangeTreeData;
+    getTreeItem(element) {
+        return {
+            label: element.name,
+            tooltip: element.description,
+            collapsibleState: element.repo_name
+                ? vscode.TreeItemCollapsibleState.Collapsed
+                : vscode.TreeItemCollapsibleState.None,
+            contextValue: element.repo_name
+                ? "fluentci-prebuilt-pipeline"
+                : "fluentci-pp-job",
+            iconPath: element.repo_name
+                ? new vscode.ThemeIcon("layers")
+                : (0, icons_1.getIconPath)("steps/step_success.svg"),
+        };
+    }
+    getChildren(element) {
+        if (!element) {
+            return fetch("https://api.fluentci.io/v1/pipelines?limit=100")
+                .then((response) => response.json())
+                .then((data) => data
+                .filter((x) => x.name !== "nix_installer_pipeline")
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((x) => ({
+                name: x.name,
+                description: x.description,
+                repo_name: x.repo_name,
+                version: x.version,
+            })));
+        }
+        vscode.window.setStatusBarMessage("Fetching Jobs...");
+        const childProcess = (0, child_process_1.spawn)("deno", [
+            "eval",
+            `
+     import { runnableJobs , jobDescriptions } from 'https://pkg.fluentci.io/${element.name}@${element.version}/src/dagger/jobs.ts';
+     console.log(JSON.stringify(Object.keys(runnableJobs).map(x => ({ name: x, description: jobDescriptions[x]}))));`,
+        ], {
+            cwd: workspaceFolder?.uri.fsPath,
+        });
+        const jobs = new Promise((resolve) => {
+            childProcess.stdout.on("data", (data) => {
+                const jobs = JSON.parse(data.toString());
+                (0, outputChannel_1.appendLineToOutputChannel)(`=> ${element.name}@${element.version} Jobs:`);
+                (0, outputChannel_1.appendLineToOutputChannel)(JSON.stringify(jobs, null, 2));
+                resolve(jobs.map((x) => ({ ...x, pipeline: element.name })));
+            });
+            childProcess.stderr.on("data", (data) => {
+                (0, outputChannel_1.showOutputChannel)(true);
+                (0, outputChannel_1.appendLineToOutputChannel)(data.toString().replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, ""));
+                if (data.toString().includes("error")) {
+                    resolve([]);
+                }
+            });
+        });
+        vscode.window.setStatusBarMessage("Jobs Fetched!");
+        vscode.window.setStatusBarMessage("");
+        return jobs;
+    }
+    getParent(element) {
+        throw new Error("Method not implemented. 3");
+    }
+    resolveTreeItem(item, element, token) {
+        throw new Error("Method not implemented. 4");
+    }
+}
+exports.PipelinesTreeProvider = PipelinesTreeProvider;
+
+
+/***/ }),
+/* 279 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.registerConfigsCommand = void 0;
 const vscode = __importStar(__webpack_require__(1));
-const outputChannel_1 = __webpack_require__(77);
-const fs_1 = __webpack_require__(74);
-const child_process_1 = __webpack_require__(73);
-const terminal_1 = __webpack_require__(79);
-const pipelines_1 = __webpack_require__(2);
-const workspace_1 = __webpack_require__(283);
+const outputChannel_1 = __webpack_require__(3);
+const fs_1 = __webpack_require__(273);
+const child_process_1 = __webpack_require__(277);
+const terminal_1 = __webpack_require__(4);
+const pipelines_1 = __webpack_require__(280);
+const workspace_1 = __webpack_require__(274);
 function registerConfigsCommand() {
     vscode.commands.registerCommand("fluentci.init", () => {
         const quickPick = vscode.window.createQuickPick();
@@ -68809,7 +68726,215 @@ exports.registerConfigsCommand = registerConfigsCommand;
 
 
 /***/ }),
-/* 279 */
+/* 280 */
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.pipelines = void 0;
+exports.pipelines = [
+    {
+        label: "Basic",
+        description: "A Minimal Pipeline to get you started",
+        name: "base_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/rust-pipeline@v0.6.3/README.md",
+        url: "https://pkg.fluentci.io/base_pipeline@v0.5.2",
+    },
+    {
+        label: "Codecov",
+        description: "A ready-to-use Pipeline that uploads coverage to Codecov",
+        name: "codecov_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/codecov-pipeline@v0.5.1/README.md",
+        url: "https://pkg.fluentci.io/codecov_pipeline@v0.5.1",
+    },
+    {
+        label: "Github",
+        description: "A ready-to-use Pipeline for uploading assets to Github Releases",
+        name: "github_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/github-pipeline@v0.1.1/README.md",
+        url: "https://pkg.fluentci.io/github_pipeline@v0.1.1",
+    },
+    {
+        label: "Deno",
+        description: "A ready-to-use Pipeline for Deno Projects",
+        name: "deno_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/deno-pipeline@v0.5.5/README.md",
+        url: "https://pkg.fluentci.io/deno_pipeline@v0.5.5",
+    },
+    {
+        label: "Chromatic",
+        description: "A ready-to-use Pipeline for uploading Storybook to Chromatic",
+        name: "chromatic_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/chromatic-pipeline@v0.6.6/README.md",
+        url: "https://pkg.fluentci.io/chromatic_pipeline@v0.6.6",
+    },
+    {
+        label: "Bun",
+        description: "A ready-to-use Pipeline for Bun",
+        name: "bun_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/bun-pipeline@v0.3.3/README.md",
+        url: "https://pkg.fluentci.io/bun_pipeline@v0.3.3",
+    },
+    {
+        label: "NodeJS",
+        description: "A ready-to-use Pipeline for NodeJS Projects",
+        name: "nodejs_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/nodejs-pipeline@v0.4.1/README.md",
+        url: "https://pkg.fluentci.io/nodejs_pipeline@v0.4.1",
+    },
+    {
+        label: "DrizzleKit",
+        description: "A ready-to-use Pipeline for managing your database migrations with Drizzle Kit",
+        name: "drizzlekit_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/drizzlekit-pipeline@v0.4.2/README.md",
+        url: "https://pkg.fluentci.io/drizzlekit_pipeline@v0.4.2",
+    },
+    {
+        label: "Prisma",
+        description: "A ready-to-use Pipeline for managing your database migrations with Prisma",
+        name: "prisma_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/prisma-pipeline@v0.4.1/README.md",
+        url: "https://pkg.fluentci.io/prisma_pipeline@v0.4.1",
+    },
+    {
+        label: "Fastlane",
+        description: "A ready-to-use Pipeline for Fastlane",
+        name: "fastlane_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/fastlane-pipeline@v0.7.2/README.md",
+        url: "https://pkg.fluentci.io/fastlane_pipeline@v0.7.2",
+    },
+    {
+        label: "Bazel",
+        description: "A ready-to-use Pipeline for Bazel Projects",
+        name: "bazel_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/bazel-pipeline@v0.3.1/README.md",
+        url: "https://pkg.fluentci.io/bazel_pipeline@v0.3.1",
+    },
+    {
+        label: "Buf",
+        description: "A ready-to-use Pipeline for Linting and and Pushing Protobuf files to Buf Registry",
+        name: "buf_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/buf-pipeline@v0.3.1/README.md",
+        url: "https://pkg.fluentci.io/buf_pipeline@v0.3.1",
+    },
+    {
+        label: "Terraform",
+        description: "A ready-to-use Pipeline for Terraform",
+        name: "terraform_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/terraform-pipeline@v0.4.1/README.md",
+        url: "https://pkg.fluentci.io/terraform_pipeline@v0.4.1",
+    },
+    {
+        label: "Go",
+        description: "A ready-to-use Pipeline for Go",
+        name: "go_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/go-pipeline@v0.6.1/README.md",
+        url: "https://pkg.fluentci.io/go_pipeline@v0.6.1",
+    },
+    {
+        label: "Cloudflare",
+        description: "A ready-to-use Pipeline for Cloudflare",
+        name: "cloudflare_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/cloudflare-pipeline@v0.6.4/README.md",
+        url: "https://pkg.fluentci.io/cloudflare_pipeline@v0.6.4",
+    },
+    {
+        label: "Terragrunt",
+        description: "A ready-to-use Pipeline for managing your infrastructure with Terragrunt",
+        name: "terragrunt_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/terragrunt-pipeline@v0.4.1/README.md",
+        url: "https://pkg.fluentci.io/terragrunt_pipeline@v0.4.1",
+    },
+    {
+        label: "Rust",
+        description: "A ready-to-use Pipeline for Rust Projects",
+        name: "rust_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/rust-pipeline@v0.6.3/README.md",
+        url: "https://pkg.fluentci.io/rust_pipeline@v0.6.3",
+    },
+    {
+        label: "Supabase",
+        description: "A ready-to-use Pipeline for deploying functions to Supabase",
+        name: "supabase_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/supabase-pipeline@v0.1.0/README.md",
+        url: "https://pkg.fluentci.io/supabase_pipeline@v0.1.0",
+    },
+    {
+        label: "Flutter",
+        description: "A ready-to-use Pipeline for Flutter Projects",
+        name: "flutter_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/flutter-pipeline@v0.5.1/README.md",
+        url: "https://pkg.fluentci.io/flutter_pipeline@v0.5.1",
+    },
+    {
+        label: "Pulumi",
+        description: "A ready-to-use Pipeline for managing your infrastructure with Pulumi",
+        name: "pulumi_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/pulumi-pipeline@v0.2.0/README.md",
+        url: "https://pkg.fluentci.io/pulumi_pipeline@v0.2.0",
+    },
+    {
+        label: "Snyk",
+        description: "A ready-to-use Pipeline for scanning vulnerabilities with Snyk",
+        name: "snyk_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/snyk-pipeline@v0.2.1/README.md",
+        url: "https://pkg.fluentci.io/snyk_pipeline@v0.2.1",
+    },
+    {
+        label: "Firebase",
+        description: "A ready-to-use Pipeline for deploying to Firebase Hosting",
+        name: "firebase_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/firebase-pipeline@v0.1.0/README.md",
+        url: "https://pkg.fluentci.io/firebase_pipeline@v0.1.0",
+    },
+    {
+        label: "Android",
+        description: "A ready-to-use Pipeline for Android Projects",
+        name: "android_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/android-pipeline@v0.7.1/README.md",
+        url: "https://pkg.fluentci.io/android_pipeline@v0.7.1",
+    },
+    {
+        label: "Spin",
+        description: "A ready-to-use Pipeline for building and deploying your Spin applications to Fermyon Platform",
+        name: "spin_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/spin-pipeline@v0.6.1/README.md",
+        url: "https://pkg.fluentci.io/spin_pipeline@v0.6.1",
+    },
+    {
+        label: "Gradle",
+        description: "A ready-to-use Pipeline for Gradle Projects",
+        name: "gradle_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/gradle-pipeline@v0.4.1/README.md",
+        url: "https://pkg.fluentci.io/gradle_pipeline@v0.4.1",
+    },
+    {
+        label: "Sonar",
+        description: "A ready-to-use Pipeline for analyzing your code with SonarCloud",
+        name: "sonar_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/sonar-pipeline@v0.3.1/README.md",
+        url: "https://pkg.fluentci.io/sonar_pipeline@v0.3.1",
+    },
+    {
+        label: "Gitlab",
+        description: "A ready-to-use Pipeline for uploading assets to Gitlab Releases",
+        name: "gitlab_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/gitlab-pipeline@v0.1.1/README.md",
+        url: "https://pkg.fluentci.io/gitlab_pipeline@v0.1.1",
+    },
+    {
+        label: "Railway",
+        description: "A ready-to-use Pipeline for deploying to Railway",
+        name: "railway_pipeline",
+        readme: "https://cdn.jsdelivr.net/gh/fluent-ci-templates/railway-pipeline@v0.6.0/README.md",
+        url: "https://pkg.fluentci.io/railway_pipeline@v0.6.0",
+    },
+];
+
+
+/***/ }),
+/* 281 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -68840,9 +68965,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.registerPipelineCommands = void 0;
 const vscode = __importStar(__webpack_require__(1));
-const terminal_1 = __webpack_require__(79);
-const pipelines_1 = __webpack_require__(2);
-const workspace_1 = __webpack_require__(283);
+const terminal_1 = __webpack_require__(4);
+const pipelines_1 = __webpack_require__(280);
+const workspace_1 = __webpack_require__(274);
 function registerPipelineCommands(context) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
@@ -68872,7 +68997,7 @@ exports.registerPipelineCommands = registerPipelineCommands;
 
 
 /***/ }),
-/* 280 */
+/* 282 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -68903,11 +69028,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.registerJobsCommands = void 0;
 const vscode = __importStar(__webpack_require__(1));
-const terminal_1 = __webpack_require__(79);
-const outputChannel_1 = __webpack_require__(77);
-const child_process_1 = __webpack_require__(73);
-const pipelines_1 = __webpack_require__(2);
-const workspace_1 = __webpack_require__(283);
+const terminal_1 = __webpack_require__(4);
+const outputChannel_1 = __webpack_require__(3);
+const child_process_1 = __webpack_require__(277);
+const pipelines_1 = __webpack_require__(280);
+const workspace_1 = __webpack_require__(274);
 function registerJobsCommands() {
     vscode.commands.registerCommand("fluentci.runJob", async () => {
         if (!(0, workspace_1.verifyWorkspace)()) {
@@ -68938,8 +69063,11 @@ function registerJobsCommands() {
             label: x.name,
             description: x.description,
         }));
-        quickPick.onDidChangeSelection((selection) => {
+        quickPick.onDidChangeSelection(async (selection) => {
             quickPick.dispose();
+            await vscode.window.showInputBox({
+                placeHolder: "Enter access token",
+            });
             (0, terminal_1.showTerminal)(true);
             (0, terminal_1.sendTextToTerminal)(`fluentci run . ${selection[0].label}`);
         });
@@ -68997,7 +69125,7 @@ exports.registerJobsCommands = registerJobsCommands;
 
 
 /***/ }),
-/* 281 */
+/* 283 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -69028,10 +69156,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.registerDocsCommands = void 0;
 const vscode = __importStar(__webpack_require__(1));
-const fs_1 = __webpack_require__(74);
-const pipelines_1 = __webpack_require__(2);
-const mdEngine_1 = __webpack_require__(282);
-const workspace_1 = __webpack_require__(283);
+const fs_1 = __webpack_require__(273);
+const pipelines_1 = __webpack_require__(280);
+const mdEngine_1 = __webpack_require__(6);
+const workspace_1 = __webpack_require__(274);
 function registerDocsCommands() {
     vscode.commands.registerCommand("fluentci.showDocs", () => {
         if (!(0, workspace_1.verifyWorkspace)()) {
@@ -69076,82 +69204,7 @@ exports.registerDocsCommands = registerDocsCommands;
 
 
 /***/ }),
-/* 282 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.renderMarkdown = void 0;
-const markdown_it_1 = __importDefault(__webpack_require__(3));
-const markdown_it_external_links_1 = __importDefault(__webpack_require__(72));
-function normalizeHighlightLang(lang) {
-    switch (lang && lang.toLowerCase()) {
-        case "tsx":
-        case "typescriptreact":
-            return "jsx";
-        case "json5":
-        case "jsonc":
-            return "json";
-        case "c#":
-        case "csharp":
-            return "cs";
-        default:
-            return lang;
-    }
-}
-function renderMarkdown(markdownContent) {
-    const hljs = __webpack_require__(80);
-    const md = new markdown_it_1.default({
-        html: true,
-        highlight: (str, lang) => {
-            if (lang && hljs.getLanguage(normalizeHighlightLang(lang))) {
-                try {
-                    return ('<pre class="hljs"><code>' +
-                        hljs.highlight(normalizeHighlightLang(lang), str).value +
-                        "</code></pre>");
-                }
-                catch (error) { }
-            }
-            return ('<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>");
-        },
-    });
-    md.use(markdown_it_external_links_1.default, {
-        externalTarget: "_blank",
-        externalRel: "noopener noreferrer",
-    });
-    md.use(__webpack_require__(274), {
-        multiline: true,
-        headerless: false, // Render tables without headers
-    });
-    const katexCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">';
-    const markdownCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">';
-    const highlightCss = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">';
-    const copyTeXCss = '<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">';
-    const html = `<!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>${""}</title>
-        ${markdownCss}
-        ${highlightCss}
-        ${katexCss}
-        ${copyTeXCss}
-    </head>
-    <body class="vscode-body">
-        ${md.render(markdownContent)}
-    </body>
-    </html>`;
-    return html;
-}
-exports.renderMarkdown = renderMarkdown;
-
-
-/***/ }),
-/* 283 */
+/* 284 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -69180,22 +69233,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.verifyWorkspace = exports.workspaceFolder = void 0;
-const fs_1 = __webpack_require__(74);
+exports.registerDoctorCommand = void 0;
 const vscode = __importStar(__webpack_require__(1));
-exports.workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-function verifyWorkspace() {
-    if (!exports.workspaceFolder) {
-        vscode.window.showErrorMessage("No workspace folder found");
-        return false;
-    }
-    if (!(0, fs_1.existsSync)(`${exports.workspaceFolder.uri.fsPath}/.fluentci`)) {
-        vscode.window.showErrorMessage("FluentCI Configs Directory does not exist in this directory");
-        return false;
-    }
-    return true;
+const terminal_1 = __webpack_require__(4);
+function registerDoctorCommand() {
+    vscode.commands.registerCommand("fluentci.doctor", () => {
+        (0, terminal_1.showTerminal)(true);
+        (0, terminal_1.sendTextToTerminal)("fluentci doctor");
+    });
 }
-exports.verifyWorkspace = verifyWorkspace;
+exports.registerDoctorCommand = registerDoctorCommand;
 
 
 /***/ })

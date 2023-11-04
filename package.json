@@ -87,6 +87,10 @@
         "title": "Fluent CI: Run a Job from a Prebuilt Pipeline..."
       },
       {
+        "command": "fluentci.doctor",
+        "title": "Fluent CI: Run Doctor..."
+      },
+      {
         "command": "fluentci-explorer.runJob",
         "title": "Run this Job"
       },
