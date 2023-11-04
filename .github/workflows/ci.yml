@@ -16,4 +16,8 @@ jobs:
       - name: Setup Fluent CI
         uses: fluentci-io/setup-fluentci@v1
       - name: Run Dagger Pipelines
-        run: fluentci run . coverage
+        run: |
+          fluentci run . coverage
+          fluentci run codecov_pipeline
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
