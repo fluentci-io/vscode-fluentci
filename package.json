@@ -147,7 +147,7 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "lint": "eslint src --ext ts",
     "test": "vitest",
-    "coverage": "vitest --coverage"
+    "coverage": "vitest --coverage --run --dir tests"
   },
   "devDependencies": {
     "@types/markdown-it": "^13.0.5",
