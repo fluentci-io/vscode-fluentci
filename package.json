@@ -4,6 +4,14 @@
   "description": "Run FluentCI jobs from within VS Code",
   "publisher": "fluentci-io",
   "icon": "resources/logo.png",
+  "author": {
+    "name": "Tsiry Sandratraina",
+    "url": "https://github.com/fluentci-io/vscode-fluentci"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fluentci-io/vscode-fluentci"
+  },
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.84.0"
@@ -147,7 +155,8 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "lint": "eslint src --ext ts",
     "test": "vitest --dir tests",
-    "coverage": "vitest --coverage --run --dir tests"
+    "coverage": "vitest --coverage --run --dir tests",
+    "vsce:package": "vsce package"
   },
   "devDependencies": {
     "@types/markdown-it": "^13.0.5",
@@ -158,6 +167,7 @@
     "@typescript-eslint/parser": "^6.9.0",
     "@vitest/coverage-istanbul": "^0.34.6",
     "@vscode/test-electron": "^2.3.6",
+    "@vscode/vsce": "^2.22.0",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "jest-snapshot": "^29.7.0",
