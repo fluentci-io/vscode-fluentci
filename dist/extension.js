@@ -254,7 +254,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.renderMarkdown = void 0;
+exports.renderMarkdown = exports.normalizeHighlightLang = void 0;
 const markdown_it_1 = __importDefault(__webpack_require__(7));
 const markdown_it_external_links_1 = __importDefault(__webpack_require__(76));
 function normalizeHighlightLang(lang) {
@@ -272,6 +272,7 @@ function normalizeHighlightLang(lang) {
             return lang;
     }
 }
+exports.normalizeHighlightLang = normalizeHighlightLang;
 function renderMarkdown(markdownContent) {
     const hljs = __webpack_require__(77);
     const md = new markdown_it_1.default({

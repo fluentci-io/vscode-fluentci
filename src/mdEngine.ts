@@ -1,7 +1,7 @@
 import MarkdownIt from "markdown-it";
 import MarkdownItExternalLinks from "markdown-it-external-links";
 
-function normalizeHighlightLang(lang: string): string {
+export function normalizeHighlightLang(lang: string): string {
   switch (lang && lang.toLowerCase()) {
     case "tsx":
     case "typescriptreact":
