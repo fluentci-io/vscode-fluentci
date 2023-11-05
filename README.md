@@ -2,6 +2,7 @@
 
 [![tests](https://github.com/fluentci-io/vscode-fluentci/actions/workflows/ci.yml/badge.svg)](https://github.com/fluentci-io/vscode-fluentci/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/fluentci-io/vscode-fluentci/graph/badge.svg?token=R68IYX06SZ)](https://codecov.io/gh/fluentci-io/vscode-fluentci)
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/fluentci-io.fluentci?&labelColor=%23000&color=%23460cf1&label=Visual%20Studio%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=fluentci-io.fluentci)
 
 The FluentCI extension for VS Code provides a set of commands for interacting with the [FluentCI](https://fluentci.io) Pipelines.
 
