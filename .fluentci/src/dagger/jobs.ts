@@ -17,7 +17,7 @@ export const test = async (
 ) => {
   await connect(async (client: Client) => {
     const context = client.host().directory(src);
-    const pm = Deno.env.get("PACKAGE_MANAGER") || packageManager || "npm";
+    const pm = Deno.env.get("PACKAGE_MANAGER") || packageManager || "bun";
     const version = Deno.env.get("NODE_VERSION") || nodeVersion || "v18.16.1";
     const ctr = client
       .pipeline(Job.test)
@@ -48,11 +48,9 @@ export const test = async (
         "-c",
         "[ -f client.gen.ts ] && rm client.gen.ts || true",
       ])
-      .withExec([pm, "run", "test"]);
+      .withExec([pm, "run", "test", "--", "--run"]);
 
-    const result = await ctr.stdout();
-
-    console.log(result);
+    await ctr.stdout();
   });
   return "Done";
 };
@@ -64,7 +62,7 @@ export const build = async (
 ) => {
   await connect(async (client: Client) => {
     const context = client.host().directory(src);
-    const pm = Deno.env.get("PACKAGE_MANAGER") || packageManager || "npm";
+    const pm = Deno.env.get("PACKAGE_MANAGER") || packageManager || "bun";
     const version = Deno.env.get("NODE_VERSION") || nodeVersion || "18.16.1";
     const ctr = client
       .pipeline(Job.build)
@@ -96,11 +94,10 @@ export const build = async (
         "[ -f client.gen.ts ] && rm client.gen.ts || true",
       ])
       .withExec([pm, "install"])
-      .withExec([pm, "run", "build"]);
+      .withExec([pm, "run", "vsce:package"])
+      .withExec(["ls", "-la"]);
 
-    const result = await ctr.stdout();
-
-    console.log(result);
+    await ctr.stdout();
   });
   return "Done";
 };
