@@ -47,11 +47,9 @@ export function registerJobsCommands() {
     }));
     quickPick.onDidChangeSelection(async (selection) => {
       quickPick.dispose();
-      await vscode.window.showInputBox({
-        placeHolder: "Enter access token",
-      });
       showTerminal(true);
       sendTextToTerminal(`fluentci run . ${selection[0].label}`);
+      return;
     });
     quickPick.onDidHide(() => quickPick.dispose());
     quickPick.show();

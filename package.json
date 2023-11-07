@@ -179,8 +179,11 @@
   },
   "dependencies": {
     "ansi-to-html": "^0.7.2",
+    "async-utility": "^1.4.3",
+    "deasync": "^0.1.29",
     "graphql": "16.8.1",
     "highlight.js": "^11.9.0",
+    "make-synchronous": "^1.0.0",
     "markdown-it": "^13.0.2",
     "markdown-it-external-links": "^0.0.6",
     "markdown-it-multimd-table": "^4.2.3"

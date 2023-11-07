@@ -10,7 +10,7 @@ afterEach(() => {
 beforeEach(() => {
   vi.mock("fs", () => {
     return {
-      existsSync: vi.fn(() => true),
+      existsSync: vi.fn(() => false),
     };
   });
 });
@@ -33,9 +33,12 @@ vi.mock("vscode", () => {
 });
 
 describe("workspace", () => {
-  test("verifyWorkspace() - with .fluentci", () => {
+  test("verifyWorkspace() - without .fluentci", () => {
     const spy = vi.spyOn(vscode.window, "showErrorMessage");
-    expect(verifyWorkspace()).toBe(true);
-    expect(spy).not.toHaveBeenCalled();
+    expect(verifyWorkspace()).toBe(false);
+    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith(
+      "FluentCI Configs Directory does not exist in this directory"
+    );
   });
 });
