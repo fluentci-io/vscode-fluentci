@@ -11,6 +11,7 @@ import { registerPipelineCommands } from "./commands/pipeline";
 import { registerJobsCommands } from "./commands/jobs";
 import { registerDocsCommands } from "./commands/docs";
 import { registerDoctorCommand } from "./commands/doctor";
+import { verifyRequirements } from "./requirements";
 
 const outputChannel = vscode.window.createOutputChannel("Fluent CI");
 const terminal = vscode.window.createTerminal("Fluent CI");
@@ -25,6 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
   initResources(context);
   initOutputChannel(outputChannel);
   initTerminal(terminal);
+
+  verifyRequirements();
 
   registerExplorerViews(context);
 
