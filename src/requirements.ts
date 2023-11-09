@@ -23,7 +23,9 @@ export function verifyRequirements() {
   docker.stderr.on("data", (err) => {
     appendLineToOutputChannel("=> Docker is not installed");
     appendLineToOutputChannel(err.message);
-    vscode.window.showErrorMessage("Docker is not installed");
+    vscode.window.showErrorMessage(
+      "Docker is not installed, Docker is required to run FluentCI jobs"
+    );
   });
 
   const dockerStatus = spawn("docker", ["info"]);
