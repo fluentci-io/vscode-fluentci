@@ -34,6 +34,16 @@ vi.mock("vscode", () => {
   };
 });
 
+vi.mock("child_process", () => {
+  return {
+    spawn: vi.fn(() => ({
+      stderr: {
+        on: vi.fn(),
+      },
+    })),
+  };
+});
+
 describe("extension", () => {
   test("activate()", () => {
     const context = {
