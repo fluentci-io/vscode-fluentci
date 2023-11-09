@@ -151,8 +151,18 @@ export const publish = async (
       .withExec([pm, "install"])
       .withExec([pm, "run", "vsce:package"])
       .withExec(["ls", "-la"])
-      .withExec([pm, "run", "vsce:publish"]);
+      .withExec([pm, "run", "vsce:publish"])
+      .withExec([
+        "bash",
+        "-c",
+        `cp fluentci-*.vsix vscode-fluentci-${Deno.env.get(
+          "RELEASE_VERSION"
+        )}.vsix`,
+      ]);
 
+    await ctr
+      .file(`vscode-fluentci-${Deno.env.get("RELEASE_VERSION")}.vsix`)
+      .export(`./vscode-fluentci-${Deno.env.get("RELEASE_VERSION")}.vsix`);
     await ctr.stdout();
   });
   return "Done";
