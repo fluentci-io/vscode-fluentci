@@ -4,6 +4,7 @@ export enum Job {
   test = "test",
   coverage = "coverage",
   build = "build",
+  publish = "publish",
   run = "run",
   install = "install",
 }
@@ -96,6 +97,61 @@ export const build = async (
       .withExec([pm, "install"])
       .withExec([pm, "run", "vsce:package"])
       .withExec(["ls", "-la"]);
+
+    await ctr.stdout();
+  });
+  return "Done";
+};
+
+export const publish = async (
+  src = ".",
+  packageManager?: string,
+  nodeVersion?: string
+) => {
+  await connect(async (client: Client) => {
+    const context = client.host().directory(src);
+    const pm = Deno.env.get("PACKAGE_MANAGER") || packageManager || "bun";
+    const version = Deno.env.get("NODE_VERSION") || nodeVersion || "18.16.1";
+    const token = Deno.env.get("VSCE_PAT");
+    if (!token) {
+      throw new Error(
+        "VSCE_PAT not set, see https://code.visualstudio.com/api/working-with-extensions/publishing-extension"
+      );
+    }
+    const ctr = client
+      .pipeline(Job.publish)
+      .container()
+      .from("pkgxdev/pkgx:latest")
+      .withExec(["apt-get", "update"])
+      .withExec(["apt-get", "install", "-y", "ca-certificates"])
+      .withExec([
+        "pkgx",
+        "install",
+        `node@${version}`,
+        "npm",
+        "bun",
+        "pnpm",
+        "classic.yarnpkg.com",
+        "rtx",
+      ])
+      .withExec(["sh", "-c", "echo 'eval $(rtx activate bash)' >> ~/.bashrc"])
+      .withMountedCache(
+        "/app/node_modules",
+        client.cacheVolume(`node_modules_${pm}`)
+      )
+      .withMountedCache("/app/dist", client.cacheVolume("dist"))
+      .withDirectory("/app", context, { exclude })
+      .withWorkdir("/app")
+      .withExec([
+        "sh",
+        "-c",
+        "[ -f client.gen.ts ] && rm client.gen.ts || true",
+      ])
+      .withEnvVariable("VSCE_PAT", token)
+      .withExec([pm, "install"])
+      .withExec([pm, "run", "vsce:package"])
+      .withExec(["ls", "-la"])
+      .withExec([pm, "run", "vsce:publish"]);
 
     await ctr.stdout();
   });
@@ -239,6 +295,7 @@ export const runnableJobs: Record<Job, JobExec> = {
   [Job.test]: test,
   [Job.coverage]: coverage,
   [Job.build]: build,
+  [Job.publish]: publish,
   [Job.run]: run,
   [Job.install]: install,
 };
@@ -247,6 +304,7 @@ export const jobDescriptions: Record<Job, string> = {
   [Job.test]: "Run tests",
   [Job.coverage]: "Run tests with coverage",
   [Job.build]: "Build the project",
+  [Job.publish]: "Publish to VSCode Marketplace",
   [Job.run]: "Run a task",
   [Job.install]: "Install dependencies",
 };

@@ -1,0 +1,16 @@
+name: Publish to VS Code Marketplace
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Fluent CI
+        uses: fluentci-io/setup-fluentci@v1
+      - name: Run Dagger Pipelines
+        run: fluentci run . publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

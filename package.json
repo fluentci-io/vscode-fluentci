@@ -156,7 +156,8 @@
     "lint": "eslint src --ext ts",
     "test": "vitest --dir tests",
     "coverage": "vitest --coverage --run --dir tests",
-    "vsce:package": "vsce package"
+    "vsce:package": "vsce package",
+    "vsce:publish": "vsce publish"
   },
   "devDependencies": {
     "@types/markdown-it": "^13.0.5",
