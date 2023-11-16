@@ -116,7 +116,11 @@
       },
       {
         "command": "fluentci-explorer.showDocs",
-        "title": "Show Documentation"
+        "title": "Show Documentation",
+        "icon": {
+          "dark": "resources/icons/dark/docs.svg",
+          "light": "resources/icons/light/docs.svg"
+        }
       },
       {
         "command": "fluentci-explorer.runJobFromPrebuiltPipeline",
@@ -136,7 +140,11 @@
       },
       {
         "command": "fluentci-explorer.showPrebuiltPipelineDocs",
-        "title": "Show Documentation"
+        "title": "Show Documentation",
+        "icon": {
+          "dark": "resources/icons/dark/docs.svg",
+          "light": "resources/icons/light/docs.svg"
+        }
       },
       {
         "command": "fluentci.addEnvVar",
@@ -218,7 +226,7 @@
         {
           "command": "fluentci-explorer.runCurrentPipeline",
           "when": "viewItem == 'fluentci-pipeline'",
-          "group": "inline@1"
+          "group": "inline@2"
         },
         {
           "command": "fluentci-explorer.runJobFromPrebuiltPipeline",
@@ -227,7 +235,7 @@
         {
           "command": "fluentci-explorer.runJobFromPrebuiltPipeline",
           "when": "viewItem == 'fluentci-pp-job'",
-          "group": "inline@1"
+          "group": "inline@2"
         },
         {
           "command": "fluentci-explorer.runPrebuiltPipeline",
@@ -236,15 +244,25 @@
         {
           "command": "fluentci-explorer.runPrebuiltPipeline",
           "when": "viewItem == 'fluentci-prebuilt-pipeline'",
-          "group": "inline@1"
+          "group": "inline@2"
         },
         {
           "command": "fluentci-explorer.showDocs",
           "when": "viewItem =~ /fluentci-pipeline/ "
         },
         {
+          "command": "fluentci-explorer.showDocs",
+          "when": "viewItem == 'fluentci-pipeline' ",
+          "group": "inline@1"
+        },
+        {
           "command": "fluentci-explorer.showPrebuiltPipelineDocs",
           "when": "viewItem =~ /fluentci-prebuilt-pipeline/ "
+        },
+        {
+          "command": "fluentci-explorer.showPrebuiltPipelineDocs",
+          "when": "viewItem == 'fluentci-prebuilt-pipeline' ",
+          "group": "inline@1"
         },
         {
           "command": "fluentci-explorer.env_vars.editEnvVar",
