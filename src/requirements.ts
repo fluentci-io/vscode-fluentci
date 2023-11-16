@@ -13,7 +13,7 @@ export function verifyRequirements() {
   const deno = spawn("deno", ["--version"]);
   deno.stderr.on("data", (err) => {
     appendLineToOutputChannel("=> Deno is not installed");
-    appendLineToOutputChannel(err.message);
+    appendLineToOutputChannel(err);
     vscode.window.showErrorMessage(
       "Deno is not installed, Deno is required to run FluentCI jobs"
     );
@@ -22,7 +22,7 @@ export function verifyRequirements() {
   const docker = spawn("docker", ["--version"]);
   docker.stderr.on("data", (err) => {
     appendLineToOutputChannel("=> Docker is not installed");
-    appendLineToOutputChannel(err.message);
+    appendLineToOutputChannel(err);
     vscode.window.showErrorMessage(
       "Docker is not installed, Docker is required to run FluentCI jobs"
     );
@@ -30,11 +30,15 @@ export function verifyRequirements() {
 
   const dockerStatus = spawn("docker", ["info"]);
   dockerStatus.stderr.on("data", (err) => {
-    appendLineToOutputChannel("=> Docker is not running");
-    appendLineToOutputChannel(err.message);
-    vscode.window.showErrorMessage(
-      "Docker is not running, please start docker"
-    );
+    appendLineToOutputChannel(err);
+  });
+  dockerStatus.on("close", (code) => {
+    if (code !== 0) {
+      appendLineToOutputChannel("=> Docker is not running");
+      vscode.window.showErrorMessage(
+        "Docker is not running, please start docker"
+      );
+    }
   });
 
   const fluentci = spawn("fluentci", ["--version"]);

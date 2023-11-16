@@ -31,6 +31,7 @@ vi.mock("vscode", () => {
         },
       ],
     },
+    EventEmitter: vi.fn(),
   };
 });
 
@@ -41,8 +42,8 @@ describe("views", () => {
     };
     const spyCreateTreeView = vi.spyOn(vscode.window, "createTreeView");
     registerExplorerViews(context as any);
-    expect(context.subscriptions.length).toBe(2);
-    expect(spyCreateTreeView).toHaveBeenCalledTimes(2);
+    expect(context.subscriptions.length).toBe(3);
+    expect(spyCreateTreeView).toHaveBeenCalledTimes(3);
     expect(spyCreateTreeView).toHaveBeenCalledWith("fluentci-explorer.jobs", {
       treeDataProvider: new JobsTreeProvider(),
     });

@@ -12,9 +12,12 @@ export interface Job {
 }
 
 export class JobsTreeProvider implements vscode.TreeDataProvider<Job> {
-  onDidChangeTreeData?:
-    | vscode.Event<void | Job | Job[] | null | undefined>
-    | undefined;
+  protected _onDidChangeTreeData = new vscode.EventEmitter<Job | null>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  refresh() {
+    this._onDidChangeTreeData.fire(null);
+  }
   getTreeItem(element: Job): vscode.TreeItem | Thenable<vscode.TreeItem> {
     return {
       label: element.name,

@@ -13,6 +13,7 @@ vi.mock("child_process", () => {
       stderr: {
         on: vi.fn(),
       },
+      on: vi.fn(),
     })),
   };
 });

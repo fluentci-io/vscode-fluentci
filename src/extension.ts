@@ -29,9 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   verifyRequirements();
 
-  registerExplorerViews(context);
+  const providers = registerExplorerViews(context);
 
-  registerExplorerCommands();
+  registerExplorerCommands(providers);
   registerPipelineCommands(context);
   registerJobsCommands();
   registerDocsCommands();

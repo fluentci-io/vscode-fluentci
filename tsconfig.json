@@ -1,5 +1,7 @@
 {
 	"compilerOptions": {
+		"baseUrl": "./@types",
+		"typeRoots": ["./node_modules/@types", "./@types"],
 		"module": "Node16",
 		"target": "ES2022",
 		"lib": [
@@ -13,5 +15,5 @@
 		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 	},
-	"exclude": ["tests"]
+	"exclude": ["tests"],
 }

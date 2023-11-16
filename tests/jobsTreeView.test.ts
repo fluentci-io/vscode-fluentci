@@ -52,6 +52,7 @@ vi.mock("vscode", () => {
       createTerminal: vi.fn(),
       createTreeView: vi.fn(),
     },
+    EventEmitter: vi.fn(),
   };
 });
 

@@ -31,6 +31,7 @@ vi.mock("vscode", () => {
         },
       ],
     },
+    EventEmitter: vi.fn(),
   };
 });
 
@@ -40,6 +41,7 @@ vi.mock("child_process", () => {
       stderr: {
         on: vi.fn(),
       },
+      on: vi.fn(),
     })),
   };
 });
@@ -53,9 +55,9 @@ describe("extension", () => {
     const spyOnCommands = vi.spyOn(vscode.commands, "registerCommand");
     const spyCreateTreeView = vi.spyOn(vscode.window, "createTreeView");
     activate(context as any);
-    expect(context.subscriptions.length).toBe(3);
-    expect(spyOnCommands).toHaveBeenCalledTimes(16);
-    expect(spyCreateTreeView).toHaveBeenCalledTimes(2);
+    expect(context.subscriptions.length).toBe(4);
+    expect(spyOnCommands).toHaveBeenCalledTimes(21);
+    expect(spyCreateTreeView).toHaveBeenCalledTimes(3);
     expect(spyCreateTreeView).toHaveBeenCalledWith("fluentci-explorer.jobs", {
       treeDataProvider: new JobsTreeProvider(),
     });
