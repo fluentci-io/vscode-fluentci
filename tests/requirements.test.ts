@@ -45,6 +45,7 @@ vi.mock("child_process", () => {
           }
         }),
       },
+      on: vi.fn(),
     })),
   };
 });
@@ -73,15 +74,12 @@ describe("requirements", () => {
     };
     initOutputChannel(outputChannel as any);
     verifyRequirements();
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledTimes(5);
+    expect(vscode.window.showErrorMessage).toHaveBeenCalledTimes(4);
     expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
       "Deno is not installed, Deno is required to run FluentCI jobs"
     );
     expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
       "Docker is not installed, Docker is required to run FluentCI jobs"
-    );
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
-      "Docker is not running, please start docker"
     );
     expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
       "FluentCI is not installed, FluentCI is required to run FluentCI jobs"

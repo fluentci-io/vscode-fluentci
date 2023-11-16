@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import { registerExplorerCommands } from "../../src/commands/explorer";
 import { initTerminal } from "../../src/terminal";
+import { registerExplorerViews } from "../../src/views";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -55,6 +56,7 @@ vi.mock("vscode", () => {
     ViewColumn: {
       One: 1,
     },
+    EventEmitter: vi.fn(),
   };
 });
 
@@ -85,7 +87,11 @@ describe("commands", () => {
     );
     const spyOnReadFileSync = vi.spyOn(fs, "readFileSync");
     const spyFetch = vi.spyOn(global, "fetch");
-    registerExplorerCommands();
+    const context = {
+      subscriptions: [],
+    };
+    const providers = registerExplorerViews(context as any);
+    registerExplorerCommands(providers);
     vscode.commands.executeCommand("fluentci-explorer.runJob", {
       name: "build",
     });
@@ -168,7 +174,7 @@ describe("commands", () => {
 
     </body>
     </html>`);
-    expect(spyOnCommands).toHaveBeenCalledTimes(6);
+    expect(spyOnCommands).toHaveBeenCalledTimes(11);
     expect(spyOnCommands).toHaveBeenCalledWith(
       "fluentci-explorer.runJob",
       expect.any(Function)

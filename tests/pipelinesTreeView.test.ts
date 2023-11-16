@@ -57,6 +57,7 @@ vi.mock("vscode", () => {
       (...args: string[]) =>
         `/home/user/.vscode/extensions/fluentci/resources/icons/${args[0]}/${args[1]}.svg`
     ),
+    EventEmitter: vi.fn(),
   };
 });
 

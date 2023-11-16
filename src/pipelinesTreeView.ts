@@ -16,9 +16,12 @@ export interface Pipeline {
 export class PipelinesTreeProvider
   implements vscode.TreeDataProvider<Pipeline>
 {
-  onDidChangeTreeData?:
-    | vscode.Event<void | Pipeline | Pipeline[] | null | undefined>
-    | undefined;
+  protected _onDidChangeTreeData = new vscode.EventEmitter<Pipeline | null>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  refresh() {
+    this._onDidChangeTreeData.fire(null);
+  }
   getTreeItem(element: Pipeline): vscode.TreeItem | Thenable<vscode.TreeItem> {
     return {
       label: element.name,
